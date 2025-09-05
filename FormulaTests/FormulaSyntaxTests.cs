@@ -7,7 +7,7 @@
 namespace CS3500.Formula;
 
 using System.Security.Cryptography;
-using CS3500.Formula3; // Change this using statement to use different formula implementations.
+using CS3500.Formula; // Change this using statement to use different formula implementations.
 
 /// <summary>
 ///   <para>
