@@ -2,7 +2,7 @@
 //   Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 // <authors> Francisco Pinas </authors>
-// <date> 8/26/2025 </date>
+// <date> 9/4/2025 </date>
 
 namespace CS3500.Formula;
 

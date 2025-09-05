@@ -84,8 +84,9 @@ public class Formula
     public Formula(string formula)
     {
         // FIXME: First use the given GetTokens method to get the tokens from the formula.
-        List<string> tokens = GetTokens(formula);
+        List<string> tokenList = GetTokens(formula);
         //        Then check each token using the rules from the assignment.
+        FormulaIsValid(tokenList);
 
     }
 
