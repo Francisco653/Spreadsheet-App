@@ -86,7 +86,7 @@ public class Formula
         // FIXME: First use the given GetTokens method to get the tokens from the formula.
         List<string> tokens = GetTokens(formula);
         //        Then check each token using the rules from the assignment.
-        
+
     }
 
     /// <summary>
@@ -218,11 +218,13 @@ public class Formula
     /// </summary>
     /// <param name="formulaTokens"></param>
     /// <returns> True if all the tokens (in relation to one another) are valid</returns>
-    private static bool FormulaIsValid(List<string> formulaTokens) { 
-        foreach (string token in formulaTokens) {
-            if(! IsValidToken(token))
+    private static bool FormulaIsValid(List<string> formulaTokens)
+    {
+        foreach (string token in formulaTokens)
+        {
+            if (!IsValidToken(token))
             {
-
+                throw new FormulaFormatException("Tokens must be a number, variable, parenthesis, or operator!");
             }
         }
         return true;
@@ -232,8 +234,9 @@ public class Formula
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
-    private static bool IsValidToken(string token) {
-        if(Regex.IsMatch(token, @"^\d+(\.\d+)?([eE][-+]?\d+)?$"))
+    private static bool IsValidToken(string token)
+    {
+        if (Regex.IsMatch(token, @"^\d+(\.\d+)?([eE][-+]?\d+)?$"))
         {
             return true; // It's a number
         }
@@ -251,7 +254,7 @@ public class Formula
         }
         return false; // It's not a valid token
     }
-
+}
 
 /// <summary>
 ///   Used to report syntax errors in the argument to the Formula constructor.
