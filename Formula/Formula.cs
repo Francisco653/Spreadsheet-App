@@ -83,7 +83,10 @@ public class Formula
     /// <param name="formula"> The string representation of the formula to be created.</param>
     public Formula(string formula)
     {
-        // FIXME: implement your code here
+        // FIXME: First use the given GetTokens method to get the tokens from the formula.
+        List<string> tokens = GetTokens(formula);
+        //        Then check each token using the rules from the assignment.
+        
     }
 
     /// <summary>
@@ -209,6 +212,28 @@ public class Formula
         }
 
         return results;
+    }
+    /// <summary>
+    /// This formula iterates through the list of tokens and checks if they are valid according to the rules specified in the assignment.
+    /// </summary>
+    /// <param name="formulaTokens"></param>
+    /// <returns> True if all the tokens (in relation to one another) are valid</returns>
+    private static bool FormulaIsValid(List<string> formulaTokens) { 
+        foreach (string token in formulaTokens) {
+            if(! IsValidToken(token))
+            {
+
+            }
+        }
+        return true;
+    }
+    /// <summary>
+    /// Returns true if the token is a valid token (number, variable, operator, or parenthesis).
+    /// </summary>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    private static bool IsValidToken(string token) {
+        return true;
     }
 }
 
