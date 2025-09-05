@@ -233,9 +233,24 @@ public class Formula
     /// <param name="token"></param>
     /// <returns></returns>
     private static bool IsValidToken(string token) {
-        return true;
+        if(Regex.IsMatch(token, @"^\d+(\.\d+)?([eE][-+]?\d+)?$"))
+        {
+            return true; // It's a number
+        }
+        else if (IsVar(token))
+        {
+            return true; // It's a variable
+        }
+        else if (Regex.IsMatch(token, @"^[\+\-\*/]$"))
+        {
+            return true; // It's an operator
+        }
+        else if (token == "(" || token == ")")
+        {
+            return true; // It's a parenthesis
+        }
+        return false; // It's not a valid token
     }
-}
 
 
 /// <summary>
