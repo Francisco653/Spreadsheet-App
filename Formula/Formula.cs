@@ -233,45 +233,55 @@ public class Formula
         foreach (string token in formulaTokens)
         {
             count++;
-            // Check if the token is valid
-            if (!IsValidToken(token))
+            // Checks individual tokens to see if they are valid (also checks first token rule)
+            if (TokenType(token) == "invalid" || (count == 1 && !IsValidFirst(TokenType(token))))
             {
-                throw new FormulaFormatException("Tokens must be a number, variable, parenthesis, or operator!");
-            }
-            // First token rule
-            if(count == 1 && !(Regex.IsMatch(token, @"^\d+(\.\d+)?([eE][-+]?\d+)?$") || IsVar(token) || token == "("))
-            {
-                throw new FormulaFormatException("The first token must be a number, variable, or left parenthesis!");
+                throw new FormulaFormatException("Tokens must be a number, variable, left/right parenthesis, or operator!");
             }
         }
         // TO-DO: Here for now to avoid build errors
         return true;
     }
     /// <summary>
-    /// Returns true if the token is a valid token (number, variable, operator, or parenthesis).
+    /// Returns a string of the token's type (number, variable, operator, parenthesis, or invalid).
     /// </summary>
     /// <param name="token"></param>
     /// <returns></returns>
-    private static bool IsValidToken(string token)
+    private static string TokenType(string token)
     {
         if (Regex.IsMatch(token, @"^(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?$"))
         {
-            return true; // It's a number
+            return "number"; // It's a number
         }
         else if (IsVar(token))
         {
-            return true; // It's a variable
+            return "variable"; // It's a variable
         }
         else if (Regex.IsMatch(token, @"^[\+\-\*/]$"))
         {
-            return true; // It's an operator
+            return "operator"; // It's an operator
         }
-        else if (token == "(" || token == ")")
+        else if (token == "(")
         {
-            return true; // It's a parenthesis
+            return "leftParenthesis"; // It's a left parenthesis
         }
-        return false; // It's not a valid token
+        else if (token == ")")
+        {
+            return "rightParenthesis"; // It's a right parenthesis
+        }
+        else
+            return "invalid"; // It's not a valid token
     }
+    /// <summary>
+    /// Returns true if the first token is valid (number, variable, or left parenthesis).
+    /// </summary>
+    /// <param name="tokenType"></param>
+    /// <returns></returns>
+    private static bool IsValidFirst(string tokenType)
+    {
+        return tokenType == "number" || tokenType == "variable" || tokenType == "leftParenthesis";
+    }
+
 }
 
 /// <summary>
