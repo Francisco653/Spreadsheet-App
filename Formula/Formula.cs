@@ -215,19 +215,36 @@ public class Formula
         return results;
     }
     /// <summary>
-    /// This formula iterates through the list of tokens and checks if they are valid according to the rules specified in the assignment.
+    /// This method iterates through the list of tokens and checks if they are valid according to the rules specified in the assignment.
     /// </summary>
     /// <param name="formulaTokens"></param>
     /// <returns> True if all the tokens (in relation to one another) are valid</returns>
     private static bool FormulaIsValid(List<string> formulaTokens)
     {
+
+        // One token minimum rule
+        if (formulaTokens.Count == 0)
+        {
+            throw new FormulaFormatException("The formula cannot be empty!");
+        }
+        // Count is needed to check first token rules
+        int count = 0;
+        // Here we start iterating through the tokens to check their validity
         foreach (string token in formulaTokens)
         {
+            count++;
+            // Check if the token is valid
             if (!IsValidToken(token))
             {
                 throw new FormulaFormatException("Tokens must be a number, variable, parenthesis, or operator!");
             }
+            // First token rule
+            if(count == 1 && !(Regex.IsMatch(token, @"^\d+(\.\d+)?([eE][-+]?\d+)?$") || IsVar(token) || token == "("))
+            {
+                throw new FormulaFormatException("The first token must be a number, variable, or left parenthesis!");
+            }
         }
+        // TO-DO: Here for now to avoid build errors
         return true;
     }
     /// <summary>
@@ -237,7 +254,7 @@ public class Formula
     /// <returns></returns>
     private static bool IsValidToken(string token)
     {
-        if (Regex.IsMatch(token, @"^\d+(\.\d+)?([eE][-+]?\d+)?$"))
+        if (Regex.IsMatch(token, @"^(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?$"))
         {
             return true; // It's a number
         }

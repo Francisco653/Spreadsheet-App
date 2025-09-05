@@ -66,7 +66,8 @@ public class FormulaSyntaxTests
 
     /// <summary>
     /// This method should also throw an exception for an invalid variable,
-    /// as a number is sandwiched between two variable characters.
+    /// as a number is sandwiched between two variable characters. 
+    /// EDIT: Actually the given getTokens method splits the variable where it stops being valid. So here, we get [c12453, h6]. Still should give an error, but for a different reason now.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestToken_Invalid_Variable_Scrambled()
