@@ -86,7 +86,7 @@ public class Formula
         // Check each token using the rules from the assignment.
         FormulaIsValid(tokenList);
         // Normalizes the string for ToString method (again to achieve O(1) time complexity).
-        canonicalForm = BuildCanonicalForm(formula);
+        canonicalForm = BuildCanonicalForm();
     }
 
     /// <summary>
@@ -318,7 +318,7 @@ public class Formula
     /// <summary>
     /// Returns true if the first token is valid (number, variable, or left parenthesis).
     /// </summary>
-    /// <param name="tokenType"></param>
+    /// <param name="tokenType">The type of the token to check for validity as the first token.</param>
     /// <returns>True if valid</returns>
     private static bool IsValidFirst(string tokenType)
     {
@@ -329,7 +329,7 @@ public class Formula
     /// </summary>
     /// <param name="formula"></param>
     /// <returns> A new normalized formula (whitespace removed and variable letters capitalized</returns>
-    private string BuildCanonicalForm(string formula)
+    private string BuildCanonicalForm()
     {
         string normalized = string.Empty;
         foreach (string token in tokenList)
