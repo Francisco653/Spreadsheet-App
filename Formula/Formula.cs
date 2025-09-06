@@ -255,12 +255,20 @@ public class Formula
             {
                 leftParenthesisCount++;
             }
-            else if(types.Last() == "rightParenthesis")
+            if(types.Last() == "rightParenthesis")
             {
                 rightParenthesisCount++;
                 if(rightParenthesisCount > leftParenthesisCount)
                 {
                     throw new FormulaFormatException("Closing parenthesis cannot at any point exceed opening parenthesis when read left to right!");
+                }
+            }
+            // Parenthesis following rule checked here.
+            if(count >= 2 && (types[types.Count -2] == "operator" || types[types.Count - 2] == "leftParenthesis")) {
+                // The conditions for the first token and tokens following an operator or opening parenthesis are the same.
+                if (!IsValidFirst(TokenType(token)))
+                {
+                    throw new FormulaFormatException("A number, variable, or opening parenthesis must follow an operator or opening parenthesis!");
                 }
             }
         }
