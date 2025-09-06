@@ -11,7 +11,7 @@ Copyright:  CS 3500 and [Francisco Pinas] - This work may not be copied for use 
 
 # Comments to Evaluators:
 Thanks for all the help in Piaza! I edited some of my tests from assignment 1 now that we are Open Box testing. 
-I had so many test cases in assignment 1 that not many were added into assignment 2.
+From assignment 1, I edited a few tests now that I know how tokens are parsed. I also added tests for toString.
 
 # Consulted Peers:
 

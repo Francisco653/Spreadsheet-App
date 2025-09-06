@@ -260,9 +260,14 @@ public class Formula
                 rightParenthesisCount++;
                 if(rightParenthesisCount > leftParenthesisCount)
                 {
-                    throw new FormulaFormatException("Closing parenthesis cannot at any point exceed opening parenthesis when read left to right!!!");
+                    throw new FormulaFormatException("Closing parenthesis cannot at any point exceed opening parenthesis when read left to right!");
                 }
             }
+        }
+        // Now we check balanced parenthesis rule that ALL tokens have been iterated through.
+        if(rightParenthesisCount > leftParenthesisCount || leftParenthesisCount > rightParenthesisCount)
+        {
+           throw new FormulaFormatException("There must be an equal amount of opening and closed parenthesis!");
         }
         return true;
     }
