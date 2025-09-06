@@ -269,13 +269,19 @@ public class Formula
         {
            throw new FormulaFormatException("There must be an equal amount of opening and closed parenthesis!");
         }
+
+        // Now we check the last token rule (Technically, the leftParenthesis condition will never be triggered due to the balanced parenthesis rule, but it is here for clarity).
+        if (types.Last() == "operator" || types.Last() == "leftParenthesis")
+        {
+            throw new FormulaFormatException("Last token must be a number, variable, or a closing parenthesis!");
+        }
         return true;
     }
     /// <summary>
     /// Returns a string of the token's type (number, variable, operator, parenthesis, or invalid).
     /// </summary>
     /// <param name="token"></param>
-    /// <returns></returns>
+    /// <returns>Returns the type the token is as a string</returns>
     private static string TokenType(string token)
     {
         if (Regex.IsMatch(token, @"^(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?$"))
