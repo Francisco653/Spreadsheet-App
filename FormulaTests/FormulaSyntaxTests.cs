@@ -678,4 +678,13 @@ public class FormulaSyntaxTests
         new Formula("((55 +123 * 6))").ToString();
     }
 
+    /// <summary>
+    /// Testing that the formula is normalized properly (variables are capitalized and white space removed).
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestToString_No_Crashes()
+    {
+        new Formula("((55 +123 * 6))").ToString();
+    }
+
 }

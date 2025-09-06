@@ -298,7 +298,7 @@ public class Formula
             {
                 normalized += token.ToUpper();
             }
-            else if (!Regex.IsMatch(token, @"^\s*$", RegexOptions.Singleline))
+            else
             {
                 normalized += token;
             }
