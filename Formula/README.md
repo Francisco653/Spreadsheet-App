@@ -10,7 +10,7 @@ Copyright:  CS 3500 and [Francisco Pinas] - This work may not be copied for use 
 ```
 
 # Comments to Evaluators:
-Thanks for all the help in Piaza!
+Thanks for all the help in Piaza!  This work "stands on its own"
 
 # Consulted Peers:
 

@@ -663,6 +663,7 @@ public class FormulaSyntaxTests
     }
 
     // --- Tests for toString() ---
+
     /// <summary>
     /// Testing that creating an acceptable formula and then calling toString does not crash the program.
     /// </summary>
@@ -696,6 +697,62 @@ public class FormulaSyntaxTests
     public void FormulaConstructor_TestToString_Crashes()
     {
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("(123) a5 ").ToString());
+    }
+
+    /// <summary>
+    /// Making sure ToString() still crashes, as empty formulas are not valid.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestToString_Empty()
+    {
+        Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula(string.Empty).ToString());
+    }
+
+    // --- Tests for getVariables() ---
+
+    /// <summary>
+    /// This tests that get variables returns three unique variables from a simple formula.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetVariables_Simple()
+    {
+        Assert.IsTrue(new HashSet<string> { "A1", "B2", "C3" }.SetEquals(new Formula("A1 + B2 - C3").GetVariables()));
+    }
+
+    /// <summary>
+    /// This tests that get variables returns three unique variables from a complex formula.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetVariables_Complex()
+    {
+        Assert.IsTrue(new HashSet<string> { "AGHY1", "B212", "C3", "EF43" }.SetEquals(new Formula("aGhY1   +   b212 - C3/2 + 100 * 10 - eF43").GetVariables()));
+    }
+
+    /// <summary>
+    /// This tests that get variables returns three unique variables from formula with repeated variables.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetVariables_Repeats()
+    {
+        Assert.IsTrue(new HashSet<string> { "AGHY1", "B2" }.SetEquals(new Formula("aGhY1   +   AGHY1 - AgHy1 + 100 * 10 - AGHy1 + b2").GetVariables()));
+    }
+
+    /// <summary>
+    /// Making sure GetVariables() still crashes, as empty formulas are not valid.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetVariables_Empty()
+    {
+        Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula(string.Empty).GetVariables());
+    }
+
+    /// <summary>
+    /// Making sure GetVariables() doesn't somehow prevent a crash from an invalid formula.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_GetVariables_Crashes()
+    {
+        Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("(123) a5 ").GetVariables());
     }
 
 }
