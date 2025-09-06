@@ -53,7 +53,10 @@ public class Formula
     ///   represents valid variable name strings.
     /// </summary>
     private const string VariableRegExPattern = @"[a-zA-Z]+\d+";
-
+    // List of tokens in the formula
+    private List<string> tokenList;
+    // This string will spit back the formula in canonical form when ToString is called, it is initiated here to achieve O(1) time complexity.
+    private string canonicalForm = string.Empty;
     /// <summary>
     ///   Initializes a new instance of the <see cref="Formula"/> class.
     ///   <para>
@@ -83,11 +86,11 @@ public class Formula
     /// <param name="formula"> The string representation of the formula to be created.</param>
     public Formula(string formula)
     {
-        // FIXME: First use the given GetTokens method to get the tokens from the formula.
-        List<string> tokenList = GetTokens(formula);
-        //        Then check each token using the rules from the assignment.
+        tokenList = GetTokens(formula);
+        // Check each token using the rules from the assignment.
         FormulaIsValid(tokenList);
-
+        // Normalizes the string for ToString method (again to achieve O(1) time complexity).
+        canonicalForm = BuildCanonicalForm(formula);
     }
 
     /// <summary>
@@ -145,8 +148,8 @@ public class Formula
     /// </returns>
     public override string ToString()
     {
-        // FIXME: add your code here.
-        return string.Empty;
+        // canonicalForm is built in the constructor to achieve O(1) time complexity.
+        return canonicalForm;
     }
 
     /// <summary>
@@ -276,10 +279,31 @@ public class Formula
     /// Returns true if the first token is valid (number, variable, or left parenthesis).
     /// </summary>
     /// <param name="tokenType"></param>
-    /// <returns></returns>
+    /// <returns>True if valid</returns>
     private static bool IsValidFirst(string tokenType)
     {
         return tokenType == "number" || tokenType == "variable" || tokenType == "leftParenthesis";
+    }
+    /// <summary>
+    /// This method normalizes the formula string to a canonical form during the construction of the Formula object.
+    /// </summary>
+    /// <param name="formula"></param>
+    /// <returns> A new normalized formula (whitespace removed and variable letters capitalized</returns>
+    private string BuildCanonicalForm(string formula)
+    {
+        string normalized = string.Empty;
+        foreach (string token in tokenList)
+        {
+            if (IsVar(token))
+            {
+                normalized += token.ToUpper();
+            }
+            else if (!Regex.IsMatch(token, @"^\s*$", RegexOptions.Singleline))
+            {
+                normalized += token;
+            }
+        }
+        return normalized;
     }
 
 }

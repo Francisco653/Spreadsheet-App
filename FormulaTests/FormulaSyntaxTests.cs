@@ -668,4 +668,14 @@ public class FormulaSyntaxTests
         new Formula("((55 +123 * 6))");
     }
 
+    // --- Tests for toString() ---'
+    /// <summary>
+    /// Testing that creating an acceptable formula and then calling toString does not crash the program.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestToString_No_Crashes()
+    {
+        new Formula("((55 +123 * 6))").ToString();
+    }
+
 }
