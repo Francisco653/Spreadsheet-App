@@ -14,10 +14,10 @@ Thanks for all the help in Piaza!
 
 # Consulted Peers:
 
-I consulted in Piazza for some questions I had regarding debugging. I used Copilot to search up regex expressions. 
+I consulted in Piazza for some questions I had regarding debugging. I used Copilot to search up how to use regex expressions.
 
 # References:
 
     1. Piazza - https://piazza.com/class/meadvfnmuyde4
     2. Microsoft Copilot - https://copilot.microsoft.com/
-    3. Title of page - URL
+    3. Microsoft Documentation - https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-collections-generic-hashset%7Bt%7D

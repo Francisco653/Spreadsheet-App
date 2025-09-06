@@ -1,14 +1,6 @@
-﻿// <copyright file="Formula_PS2.cs" company="UofU-CS3500">
-// Copyright (c) 2024 UofU-CS3500. All rights reserved.
-// </copyright>
-// <summary>
-//   <para>
-//     This code is provides to start your assignment.  It was written
-//     by Profs Joe, Danny, and Jim.  You should keep this attribution
-//     at the top of your code where you have your header comment, along
-//     with the other required information.
-//   </para>
-// </summary>
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 
 namespace CS3500.Formula;
@@ -53,6 +45,8 @@ public class Formula
     private List<string> tokenList;
     // This string will spit back the formula in canonical form when ToString is called, it is initiated here to achieve O(1) time complexity.
     private string canonicalForm = string.Empty;
+    // This hashset contains all the UNIQUE variables in the formula.
+    private HashSet<string> uniqueVariables = new HashSet<string>();
     /// <summary>
     ///   Initializes a new instance of the <see cref="Formula"/> class.
     ///   <para>
@@ -108,8 +102,14 @@ public class Formula
     /// <returns> the set of variables (string names) representing the variables referenced by the formula. </returns>
     public ISet<string> GetVariables()
     {
-        // FIXME: implement your code here!
-        return new HashSet<string>();
+        foreach (string token in tokenList)
+        {
+            if (IsVar(token))
+            {
+                uniqueVariables.Add(token.ToUpper());
+            }
+        }
+        return uniqueVariables;
     }
 
     /// <summary>
@@ -236,7 +236,7 @@ public class Formula
         {
             // Check first token rule
             count++;
-            if(count == 1 && !IsValidFirst(TokenType(token)))
+            if (count == 1 && !IsValidFirst(TokenType(token)))
             {
                 throw new FormulaFormatException("First token must be a number, variable, or an open parenthesis!");
             }
@@ -251,20 +251,21 @@ public class Formula
             // Adds the token type now that it is verified, and from here more rule checks will occur.
             types.Add(TokenType(token));
             // Counting opening and closing parenthesis (left and right respectively) to check closing parenthesis and later the balanced parenthesis rules.
-            if (types.Last() == "leftParenthesis" )
+            if (types.Last() == "leftParenthesis")
             {
                 leftParenthesisCount++;
             }
-            if(types.Last() == "rightParenthesis")
+            if (types.Last() == "rightParenthesis")
             {
                 rightParenthesisCount++;
-                if(rightParenthesisCount > leftParenthesisCount)
+                if (rightParenthesisCount > leftParenthesisCount)
                 {
                     throw new FormulaFormatException("Closing parenthesis cannot at any point exceed opening parenthesis when read left to right!");
                 }
             }
             // Parenthesis following rule checked here.
-            if(count >= 2 && (types[types.Count -2] == "operator" || types[types.Count - 2] == "leftParenthesis")) {
+            if (count >= 2 && (types[types.Count - 2] == "operator" || types[types.Count - 2] == "leftParenthesis"))
+            {
                 // The conditions for the first token and tokens following an operator or opening parenthesis are the same.
                 if (!IsValidFirst(TokenType(token)))
                 {
@@ -272,15 +273,18 @@ public class Formula
                 }
             }
             // Extra following rule (Any token that immediately follows a number, a variable, or a closing parenthesis must be either an operator or a closing parenthesis.)
-            if(count >= 2 && (types[types.Count - 2] == "number" || types[types.Count - 2] == "variable" || types[types.Count - 2] == "rightParenthesis"))
+            if (count >= 2 && (types[types.Count - 2] == "number" || types[types.Count - 2] == "variable" || types[types.Count - 2] == "rightParenthesis"))
             {
-                throw new FormulaFormatException("An operator or a closing parenthesis must follow a variable, a number, or a closing parenthesis!");
+                if (!(types.Last() == "operator" || types.Last() == "rightParenthesis"))
+                {
+                    throw new FormulaFormatException("An operator or a closing parenthesis must follow a variable, a number, or a closing parenthesis!");
+                }
             }
         }
         // Now we check balanced parenthesis rule that ALL tokens have been iterated through.
         if (rightParenthesisCount > leftParenthesisCount || leftParenthesisCount > rightParenthesisCount)
         {
-           throw new FormulaFormatException("There must be an equal amount of opening and closed parenthesis!");
+            throw new FormulaFormatException("There must be an equal amount of opening and closed parenthesis!");
         }
 
         // Now we check the last token rule (Technically, the leftParenthesis condition will never be triggered due to the balanced parenthesis rule, but it is here for clarity).
@@ -303,6 +307,7 @@ public class Formula
         }
         else if (IsVar(token))
         {
+
             return "variable"; // It's a variable
         }
         else if (Regex.IsMatch(token, @"^[\+\-\*/]$"))
@@ -348,9 +353,9 @@ public class Formula
                 normalized += token;
             }
         }
+
         return normalized;
     }
-
 }
 
 /// <summary>

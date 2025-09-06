@@ -1,14 +1,8 @@
-﻿// <copyright file="FormulaSyntaxTests.cs" company="UofU-CS3500">
-//   Copyright (c) 2025 UofU-CS3500. All rights reserved.
-// </copyright>
-// <authors> Francisco Pinas </authors>
-// <date> 9/4/2025 </date>
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
 
 namespace CS3500.Formula;
-
-using System.Security.Cryptography;
-using CS3500.Formula; // Change this using statement to use different formula implementations.
-
 /// <summary>
 ///   <para>
 ///     The following class shows the basics of how to use the MSTest framework,
@@ -30,9 +24,9 @@ public class FormulaSyntaxTests
     ///     when trying to create a formula with no tokens.
     /// </summary>
     [TestMethod]
-    public void FormulaConstructor_TestNoTokens_Invalid( )
+    public void FormulaConstructor_TestNoTokens_Invalid()
     {
-        Assert.ThrowsExactly<FormulaFormatException>( ( ) => _ = new Formula( string.Empty ) );
+        Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula(string.Empty));
     }
 
     /// <summary>
@@ -258,7 +252,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestClosing_Proper()
     {
-      new Formula("(abc123) +  (def456)");
+        new Formula("(abc123) +  (def456)");
     }
 
 
@@ -299,7 +293,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestBalanced_Proper_Simple()
     {
-      new Formula("(a0 + 5) * 2");
+        new Formula("(a0 + 5) * 2");
     }
 
 
@@ -370,7 +364,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestFirst_Variable()
     {
-       new Formula("abc123 + easy0");
+        new Formula("abc123 + easy0");
     }
 
     // --- Tests for  Last Token Rule ---
@@ -408,7 +402,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestLast_Variable()
     {
-       new Formula("10 + ACDC42");
+        new Formula("10 + ACDC42");
     }
 
     /// <summary>
@@ -492,7 +486,7 @@ public class FormulaSyntaxTests
     /// Should throw a formula format exception error as numbers cannot follow variable.
     /// </summary>
     [TestMethod]
-    public void FormulaConstructor_TestExtra_Variable_Number ()
+    public void FormulaConstructor_TestExtra_Variable_Number()
     {
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("Abc123  2"));
     }
@@ -530,7 +524,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestExtra_Variable_Closing_Parenthesis()
     {
-       new Formula("( 89 * Abc123)");
+        new Formula("( 89 * Abc123)");
     }
 
     /// <summary>
@@ -593,7 +587,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestExtra_Number_Operator()
     {
-       new Formula("123 * 6 ");
+        new Formula("123 * 6 ");
     }
 
     /// <summary>
@@ -668,7 +662,7 @@ public class FormulaSyntaxTests
         new Formula("((55 +123 * 6))");
     }
 
-    // --- Tests for toString() ---'
+    // --- Tests for toString() ---
     /// <summary>
     /// Testing that creating an acceptable formula and then calling toString does not crash the program.
     /// </summary>
@@ -679,12 +673,29 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// Testing that the formula is normalized properly (variables are capitalized and white space removed).
+    /// Testing that the formula is normalized properly in a very complex case (variables are capitalized and white space removed).
     /// </summary>
     [TestMethod]
-    public void FormulaConstructor_TestToString_Outputs_Correctly()
+    public void FormulaConstructor_TestToString_Outputs_Complex()
     {
         Assert.AreEqual("((XABCD55+123*WWW6))", new Formula("((xaBCD55 +     123 * www6))").ToString());
+    }
+    /// <summary>
+    /// Testing that the formula is normalized properly in a very simple case (variables are capitalized and white space removed).
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestToString_Outputs_Simple()
+    {
+        Assert.AreEqual("ABC123+G2", new Formula("aBC123 + g2").ToString());
+    }
+
+    /// <summary>
+    /// Making sure ToString() doesn't somehow prevent a crash from an invalid formula.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestToString_Crashes()
+    {
+        Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("(123) a5 ").ToString());
     }
 
 }
