@@ -8,10 +8,6 @@
 //     at the top of your code where you have your header comment, along
 //     with the other required information.
 //   </para>
-//   <para>
-//     You should remove/add/adjust comments in your file as appropriate
-//     to represent your work and any changes you make.
-//   </para>
 // </summary>
 
 
@@ -224,25 +220,50 @@ public class Formula
     /// <returns> True if all the tokens (in relation to one another) are valid</returns>
     private static bool FormulaIsValid(List<string> formulaTokens)
     {
-
+        // This will hold the types of each token, useful for checking some of the formatting rules.
+        List<string> types = new List<string>();
         // One token minimum rule
         if (formulaTokens.Count == 0)
         {
             throw new FormulaFormatException("The formula cannot be empty!");
         }
-        // Count is needed to check first token rules
+        // These ints are used for checking first token, and number of opening/closing parenthesis.
         int count = 0;
-        // Here we start iterating through the tokens to check their validity
+        int leftParenthesisCount = 0;
+        int rightParenthesisCount = 0;
+        // Here we start iterating through the tokens to check their validity.
         foreach (string token in formulaTokens)
         {
+            // Check first token rule
             count++;
-            // Checks individual tokens to see if they are valid (also checks first token rule)
-            if (TokenType(token) == "invalid" || (count == 1 && !IsValidFirst(TokenType(token))))
+            if(count == 1 && !IsValidFirst(TokenType(token)))
             {
-                throw new FormulaFormatException("Tokens must be a number, variable, left/right parenthesis, or operator!");
+                throw new FormulaFormatException("First token must be a number, variable, or an open parenthesis!");
+            }
+
+            // Checks individual tokens to see if they are valid.
+            if (TokenType(token) == "invalid")
+            {
+                throw new FormulaFormatException("Tokens must be a number, variable, opening/closing parenthesis, or operator!");
+            }
+
+
+            // Adds the token type now that it is verified, and from here more rule checks will occur.
+            types.Add(TokenType(token));
+            // Counting opening and closing parenthesis (left and right respectively) to check closing parenthesis and later the balanced parenthesis rules.
+            if (types.Last() == "leftParenthesis" )
+            {
+                leftParenthesisCount++;
+            }
+            else if(types.Last() == "rightParenthesis")
+            {
+                rightParenthesisCount++;
+                if(rightParenthesisCount > leftParenthesisCount)
+                {
+                    throw new FormulaFormatException("Closing parenthesis cannot at any point exceed opening parenthesis when read left to right!!!");
+                }
             }
         }
-        // TO-DO: Here for now to avoid build errors
         return true;
     }
     /// <summary>
