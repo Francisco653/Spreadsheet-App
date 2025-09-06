@@ -682,9 +682,9 @@ public class FormulaSyntaxTests
     /// Testing that the formula is normalized properly (variables are capitalized and white space removed).
     /// </summary>
     [TestMethod]
-    public void FormulaConstructor_TestToString_No_Crashes()
+    public void FormulaConstructor_TestToString_Outputs_Correctly()
     {
-        new Formula("((55 +123 * 6))").ToString();
+        Assert.AreEqual("((XABCD55+123*WWW6))", new Formula("((xaBCD55 +     123 * www6))").ToString());
     }
 
 }

@@ -20,3 +20,4 @@ I consulted in Piazza for some questions I had regarding debugging.
 # References:
 
     1. Piazza - https://piazza.com/class/meadvfnmuyde4
+    2. Microsoft - https://learn.microsoft.com/en-us/dotnet/api/microsoft.visualstudio.testtools.unittesting.assert.equals?view=mstest-net-3.10
