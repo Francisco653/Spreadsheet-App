@@ -271,9 +271,14 @@ public class Formula
                     throw new FormulaFormatException("A number, variable, or opening parenthesis must follow an operator or opening parenthesis!");
                 }
             }
+            // Extra following rule (Any token that immediately follows a number, a variable, or a closing parenthesis must be either an operator or a closing parenthesis.)
+            if(count >= 2 && (types[types.Count - 2] == "number" || types[types.Count - 2] == "variable" || types[types.Count - 2] == "rightParenthesis"))
+            {
+                throw new FormulaFormatException("An operator or a closing parenthesis must follow a variable, a number, or a closing parenthesis!");
+            }
         }
         // Now we check balanced parenthesis rule that ALL tokens have been iterated through.
-        if(rightParenthesisCount > leftParenthesisCount || leftParenthesisCount > rightParenthesisCount)
+        if (rightParenthesisCount > leftParenthesisCount || leftParenthesisCount > rightParenthesisCount)
         {
            throw new FormulaFormatException("There must be an equal amount of opening and closed parenthesis!");
         }
