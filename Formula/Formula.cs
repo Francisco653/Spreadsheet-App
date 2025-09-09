@@ -350,7 +350,23 @@ public class Formula
             }
             else
             {
-                normalized += token;
+                if (TokenType(token) == "number")
+                {
+                    double num = double.Parse(token);
+                    // This ensures decimals like 2.0000 are properly converted to just 2. However we have to be careful of the fact that integer values have a lower limit than doubles.
+                    if (num == Math.Floor(num) && num <= int.MaxValue)
+                    {
+                        normalized += ((int)num).ToString();
+                    }
+                    else
+                    {
+                        normalized += num.ToString();
+                    }
+                }
+                else
+                {
+                    normalized += token;
+                }
             }
         }
 
