@@ -51,17 +51,21 @@ namespace CS3500.DependencyGraph;
 /// </summary>
 public class DependencyGraph
 {
-    // These dictionaries hold dependents and dependees respectively of each node. 
-    private Dictionary<string, HashSet<string>> dependents;
-    private Dictionary<string, HashSet<string>> dependees;
+    // The key of this dictionary is the dependee (parent), which point to a set of dependents (children).
+    private Dictionary<string, HashSet<string>> parents;
+    // The key of this dictionary is the dependent (child), which point to a set of dependees (parents).
+    private Dictionary<string, HashSet<string>> children;
+    // Tracks the number of ordered pairs in the graph.
+    private int count;
     /// <summary>
     ///   Initializes a new instance of the <see cref="DependencyGraph"/> class.
     ///   The initial DependencyGraph is empty.
     /// </summary>
     public DependencyGraph()
     {
-        dependents = new Dictionary<string, HashSet<string>>();
-        dependees = new Dictionary<string, HashSet<string>>();
+        parents = new Dictionary<string, HashSet<string>>();
+        children = new Dictionary<string, HashSet<string>>();
+        count = 0;
     }
 
     /// <summary>
@@ -69,7 +73,7 @@ public class DependencyGraph
     /// </summary>
     public int Size
     {
-        get { return 0; }
+        get { return count; }
     }
 
     /// <summary>
@@ -79,7 +83,7 @@ public class DependencyGraph
     /// <returns> true if the node has dependents. </returns>
     public bool HasDependents(string nodeName)
     {
-        return false;
+        return parents.ContainsKey(nodeName) && parents[nodeName].Count > 0;
     }
 
     /// <summary>
@@ -89,7 +93,7 @@ public class DependencyGraph
     /// <param name="nodeName">The name of the node.</param>
     public bool HasDependees(string nodeName)
     {
-        return false;
+        return children.ContainsKey(nodeName) && children[nodeName].Count > 0;
     }
 
     /// <summary>
@@ -101,7 +105,7 @@ public class DependencyGraph
     /// <returns> The dependents of nodeName. </returns>
     public IEnumerable<string> GetDependents(string nodeName)
     {
-        return new List<string>(); // Choose your own data structure
+        return parents[nodeName];
     }
 
     /// <summary>
@@ -113,7 +117,7 @@ public class DependencyGraph
     /// <returns> The dependees of nodeName. </returns>
     public IEnumerable<string> GetDependees(string nodeName)
     {
-        return new List<string>(); // Choose your own data structure
+        return children[nodeName];
     }
 
     /// <summary>
@@ -128,6 +132,40 @@ public class DependencyGraph
     /// <param name="dependent"> The name of the node that cannot be evaluated until after the other node has been. </param>
     public void AddDependency(string dependee, string dependent)
     {
+        bool entryAdded = false;
+        // Create the parent (dependent) entry if it doesn't exist, then add the child (dependent).
+        if (!parents.ContainsKey(dependee))
+        {
+            parents[dependee] = new HashSet<string>();
+            parents[dependee].Add(dependent);
+            entryAdded = true;
+        }
+
+        // Check if the dependent already exists for this dependee.
+        else if (parents[dependee].Add(dependent))
+        {
+            entryAdded = true;
+        }
+
+        // Create the child entry if it doesn't exist, then add the parent (dependee).
+        if (!children.ContainsKey(dependent))
+        {
+            children[dependent] = new HashSet<string>();
+            children[dependent].Add(dependee);
+            entryAdded = true;
+        }
+
+        // Check if the dependee already exists for this dependent.
+        else if (children[dependent].Add(dependee))
+        {
+            entryAdded = true;
+        }
+
+        // If we added a new ordered pair, increment the count.
+        if (entryAdded)
+        {
+            count++;
+        }
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ Thanks for all the help in Piaza!  This work "stands on its own"
 
 # Consulted Peers:
 
-I consulted in Piazza for some questions I had regarding debugging. I used Copilot to search up how to use regex expressions.
+I consulted in Piazza for some questions I had regarding debugging. I used Copilot to search up dictionary syntax and HashSet syntax in C#.
 
 # References:
 
