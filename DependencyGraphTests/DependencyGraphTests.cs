@@ -87,6 +87,8 @@ public class DependencyGraphExampleStressTests
             Assert.IsTrue(dependees[i].SetEquals(new HashSet<string>(dg.GetDependees(letters[i]))));
         }
     }
+    // -- BLACK BOX TESTS PRIOR TO IMPLEMENTATION OF DEPENDENCY GRAPH --
+
     /// <summary>
     /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, a new dependency graph is empty when first created.
     /// As such, the size should be zero.
@@ -155,7 +157,7 @@ public class DependencyGraphExampleStressTests
         DependencyGraph dg = new();
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("A1", "B1");
-        Assert.IsFalse(dg.HasDependees("A1"));
+        Assert.IsFalse(dg.HasDependees("B1"));
     }
 
     /// <summary>
@@ -173,7 +175,7 @@ public class DependencyGraphExampleStressTests
 
     /// <summary>
     /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, when a new dependency graph is created
-    /// and dependents are added to the same Dependee, a proper list of ALL dependents is returned.
+    /// and dependents are added to the same dependee, a proper list of ALL dependents is returned.
     /// </summary>
     [TestMethod]
     public void TestAddDependents()
@@ -183,6 +185,52 @@ public class DependencyGraphExampleStressTests
         dg.AddDependency("A1", "C1");
         dg.AddDependency("A1", "A2");
         Assert.IsTrue(new HashSet<string> { "B1" , "C1" , "A2" }.SetEquals(dg.GetDependents("A1")));
+    }
+
+    /// <summary>
+    /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, when a new dependency graph is created
+    /// and dependees are added to the same dependant, a proper list of ALL dependees is returned.
+    /// </summary>
+    [TestMethod]
+    public void TestAddDependees()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        dg.AddDependency("A2", "B1");
+        dg.AddDependency("C1", "B1");
+        Assert.IsTrue(new HashSet<string> { "A1", "A2", "C1" }.SetEquals(dg.GetDependees("B1")));
+    }
+
+    /// <summary>
+    /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, when a new dependency graph is created
+    /// and dependents are replaced, the new list of dependents is adopted correctly.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependents()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        dg.AddDependency("A1", "C1");
+        dg.AddDependency("A1", "A2");
+        HashSet<string> replacement = new HashSet<string> { "C5", "D1", "F2" };
+        dg.ReplaceDependents("A1", replacement);
+        Assert.IsTrue(new HashSet<string> { "C5", "D1", "F2" }.SetEquals(dg.GetDependents("A1")));
+    }
+
+    /// <summary>
+    /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, when a new dependency graph is created
+    /// and dependees are replaced, the new list of dependees is adopted correctly.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependees()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        dg.AddDependency("A2", "B1");
+        dg.AddDependency("C1", "B1");
+        HashSet<string> replacement = new HashSet<string> { "Z8", "G13", "F42" };
+        dg.ReplaceDependees("B1", replacement);
+        Assert.IsTrue(new HashSet<string> { "Z8", "G13", "F42" }.SetEquals(dg.GetDependees("B1")));
     }
 
 }
