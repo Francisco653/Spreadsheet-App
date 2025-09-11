@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormulaTests", "FormulaTests\FormulaTests.csproj", "{5C8B1180-EA46-4FA4-BB1B-9943DE324543}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyGraph", "DependencyGraph\DependencyGraph.csproj", "{5AF852B0-1CAE-4194-97DB-337D40E11400}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DependencyGraphTests", "DependencyGraphTests\DependencyGraphTests.csproj", "{2F90A88C-900D-4513-AEC0-436955360B43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +32,14 @@ Global
 		{5C8B1180-EA46-4FA4-BB1B-9943DE324543}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C8B1180-EA46-4FA4-BB1B-9943DE324543}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C8B1180-EA46-4FA4-BB1B-9943DE324543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AF852B0-1CAE-4194-97DB-337D40E11400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AF852B0-1CAE-4194-97DB-337D40E11400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF852B0-1CAE-4194-97DB-337D40E11400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AF852B0-1CAE-4194-97DB-337D40E11400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F90A88C-900D-4513-AEC0-436955360B43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F90A88C-900D-4513-AEC0-436955360B43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F90A88C-900D-4513-AEC0-436955360B43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F90A88C-900D-4513-AEC0-436955360B43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
