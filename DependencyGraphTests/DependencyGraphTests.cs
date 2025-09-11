@@ -184,7 +184,7 @@ public class DependencyGraphExampleStressTests
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A1", "C1");
         dg.AddDependency("A1", "A2");
-        Assert.IsTrue(new HashSet<string> { "B1" , "C1" , "A2" }.SetEquals(dg.GetDependents("A1")));
+        Assert.IsTrue(new HashSet<string> { "B1", "C1", "A2" }.SetEquals(dg.GetDependents("A1")));
     }
 
     /// <summary>
@@ -233,4 +233,14 @@ public class DependencyGraphExampleStressTests
         Assert.IsTrue(new HashSet<string> { "Z8", "G13", "F42" }.SetEquals(dg.GetDependees("B1")));
     }
 
+    // -- END OF BLACK BOX TESTS, START OF WHITE BOX TESTS --
+
+    /// <summary>
+    /// Simply put, testing that creating a new dependency graph doesn't cause any crashes.
+    /// </summary>
+    [TestMethod]
+    public void TestCreateDependencyGraph()
+    {
+        new DependencyGraph();
+    }
 }

@@ -51,14 +51,17 @@ namespace CS3500.DependencyGraph;
 /// </summary>
 public class DependencyGraph
 {
+    // These dictionaries hold dependents and dependees respectively of each node. 
+    private Dictionary<string, HashSet<string>> dependents;
+    private Dictionary<string, HashSet<string>> dependees;
     /// <summary>
     ///   Initializes a new instance of the <see cref="DependencyGraph"/> class.
     ///   The initial DependencyGraph is empty.
     /// </summary>
     public DependencyGraph()
     {
-        //TO-DO: Implement this constructor, decide on a data structure (Dictionary seems like a good choice)
-        return;
+        dependents = new Dictionary<string, HashSet<string>>();
+        dependees = new Dictionary<string, HashSet<string>>();
     }
 
     /// <summary>
