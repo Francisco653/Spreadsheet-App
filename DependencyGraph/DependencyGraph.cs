@@ -181,13 +181,10 @@ public class DependencyGraph
         {
             children[dependent] = new HashSet<string>();
             children[dependent].Add(dependee);
-            entryAdded = true;
         }
-
-        // Check if the dependee already exists for this dependent.
-        else if (children[dependent].Add(dependee))
+        else
         {
-            entryAdded = true;
+            children[dependent].Add(dependee);
         }
 
         // If we added a new ordered pair, increment the count.
@@ -206,6 +203,12 @@ public class DependencyGraph
     /// <param name="dependent"> The name of the node that cannot be evaluated until the other node has been. </param>
     public void RemoveDependency(string dependee, string dependent)
     {
+        if (parents.ContainsKey(dependee))
+        {
+            parents[dependee].Remove(dependent);
+            children[dependent].Remove(dependee);
+            count--;
+        }
     }
 
     /// <summary>
