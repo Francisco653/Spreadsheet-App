@@ -14,10 +14,7 @@ Thanks for all the help in Piaza!  This work "stands on its own"
 
 # Consulted Peers:
 
-I consulted in Piazza for some questions I had regarding debugging. I used Copilot to search up dictionary syntax and HashSet syntax in C#.
+I used Copilot to search up dictionary syntax and HashSet syntax in C#.
 
 # References:
-
-    1. Piazza - https://piazza.com/class/meadvfnmuyde4
-    2. Microsoft Copilot - https://copilot.microsoft.com/
-    3. Microsoft Documentation - https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-collections-generic-hashset%7Bt%7D
+    1. Microsoft Copilot - https://copilot.microsoft.com/

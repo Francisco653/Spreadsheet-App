@@ -14,10 +14,9 @@ Thanks for all the help in Piaza!  This work "stands on its own".
 CLARIFICATION: I named the dictionary that has the dependents as keys "parents"". I named the dictionary that has the dependees as keys "children". I did this because it made more sense to me that way. Parents have children (dependents) and children have parents (dependees).
 
 # Consulted Peers:
-I consulted in Piazza for some questions I had regarding debugging. I used Copilot to search up dictionary syntax and HashSet syntax in C#.
+I consulted in Piazza for some questions I had regarding assignment specifications. I used Copilot to search up dictionary syntax and HashSet syntax in C#.
 
 
 # References:
     1. Piazza - https://piazza.com/class/meadvfnmuyde4
     2. Microsoft Copilot - https://copilot.microsoft.com/
-    3. Microsoft Documentation - https://learn.microsoft.com/en-us/dotnet/fundamentals/runtime-libraries/system-collections-generic-hashset%7Bt%7D

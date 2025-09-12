@@ -7,7 +7,7 @@ using CS3500.DependencyGraph;
 ///   to contain all DependencyGraphTest Unit Tests
 /// </summary>
 [TestClass]
-public class DependencyGraphExampleStressTests
+public class DependencyGraphTests
 {
     /// <summary>
     /// This test creates a large string array of 200 with characters a,b,c... throughout the ascii table. These characters are then iterated through repeatedly to add and remove dependencies, 
@@ -274,7 +274,7 @@ public class DependencyGraphExampleStressTests
     {
         DependencyGraph dg = new();
         dg.AddDependency("A1", "B1");
-        dg.HasDependents("test");
+        Assert.IsFalse(dg.HasDependents("test"));
     }
 
     /// <summary>
@@ -285,7 +285,7 @@ public class DependencyGraphExampleStressTests
     {
         DependencyGraph dg = new();
         dg.AddDependency("A1", "B1");
-        dg.HasDependees("nonexistent");
+        Assert.IsFalse(dg.HasDependees("nonexistent"));
     }
 
     /// <summary>
@@ -329,5 +329,84 @@ public class DependencyGraphExampleStressTests
         dg.AddDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependees("A1"));
     }
+    /// <summary>
+    /// This tests that adding a duplicate dependency does not increase the size of the dependency graph.
+    /// </summary>
+    [TestMethod]
+    public void TestAddDependencyDuplicate()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        dg.AddDependency("A1", "B1");
+        Assert.AreEqual(1, dg.Size);
+    }
+    /// <summary>
+    /// This tests that adding a dependency of one string to itself is counted once. 
+    /// </summary>
+    [TestMethod]
+    public void TestAddDependencyToSelfSize()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("b11", "b11");
+        Assert.AreEqual(1, dg.Size);
+    }
 
+    /// <summary>
+    /// This tests that adding a dependency of one string to itself displays tracks that it has dependees.
+    /// </summary>
+    [TestMethod]
+    public void TestAddDependencyToSelfHasDependees()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("b11", "b11");
+        Assert.IsTrue(dg.HasDependees("b11"));
+    }
+
+    /// <summary>
+    /// This tests that adding a dependency of one string to itself displays tracks that it has dependents.
+    /// </summary>
+    [TestMethod]
+    public void TestAddDependencyToSelfHasDependents()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("b11", "b11");
+        Assert.IsTrue(dg.HasDependents("b11"));
+    }
+
+    /// <summary>
+    /// This tests that adding a dependency of one string to itself does not break the list of dependents.
+    /// </summary>
+    [TestMethod]
+    public void TestAddDependencyToSelfCorrectDependents()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("duplicate", "duplicate");
+        dg.AddDependency("duplicate", "unique");
+        Assert.IsTrue(new HashSet<string> {"duplicate" , "unique" }.SetEquals(dg.GetDependents("duplicate")));
+    }
+
+    /// <summary>
+    /// This tests that adding a dependency of one string to itself does not break the list of dependents.
+    /// </summary>
+    [TestMethod]
+    public void TestAddDependencyToSelfCorrectDependees()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("duplicate", "duplicate");
+        dg.AddDependency("duplicate", "unique");
+        Assert.IsTrue(new HashSet<string> {"duplicate"}.SetEquals(dg.GetDependees("duplicate")));
+    }
+    /// <summary>
+    /// Removing a non-existant dependency should not change the ones that do exist, and should not crash.
+    /// </summary>
+    [TestMethod]
+    public void TestRemoveDependencyNonExistentDependee()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        dg.RemoveDependency("A1", "C1");
+        Assert.AreEqual(1, dg.Size);
+        Assert.IsTrue(new HashSet<string> { "B1" }.SetEquals(dg.GetDependents("A1")));
+        Assert.IsTrue(new HashSet<string> { "A1" }.SetEquals(dg.GetDependees("B1"))); 
+    }
 }

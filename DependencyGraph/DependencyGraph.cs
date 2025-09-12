@@ -206,8 +206,11 @@ public class DependencyGraph
         if (parents.ContainsKey(dependee))
         {
             parents[dependee].Remove(dependent);
-            children[dependent].Remove(dependee);
-            count--;
+            if (children.ContainsKey(dependent))
+            {
+                children[dependent].Remove(dependee);
+                count--;
+            }
         }
     }
 

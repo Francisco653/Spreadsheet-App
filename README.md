@@ -19,4 +19,4 @@ The Spreadsheet program is currently capable of verifying the validity of formul
 
     1. Assignment One:   Predicted Hours:          8        Actual Hours:   7
     2. Assignment Two:   Predicted Hours:           12        Actual Hours:    5
-    3. Assignment Three:   Predicted Hours:           8        Actual Hours:    3 (So far)
+    3. Assignment Three:   Predicted Hours:           8        Actual Hours:    3.5 (So far)
