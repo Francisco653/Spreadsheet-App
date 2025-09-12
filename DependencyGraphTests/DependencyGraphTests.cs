@@ -252,7 +252,7 @@ public class DependencyGraphTests
     {
         DependencyGraph dg = new();
         dg.AddDependency("D1", "B1");
-        Assert.IsTrue(new HashSet<string> {}.SetEquals(dg.GetDependees("A1")));
+        Assert.IsTrue(new HashSet<string> { }.SetEquals(dg.GetDependees("A1")));
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ public class DependencyGraphTests
     {
         DependencyGraph dg = new();
         dg.AddDependency("B1", "A1");
-        Assert.IsTrue(new HashSet<string> {}.SetEquals(dg.GetDependents("z9")));
+        Assert.IsTrue(new HashSet<string> { }.SetEquals(dg.GetDependents("z9")));
     }
 
     /// <summary>
@@ -306,7 +306,7 @@ public class DependencyGraphTests
     {
         DependencyGraph dg = new();
         dg.AddDependency("C1", "88");
-       Assert.IsTrue(dg.HasDependents("C1"));
+        Assert.IsTrue(dg.HasDependents("C1"));
     }
 
     /// <summary>
@@ -382,7 +382,7 @@ public class DependencyGraphTests
         DependencyGraph dg = new();
         dg.AddDependency("duplicate", "duplicate");
         dg.AddDependency("duplicate", "unique");
-        Assert.IsTrue(new HashSet<string> {"duplicate" , "unique" }.SetEquals(dg.GetDependents("duplicate")));
+        Assert.IsTrue(new HashSet<string> { "duplicate", "unique" }.SetEquals(dg.GetDependents("duplicate")));
     }
 
     /// <summary>
@@ -394,7 +394,7 @@ public class DependencyGraphTests
         DependencyGraph dg = new();
         dg.AddDependency("duplicate", "duplicate");
         dg.AddDependency("duplicate", "unique");
-        Assert.IsTrue(new HashSet<string> {"duplicate"}.SetEquals(dg.GetDependees("duplicate")));
+        Assert.IsTrue(new HashSet<string> { "duplicate" }.SetEquals(dg.GetDependees("duplicate")));
     }
     /// <summary>
     /// Removing a non-existant dependee from a dependency should not change the ones that do exist, and should not crash.
@@ -407,7 +407,7 @@ public class DependencyGraphTests
         dg.RemoveDependency("A1", "C1");
         Assert.AreEqual(1, dg.Size);
         Assert.IsTrue(new HashSet<string> { "B1" }.SetEquals(dg.GetDependents("A1")));
-        Assert.IsTrue(new HashSet<string> { "A1" }.SetEquals(dg.GetDependees("B1"))); 
+        Assert.IsTrue(new HashSet<string> { "A1" }.SetEquals(dg.GetDependees("B1")));
     }
     /// <summary>
     /// Removing a non-existant dependent from a dependency should not change the ones that do exist, and should not crash.
@@ -459,6 +459,4 @@ public class DependencyGraphTests
         Assert.IsTrue(new HashSet<string> { "B1", "C1" }.SetEquals(dg.GetDependents("A1")));
         Assert.IsTrue(new HashSet<string> { "Y1" }.SetEquals(dg.GetDependents("X1")));
     }
-
-
 }

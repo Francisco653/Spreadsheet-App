@@ -253,5 +253,20 @@ public class DependencyGraph
     /// <param name="newDependees"> The new dependees for nodeName. Could be empty.</param>
     public void ReplaceDependees(string nodeName, IEnumerable<string> newDependees)
     {
+        // If the child doesn't exist, just add the new dependencies.
+        if (children.ContainsKey(nodeName))
+        {
+            // Remove dependencies from children
+            var currentDependees = new HashSet<string>(children[nodeName]);
+            foreach (var dependee in currentDependees)
+            {
+                RemoveDependency(dependee, nodeName);
+            }
+        }
+        // Now, create the new dependencies
+        foreach (var newDependee in newDependees)
+        {
+            AddDependency(newDependee, nodeName);
+        }
     }
 }
