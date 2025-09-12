@@ -243,4 +243,25 @@ public class DependencyGraphExampleStressTests
     {
         new DependencyGraph();
     }
+
+    /// <summary>
+    /// This tests that getting dependees of a non-existent node does not cause a crash.
+    /// </summary>
+    [TestMethod]
+    public void TestGetDependeesNonExistent()
+    {
+        DependencyGraph dg = new();
+        dg.GetDependees("A1");
+    }
+
+    /// <summary>
+    /// This tests that getting dependents of a non-existent node does not cause a crash.
+    /// </summary>
+    [TestMethod]
+    public void TestGetDependentsNonExistent()
+    {
+        DependencyGraph dg = new();
+        dg.GetDependents("l78");
+    }
+
 }

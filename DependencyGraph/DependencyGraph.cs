@@ -83,7 +83,15 @@ public class DependencyGraph
     /// <returns> true if the node has dependents. </returns>
     public bool HasDependents(string nodeName)
     {
-        return parents.ContainsKey(nodeName) && parents[nodeName].Count > 0;
+        if (!parents.ContainsKey(nodeName))
+        {
+            return false;
+        }
+
+        else
+        {
+            return parents.ContainsKey(nodeName) && parents[nodeName].Count > 0;
+        }
     }
 
     /// <summary>
@@ -93,7 +101,14 @@ public class DependencyGraph
     /// <param name="nodeName">The name of the node.</param>
     public bool HasDependees(string nodeName)
     {
-        return children.ContainsKey(nodeName) && children[nodeName].Count > 0;
+        if (!children.ContainsKey(nodeName))
+        {
+            return false;
+        }
+        else
+        {
+            return children.ContainsKey(nodeName) && children[nodeName].Count > 0;
+        }
     }
 
     /// <summary>
@@ -105,7 +120,14 @@ public class DependencyGraph
     /// <returns> The dependents of nodeName. </returns>
     public IEnumerable<string> GetDependents(string nodeName)
     {
-        return parents[nodeName];
+        if (!parents.ContainsKey(nodeName))
+        {
+            return new HashSet<string>();
+        }
+        else
+        {
+            return parents[nodeName];
+        }
     }
 
     /// <summary>
@@ -117,7 +139,14 @@ public class DependencyGraph
     /// <returns> The dependees of nodeName. </returns>
     public IEnumerable<string> GetDependees(string nodeName)
     {
-        return children[nodeName];
+        if (!children.ContainsKey(nodeName))
+        {
+            return new HashSet<string>();
+        }
+        else
+        {
+            return children[nodeName];
+        }
     }
 
     /// <summary>
