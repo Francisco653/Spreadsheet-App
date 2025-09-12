@@ -10,7 +10,8 @@ Copyright:  CS 3500 and [Francisco Pinas] - This work may not be copied for use 
 ```
 
 # Comments to Evaluators:
-Thanks for all the help in Piaza!  This work "stands on its own"
+Thanks for all the help in Piaza!  This work "stands on its own". 
+CLARIFICATION: I named the dictionary that has the dependents as keys "parents"". I named the dictionary that has the dependees as keys "children". I did this because it made more sense to me that way. Parents have children (dependents) and children have parents (dependees).
 
 # Consulted Peers:
 I consulted in Piazza for some questions I had regarding debugging. I used Copilot to search up dictionary syntax and HashSet syntax in C#.
