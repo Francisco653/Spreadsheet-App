@@ -1,4 +1,23 @@
-﻿namespace CS3500.DevelopmentTests;
+﻿/// <summary>
+/// Author:    Francisco Pinas
+/// Partner:   N/A
+/// Date:      9/11/2025
+/// Course:    CS 3500, University of Utah, School of Computing
+/// Copyright: CS 3500 and Francisco - This work may not 
+///            be copied for use in Academic Coursework.
+///
+/// I, Francisco, certify that I wrote this code from scratch and
+/// did not copy it in part or whole from another source.  All 
+/// references used in the completion of the assignments are cited 
+/// in my README file.
+///
+/// File Contents
+///
+///    This file contains the tests for the DependencyGraph class. It ensures that proper lists are returned for the dependents and dependees of a given node,
+///    it ensures that these processes are done in a timely manner, and it ensures that the size of the dependency graph is tracked correctly.
+/// </summary>
+
+namespace CS3500.DevelopmentTests;
 
 using CS3500.DependencyGraph;
 

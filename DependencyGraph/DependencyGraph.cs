@@ -1,9 +1,23 @@
-﻿// Skeleton implementation written by Joe Zachary for CS 3500, September 2013.
-// Version 1.1 (Fixed error in comment for RemoveDependency.)
-// Version 1.2 - Daniel Kopta
-// Version 1.3 - H. James de St. Germain Fall 2024
-// (Clarified meaning of dependent and dependee.)
-// (Clarified names in solution/project structure.)
+﻿/// <summary>
+/// Author:    Francisco Pinas
+/// Partner:   N/A
+/// Date:      9/11/2025
+/// Course:    CS 3500, University of Utah, School of Computing
+/// Copyright: CS 3500 and Francisco - This work may not 
+///            be copied for use in Academic Coursework.
+///
+/// I, Francisco, certify that I wrote this code from scratch and
+/// did not copy it in part or whole from another source.  All 
+/// references used in the completion of the assignments are cited 
+/// in my README file.
+///
+/// File Contents
+///
+///    This file is the DependencyGraph class, which is used to represent the dependencies between two objects. Duplicate entries are not counted. 
+///    This class tracks both parent and children nodes (dependees and dependents) using two dictionaries of hashsets.
+///    This class can return if a given node has dependents or dependees and return the dependents or dependees of a given node.
+///    NOTE: A node can be both a dependee and a dependent, and can point to itself.
+/// </summary>
 
 namespace CS3500.DependencyGraph;
 

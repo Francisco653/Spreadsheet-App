@@ -1,6 +1,22 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿/// <summary>
+/// Author:    Francisco Pinas
+/// Partner:   N/A
+/// Date:      08/28/2025
+/// Course:    CS 3500, University of Utah, School of Computing
+/// Copyright: CS 3500 and Francisco - This work may not 
+///            be copied for use in Academic Coursework.
+///
+/// I, Francisco, certify that I wrote this code from scratch and
+/// did not copy it in part or whole from another source.  All 
+/// references used in the completion of the assignments are cited 
+/// in my README file.
+///
+/// File Contents
+///
+///    This file is the FormulaTester Class, used to test the Formula class.
+///    This class ensures that the Formula class is properly creating tokens,
+///    and enforcing the rules for how a formula should be structured.
+/// </summary>
 
 namespace CS3500.Formula;
 /// <summary>
