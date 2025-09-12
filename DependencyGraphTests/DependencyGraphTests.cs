@@ -289,25 +289,45 @@ public class DependencyGraphExampleStressTests
     }
 
     /// <summary>
-    /// This tests that checking for dependees of a non-existent node does not cause a crash.
+    /// This tests that when a dependency is added, HasDependees returns true for the dependent.
     /// </summary>
     [TestMethod]
-    public void TestHasDependeesAdded()
+    public void TestHasDependeesTrue()
     {
         DependencyGraph dg = new();
         dg.AddDependency("A1", "B1");
-        dg.HasDependees("B1");
+        Assert.IsTrue(dg.HasDependees("B1"));
     }
     /// <summary>
-    /// This tests that checking for dependees of a non-existent node does not cause a crash.
+    /// This tests that when a dependency is added, HasDependents returns true for the dependee.
     /// </summary>
     [TestMethod]
-    public void TestHasDependentsAdded()
+    public void TestHasDependentsTrue()
     {
         DependencyGraph dg = new();
         dg.AddDependency("C1", "88");
-        dg.HasDependents("C1");
+       Assert.IsTrue(dg.HasDependents("C1"));
     }
 
+    /// <summary>
+    /// This tests that when a dependency is added, the dependee isn't mistakenly marked as having dependees.
+    /// </summary>
+    [TestMethod]
+    public void TestHasDependentsFalse()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        Assert.IsFalse(dg.HasDependents("B1"));
+    }
+    /// <summary>
+    /// This tests that when a dependency is added, the dependent isn't mistakenly marked as having dependents.
+    /// </summary>
+    [TestMethod]
+    public void TestHasDependeesFalse()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        Assert.IsFalse(dg.HasDependees("A1"));
+    }
 
 }
