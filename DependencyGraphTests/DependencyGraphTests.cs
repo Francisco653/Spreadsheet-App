@@ -397,7 +397,7 @@ public class DependencyGraphTests
         Assert.IsTrue(new HashSet<string> {"duplicate"}.SetEquals(dg.GetDependees("duplicate")));
     }
     /// <summary>
-    /// Removing a non-existant dependency should not change the ones that do exist, and should not crash.
+    /// Removing a non-existant dependee from a dependency should not change the ones that do exist, and should not crash.
     /// </summary>
     [TestMethod]
     public void TestRemoveDependencyNonExistentDependee()
@@ -409,4 +409,56 @@ public class DependencyGraphTests
         Assert.IsTrue(new HashSet<string> { "B1" }.SetEquals(dg.GetDependents("A1")));
         Assert.IsTrue(new HashSet<string> { "A1" }.SetEquals(dg.GetDependees("B1"))); 
     }
+    /// <summary>
+    /// Removing a non-existant dependent from a dependency should not change the ones that do exist, and should not crash.
+    /// </summary>
+    [TestMethod]
+    public void TestRemoveDependencyNonExistentDependent()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        dg.RemoveDependency("C1", "B1");
+        Assert.AreEqual(1, dg.Size);
+        Assert.IsTrue(new HashSet<string> { "B1" }.SetEquals(dg.GetDependents("A1")));
+        Assert.IsTrue(new HashSet<string> { "A1" }.SetEquals(dg.GetDependees("B1")));
+    }
+
+    /// <summary>
+    /// Removing a non-existant dependency from an empty dependency graph should not cause a crash.
+    /// </summary>
+    [TestMethod]
+    public void TestRemoveDependencyFromEmpty()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "B1");
+        dg.RemoveDependency("A1", "Chrome");
+    }
+    /// <summary>
+    /// Replacing dependents of an empty dependency graph should not crash, and in fact simply create the new dependencies. 
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependentsFromEmpty()
+    {
+        DependencyGraph dg = new();
+        dg.ReplaceDependents("A1", new HashSet<string> { "B1", "C1" });
+        Assert.AreEqual(2, dg.Size);
+        Assert.IsTrue(new HashSet<string> { "B1", "C1" }.SetEquals(dg.GetDependents("A1")));
+    }
+
+    /// <summary>
+    /// Replacing dependents of a non-existent dependee should not crash, and in fact simply create the new dependencies. 
+    /// Also ensuring that existing uninvolved dependencies are not changed.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependentsFromNonExistantDependee()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("X1", "Y1");
+        dg.ReplaceDependents("A1", new HashSet<string> { "B1", "C1" });
+        Assert.AreEqual(3, dg.Size);
+        Assert.IsTrue(new HashSet<string> { "B1", "C1" }.SetEquals(dg.GetDependents("A1")));
+        Assert.IsTrue(new HashSet<string> { "Y1" }.SetEquals(dg.GetDependents("X1")));
+    }
+
+
 }

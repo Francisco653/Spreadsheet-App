@@ -205,11 +205,15 @@ public class DependencyGraph
     {
         if (parents.ContainsKey(dependee))
         {
+            // Note: Nothing will be removed here if the dependent doesn't exist in the set.
             parents[dependee].Remove(dependent);
+            // Need to check that this ordered pair actually exists
             if (children.ContainsKey(dependent))
             {
-                children[dependent].Remove(dependee);
-                count--;
+                if(children[dependent].Remove(dependee))
+                {
+                    count--;
+                }
             }
         }
     }
@@ -222,6 +226,21 @@ public class DependencyGraph
     /// <param name="newDependents"> The new dependents for nodeName. </param>
     public void ReplaceDependents(string nodeName, IEnumerable<string> newDependents)
     {
+        // If the parent doesn't exist, just add the new dependencies.
+        if (parents.ContainsKey(nodeName))
+        {
+            // Remove dependencies from parents
+            var currentDependents = new HashSet<string>(parents[nodeName]);
+            foreach (var dependent in currentDependents)
+            {
+                RemoveDependency(nodeName, dependent);
+            }
+        }
+        // Now, create the new dependencies
+        foreach (var newDependent in newDependents)
+        {
+            AddDependency(nodeName, newDependent);
+        }
     }
 
     /// <summary>
