@@ -87,13 +87,32 @@ public class DependencyGraphTests
             Assert.IsTrue(dependees[i].SetEquals(new HashSet<string>(dg.GetDependees(letters[i]))));
         }
     }
-    // -- BLACK BOX TESTS PRIOR TO IMPLEMENTATION OF DEPENDENCY GRAPH --
-
     /// <summary>
-    /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, a new dependency graph is empty when first created.
-    /// As such, the size should be zero.
+    /// This stress tests creates a ton of dependency graph objects and constantly replaces them. 
     /// </summary>
     [TestMethod]
+    [Timeout(2000)]
+    public void StressTestCreateAndReplace()
+    {
+        for(int i = 0; i < 1000; i++)
+        {
+            DependencyGraph dg = new();
+            dg.AddDependency("" + (char) (i), "" + (char) (i + 1));
+            dg.AddDependency("" + (char)(i + 2), "" + (char)(i + 3));
+            dg.AddDependency("" + (char)(i + 4), "" + (char)(i + 5));
+            dg.ReplaceDependents("A", new HashSet<string> { "X", "Y", "Z" });
+            dg.ReplaceDependees("D", new HashSet<string> { "W", "V" });
+            Assert.IsTrue(new HashSet<string> { "X", "Y", "Z" }.SetEquals(dg.GetDependents("A")));
+            Assert.IsTrue(new HashSet<string> { "W", "V" }.SetEquals(dg.GetDependees("D")));
+        }
+    }
+        // -- BLACK BOX TESTS PRIOR TO IMPLEMENTATION OF DEPENDENCY GRAPH --
+
+        /// <summary>
+        /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, a new dependency graph is empty when first created.
+        /// As such, the size should be zero.
+        /// </summary>
+        [TestMethod]
     public void TestEmptyBySize()
     {
         DependencyGraph dg = new();
