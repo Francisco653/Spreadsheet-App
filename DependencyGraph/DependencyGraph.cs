@@ -83,14 +83,15 @@ public class DependencyGraph
     /// <returns> true if the node has dependents. </returns>
     public bool HasDependents(string nodeName)
     {
+
         if (!parents.ContainsKey(nodeName))
         {
             return false;
         }
-
+        // Could be a case that the key is created but replaceDependents passes an empty list to the key, so we check count.
         else
         {
-            return parents.ContainsKey(nodeName) && parents[nodeName].Count > 0;
+            return parents[nodeName].Count > 0;
         }
     }
 
@@ -105,9 +106,10 @@ public class DependencyGraph
         {
             return false;
         }
+        // Could be a case that the key is created but replaceDependees passes an empty list to the key, so we check count.
         else
         {
-            return children.ContainsKey(nodeName) && children[nodeName].Count > 0;
+            return children[nodeName].Count > 0;
         }
     }
 

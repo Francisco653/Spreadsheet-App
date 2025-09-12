@@ -459,4 +459,58 @@ public class DependencyGraphTests
         Assert.IsTrue(new HashSet<string> { "B1", "C1" }.SetEquals(dg.GetDependents("A1")));
         Assert.IsTrue(new HashSet<string> { "Y1" }.SetEquals(dg.GetDependents("X1")));
     }
+
+    /// <summary>
+    /// Testing for an extreme corner case where a dependency is created, thus creating a key for the dependee, 
+    /// and then replaceDependents is called with an empty list, thus making HasDependents return false even though the key exists. 
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependentsHasDependentsEmptyList()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("A1", "Y1");
+        dg.AddDependency("A1", "354");
+        dg.ReplaceDependents("A1", new HashSet<string> {});
+        Assert.IsFalse(dg.HasDependents("A1"));
+    }
+
+    /// <summary>
+    /// Replacing dependees of a non-existent dependent should not crash, and in fact simply create the new dependencies. 
+    /// Also ensuring that existing uninvolved dependencies are not changed.
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependeeFromNonExistantDependent()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("X1", "Y1");
+        dg.ReplaceDependees("A1", new HashSet<string> { "B1", "C1" });
+        Assert.AreEqual(3, dg.Size);
+        Assert.IsTrue(new HashSet<string> { "B1", "C1" }.SetEquals(dg.GetDependees("A1")));
+        Assert.IsTrue(new HashSet<string> { "Y1" }.SetEquals(dg.GetDependents("X1")));
+    }
+    /// <summary>
+    /// Replacing dependees of an empty dependency graph should not crash, and in fact simply create the new dependencies. 
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependeeFromEmpty()
+    {
+        DependencyGraph dg = new();
+        dg.ReplaceDependees("Empty", new HashSet<string> { "not", "empty" });
+        Assert.IsTrue(new HashSet<string> { "not", "empty" }.SetEquals(dg.GetDependees("Empty")));
+    }
+
+    /// <summary>
+    /// Testing for an extreme corner case where a dependency is created, thus creating a key for the dependent, 
+    /// and then replaceDependees is called with an empty list, thus making HasDependees return false even though the key exists. 
+    /// </summary>
+    [TestMethod]
+    public void TestReplaceDependeeHasDependeesEmptyList()
+    {
+        DependencyGraph dg = new();
+        dg.AddDependency("F2", "Child");
+        dg.AddDependency("AC1", "Child");
+        dg.ReplaceDependees("Child", new HashSet<string> {});
+        Assert.IsFalse(dg.HasDependees("Child"));
+    }
+
 }
