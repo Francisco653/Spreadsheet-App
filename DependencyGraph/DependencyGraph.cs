@@ -142,7 +142,7 @@ public class DependencyGraph
         }
         else
         {
-            return parents[nodeName];
+            return new HashSet<String>(parents[nodeName]);
         }
     }
 
@@ -161,7 +161,8 @@ public class DependencyGraph
         }
         else
         {
-            return children[nodeName];
+            // Return a copy to prevent external modification.
+            return new HashSet<string>(children[nodeName]);
         }
     }
 
