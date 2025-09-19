@@ -771,4 +771,11 @@ public class FormulaSyntaxTests
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("(123) a5 ").GetVariables());
     }
 
+    // --- ASSIGNMENT 4 PRETESTS ---
+    // TODO: Add tests for overriden Equals()
+    // TODO: Add tests for overriden GetHashCode()
+    // TODO: Add tests for the == operator
+    // TODO: Add tests for the != operator
+    // TODO: Add tests for Evaluate(lookup)
+
 }
