@@ -919,7 +919,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_Variable_Lambda()
     {
-        Formula f = new ("A1 + B1 - D1 + 1");
+        Formula f = new("A1 + B1 - D1 + 1");
         Assert.AreEqual(6, f.Evaluate((name) => 5));
     }
 
@@ -929,7 +929,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_NoVariable_Lambda()
     {
-        Formula f = new ("10 + 5 * 0 - 10");
+        Formula f = new("10 + 5 * 0 - 10");
         Assert.AreEqual(0, f.Evaluate((name) => 5));
     }
 
@@ -992,10 +992,10 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEquals_Updated_Same()
     {
-        Formula f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
-        Formula f2 = new ("A1+B2-C3 * 2e5 -.25");
+        Formula f1 = new("a1 + b2 - c3 * 2E+5 - 0.25");
+        Formula f2 = new("A1+B2-C3 * 2e5 -.25");
         Assert.IsTrue(f2.Equals(f1));
-        f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
+        f1 = new("a1 + b2 - c3 * 2E+5 - 0.25");
         Assert.IsTrue(f1.Equals(f2));
     }
 
@@ -1005,10 +1005,10 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEquals_Updated_Different()
     {
-        Formula f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
-        Formula f2 = new ("A1+B2-C3 * 2e5 -.25");
+        Formula f1 = new("a1 + b2 - c3 * 2E+5 - 0.25");
+        Formula f2 = new("A1+B2-C3 * 2e5 -.25");
         Assert.IsTrue(f2.Equals(f1));
-        f1 = new ("55 + 10 - f90");
+        f1 = new("55 + 10 - f90");
         Assert.IsFalse(f1.Equals(f2));
     }
 

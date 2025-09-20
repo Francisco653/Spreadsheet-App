@@ -502,9 +502,16 @@ public class Formula
                     }
                 }
 
+                // Add the number normally if we don't need to worry about multiplication or division
+                else
+                {
+                    valueStack.Push(double.Parse(token));
+                }
+            }
+
                 // Handles variables (NOTE: The delegate lookup method is used to get the value of the variable.
                 // The delegate function is expected to throw an ArgumentException if the variable is undefined.
-                if (TokenType(token) == "variable")
+            if (TokenType(token) == "variable")
                 {
                     // This handles multiplication and division order of operations.
                     if (operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
@@ -526,10 +533,40 @@ public class Formula
                             valueStack.Push(number / lookup(token));
                         }
                     }
-                }
 
+                // Add the variable normally if we don't need to worry about multiplication or division
+                else
+                {
+                    valueStack.Push(lookup(token));
+                }
+            }
+
+                // Handle + or - token
+            if (token == "+" || token == "-")
+            {
+               // If we see another + or -, we need to first evaluate the current operator.
+               if (operatorStack.Peek() == "+" || operatorStack.Peek() == "-")
+               {
+                    double number1 = valueStack.Pop();
+                    double number2 = valueStack.Pop();
+                    string currentOperator = operatorStack.Pop();
+
+                    if (currentOperator == "+")
+                    {
+                        valueStack.Push(number2 + number1);
+                    }
+                    else
+                    {
+                        valueStack.Push(number2 - number1);
+                    }
+                }
+               else
+                {
+                    operatorStack.Push(token);
+                }
             }
         }
+
         return valueStack.Pop(); // TODO: REMOVE THIS LINE WHEN POSSIBLE
     }
 
