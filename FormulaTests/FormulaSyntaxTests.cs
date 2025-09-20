@@ -1298,7 +1298,7 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// This tests make sure that a the formula is evaluated properly dividing something inside a parenthesis by zero.
+    /// This tests make sure that a the formula is evaluated properly dividing by zero in a parenthesis.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_Divide_Inside_Parenthesis_By_Zero()
