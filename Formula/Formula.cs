@@ -123,6 +123,7 @@ public class Formula
                 uniqueVariables.Add(token.ToUpper());
             }
         }
+
         return uniqueVariables;
     }
 
@@ -471,7 +472,7 @@ public class Formula
     /// <returns> Either a double or a formula error, based on evaluating the formula.</returns>
     public object Evaluate(Lookup lookup)
     {
-        // FIXME: Implement the required algorithm here.
+        // TODO: Implement the required algorithm here.
         return null;
     }
 
@@ -485,8 +486,17 @@ public class Formula
     /// <returns> The hashcode for the object. </returns>
     public override int GetHashCode()
     {
-        // FIXME: Implement the required algorithm here.
-        return 0;
+        // TODO: Implement the required algorithm here.
+        int hash = 0;
+        int count = 0;
+        string [] canonicalChars = canonicalForm.Split();
+        // The hashcode of each string character is obtained along with count, to differentiate between anagrams.
+        foreach (string character in canonicalChars) {
+            count++;
+            hash += character.GetHashCode() + count.GetHashCode();
+        }
+
+        return hash;
     }
 }
 
