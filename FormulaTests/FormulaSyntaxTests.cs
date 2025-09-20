@@ -1,6 +1,7 @@
 ﻿
 
 using Microsoft.CodeCoverage.Core;
+using Microsoft.Testing.Platform.Extensions.Messages;
 
 /// <summary>
 /// Author:    Francisco Pinas
@@ -1043,5 +1044,18 @@ public class FormulaSyntaxTests
     public void FormulaConstructor_TestGetHashCode_Anagram()
     {
         Assert.AreNotEqual(new Formula("a1 + b2 - c3").GetHashCode(), new Formula("C3 - B2 + a1").GetHashCode());
+    }
+
+    /// <summary>
+    /// Making sure that GetHashCode() returns a unique hash code when a formula variable is updated with a new object.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetHashCode_Update()
+    {
+        Formula f1 = new Formula("81 / b32 - 03");
+        int oldHash = f1.GetHashCode();
+        f1 = new Formula("a11 + b22 * c44");
+        int newHash = f1.GetHashCode();
+        Assert.AreNotEqual(oldHash, newHash);
     }
 }
