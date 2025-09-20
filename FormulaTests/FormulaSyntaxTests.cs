@@ -1,5 +1,7 @@
 ﻿
 
+using Microsoft.CodeCoverage.Core;
+
 /// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
@@ -812,6 +814,16 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
+    /// This tests ensures that two formula objects with identical syntax are equal.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEquals_Same()
+    {
+
+        Assert.IsTrue(new Formula("a1 + b2 - c3 * 2E+5 - 0.25").Equals(new Formula("A1+B2-C3 * 2e5 -.25")));
+    }
+
+    /// <summary>
     /// This test simply checks that getting the hash code of a valid formula does not crash the program.
     /// </summary>
     [TestMethod]
@@ -946,5 +958,81 @@ public class FormulaSyntaxTests
         Assert.AreEqual(7, f.Evaluate(TestLookup));
     }
 
-    // --- END OF ASSIGNMENT 4 PRETESTS ---
+    // --- END OF ASSIGNMENT 4 PRETESTS, START OF ASSIGNMENT 4 WHITE BOX TESTS ---
+
+    /// <summary>
+    /// This test makes sure that the equal operator returns true for two pointers pointing to the same object.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEqualOperator_Self()
+    {
+        Formula f1 = new Formula("a5 / a4");
+        Formula f2 = f1;
+        Assert.IsTrue(f2 == f1);
+        Assert.IsTrue(f1 == f2);
+    }
+
+    /// <summary>
+    /// This test makes sure that the equal operator returns false when a formula is changed.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEqualOperator_Updated()
+    {
+        Formula f1 = new Formula("a5 / a4");
+        Formula f2 = new Formula("A5 /     A4");
+        Assert.IsTrue(f2 == f1);
+        f2 = new Formula(" 67 + 68 + 69");
+        Assert.IsFalse(f1 == f2);
+    }
+
+    /// <summary>
+    /// This tests ensures that two formula objects are equal even after creating a new but identical object.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEquals_Updated_Same()
+    {
+        Formula f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
+        Formula f2 = new ("A1+B2-C3 * 2e5 -.25");
+        Assert.IsTrue(f2.Equals(f1));
+        f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
+        Assert.IsTrue(f1.Equals(f2));
+    }
+
+    /// <summary>
+    /// This tests ensures that two formula objects are not equal after an object is replaced.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEquals_Updated_Different()
+    {
+        Formula f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
+        Formula f2 = new ("A1+B2-C3 * 2e5 -.25");
+        Assert.IsTrue(f2.Equals(f1));
+        f1 = new ("55 + 10 - f90");
+        Assert.IsFalse(f1.Equals(f2));
+    }
+
+    /// <summary>
+    /// This test makes sure that the not equal operator returns false for two pointers pointing to the same object.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestNotEqualOperator_Self()
+    {
+        Formula f1 = new Formula("a5 / a4");
+        Formula f2 = f1;
+        Assert.IsFalse(f2 != f1);
+        Assert.IsFalse(f1 != f2);
+    }
+
+    /// <summary>
+    /// This test makes sure that the not equal operator returns true when a formula is changed.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestNotEqualOperator_Updated()
+    {
+        Formula f1 = new Formula("a5 / a4");
+        Formula f2 = new Formula("A5 /     A4");
+        Assert.IsFalse(f2 != f1);
+        f2 = new Formula(" 77 + 88 - A9");
+        Assert.IsTrue(f1 != f2);
+    }
 }
