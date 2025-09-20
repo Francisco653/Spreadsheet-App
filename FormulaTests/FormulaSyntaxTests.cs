@@ -1,4 +1,6 @@
-﻿/// <summary>
+﻿
+
+/// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
 /// Date:      08/28/2025
@@ -17,7 +19,6 @@
 ///    This class ensures that the Formula class is properly creating tokens,
 ///    and enforcing the rules for how a formula should be structured.
 /// </summary>
-
 namespace CS3500.Formula;
 /// <summary>
 ///   <para>
@@ -772,10 +773,150 @@ public class FormulaSyntaxTests
     }
 
     // --- ASSIGNMENT 4 PRETESTS ---
-    // TODO: Add tests for overriden Equals()
-    // TODO: Add tests for overriden GetHashCode()
-    // TODO: Add tests for the == operator
-    // TODO: Add tests for the != operator
-    // TODO: Add tests for Evaluate(lookup)
 
+    /// <summary>
+    /// This tests ensures that two formula objects with only visual syntax differences are considered equal.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEquals_True()
+    {
+        Assert.IsTrue(new Formula("a1 + b2 - c3 * 2E+5 - 0.25").Equals(new Formula("A1+B2-C3 * 2e5 -.25")));
+    }
+
+    /// <summary>
+    /// This test ensures that two formula objects with different variables are not considered equal.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEquals_False()
+    {
+        Assert.IsFalse(new Formula("a1 + b2 - c3").Equals(new Formula("A1+B2-C4")));
+    }
+
+    /// <summary>
+    /// Comparing to a null object should return false, not crash the program.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEquals_False_Null()
+    {
+        Assert.IsFalse(new Formula("a1 + b2 - c3").Equals(null));
+    }
+
+    /// <summary>
+    /// Comparing to a non-formula object should return false, not crash the program.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEquals_False_Other_Type()
+    {
+        double notAFormula = 3.14;
+        Assert.IsFalse(new Formula("a1 + b2 - c3").Equals(notAFormula));
+    }
+
+    /// <summary>
+    /// This test simply checks that getting the hash code of a valid formula does not crash the program.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetHashCode_No_Crashes()
+    {
+        new Formula("41 + 72 - 83").GetHashCode();
+    }
+
+    /// <summary>
+    /// This tests ensures that two formula objects with only visual syntax differences have the same hash code.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetHashCode_True()
+    {
+        Assert.AreEqual(new Formula("a1 + b2 - c3 * 2E+5 - 0.25").GetHashCode(), new Formula("A1+B2-C3 * 2e5 -.25").GetHashCode());
+    }
+
+    /// <summary>
+    /// Distinct formulas should (almost) always have distinct hash codes.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetHashCode_False()
+    {
+        Assert.AreNotEqual(new Formula("a1 + b2 - c3").GetHashCode(), new Formula("A1+B2-C4").GetHashCode());
+    }
+
+    /// <summary>
+    /// This tests ensures that two formula objects with only visual syntax differences are considered equal.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEqualOperator_True()
+    {
+        Assert.IsTrue(new Formula("a1 + b2 - c3 * 2E+5 - 0.25") == new Formula("A1+B2-C3 * 2e5 -.25"));
+    }
+
+    /// <summary>
+    /// This test ensures that two formula objects with different variables are not considered equal.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEqualOperator_False()
+    {
+        Assert.IsFalse(new Formula("a1 + b2 - c3") == new Formula("A1+B2-C4"));
+    }
+
+    /// <summary>
+    /// This tests ensures that two formula objects with only visual syntax differences are considered equal.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestNotEqualOperator_False()
+    {
+        Assert.IsFalse(new Formula("a1 + b2 - c3 * 2E+5 - 0.25") != new Formula("A1+B2-C3 * 2e5 -.25"));
+    }
+
+    /// <summary>
+    /// This test ensures that two formula objects with different variables are not considered equal.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestNotEqualOperator_True()
+    {
+        Assert.IsTrue(new Formula("a1 + b2 - c3") != new Formula("A1+B2-C4"));
+    }
+
+    /// <summary>
+    /// This methods ensures that evaluating a formula with variables works properly when provided a valid but very simple lookup function.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Variable()
+    {
+        Formula f = new Formula("A1 * B1 + 3");
+        double TestLookup(string name)
+        {
+            if (name == "A1")
+            {
+                return 2;
+            }
+            else if (name == "B1")
+            {
+                return 3;
+            }
+            else
+            {
+                throw new ArgumentException("I don't know that variable");
+            }
+        }
+
+        Assert.AreEqual(9, f.Evaluate(TestLookup));
+    }
+
+    /// <summary>
+    /// This methods ensures that evaluating a formula with variables works properly when provided a valid but very simple lookup lambda function.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Variable_Lambda()
+    {
+        Formula f = new ("A1 + B1 - D1 + 1");
+        Assert.AreEqual(6, f.Evaluate((name) => 5));
+    }
+
+    /// <summary>
+    /// This methods ensures that evaluating a formula without variables works properly.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_NoVariable()
+    {
+        Formula f = new ("10 + 5 * 0 - 10");
+        Assert.AreEqual(0, f.Evaluate((name) => 5));
+    }
 }
