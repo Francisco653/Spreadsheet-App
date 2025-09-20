@@ -395,9 +395,12 @@ public class Formula
     /// <param name="f1"> The first of two formula objects. </param>
     /// <param name="f2"> The second of two formula objects. </param>
     /// <returns> true if the two formulas are the same.</returns>
+#pragma warning disable SA1201 // Operator is being overriden on purpose
     public static bool operator ==(Formula f1, Formula f2)
     {
+        return f1.Equals(f2);
     }
+#pragma warning restore SA1201 // Operator is being overriden on purpose
 
     /// <summary>
     ///   <para>
@@ -409,6 +412,7 @@ public class Formula
     /// <returns> true if the two formulas are not equal to each other.</returns>
     public static bool operator !=(Formula f1, Formula f2)
     {
+        return ! (f1 == f2);
     }
 
     /// <summary>
@@ -430,8 +434,12 @@ public class Formula
     /// </returns>
     public override bool Equals(object? obj)
     {
-        // FIXME: write this method
-        return true;
+        if (obj is Formula otherFormula)
+        {
+            return this.ToString() == otherFormula.ToString();
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -464,6 +472,7 @@ public class Formula
     public object Evaluate(Lookup lookup)
     {
         // FIXME: Implement the required algorithm here.
+        return null;
     }
 
     /// <summary>
@@ -477,6 +486,7 @@ public class Formula
     public override int GetHashCode()
     {
         // FIXME: Implement the required algorithm here.
+        return 0;
     }
 }
 

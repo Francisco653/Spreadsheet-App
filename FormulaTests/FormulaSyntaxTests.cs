@@ -921,7 +921,7 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// This methods ensures that evaluating a formula with variables works properly when provided a valid but very simple lookup function.
+    /// This methods ensures that evaluating a formula without variables works properly when provided a valid but very simple lookup function.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_NoVariable()
@@ -942,6 +942,9 @@ public class FormulaSyntaxTests
                 throw new ArgumentException("I don't know that variable");
             }
         }
+
         Assert.AreEqual(7, f.Evaluate(TestLookup));
     }
+
+    // --- END OF ASSIGNMENT 4 PRETESTS ---
 }
