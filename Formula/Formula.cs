@@ -544,7 +544,7 @@ public class Formula
             else if (token == "+" || token == "-")
             {
                 // If we see another + or -, we need to first evaluate the current operator.
-                if ((operatorStack.Count > 0 && operatorStack.Peek() == "*") || (operatorStack.Count > 0 && operatorStack.Peek() == "/"))
+                if ((operatorStack.Count > 0 && operatorStack.Peek() == "+") || (operatorStack.Count > 0 && operatorStack.Peek() == "-"))
                 {
                     double number1 = valueStack.Pop();
                     double number2 = valueStack.Pop();
