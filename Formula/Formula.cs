@@ -481,7 +481,7 @@ public class Formula
             if (TokenType(token) == "number")
             {
                 // This handles multiplication and division order of operations.
-                if (operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
+                if ((operatorStack.Count > 0 && operatorStack.Peek() == "*") || (operatorStack.Count > 0 && operatorStack.Peek() == "/"))
                 {
                     string op = operatorStack.Pop();
                     double number = valueStack.Pop();
@@ -510,10 +510,10 @@ public class Formula
 
             // Handles variables (NOTE: The delegate lookup method is used to get the value of the variable.
             // The delegate function is expected to throw an ArgumentException if the variable is undefined.
-            if (TokenType(token) == "variable")
+            else if (TokenType(token) == "variable")
             {
                 // This handles multiplication and division order of operations.
-                if (operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
+                if ((operatorStack.Count > 0 && operatorStack.Peek() == "*") || (operatorStack.Count > 0 && operatorStack.Peek() == "/"))
                 {
                     string op = operatorStack.Pop();
                     double number = valueStack.Pop();
@@ -541,10 +541,10 @@ public class Formula
             }
 
             // Handle + or - token
-            if (token == "+" || token == "-")
+            else if (token == "+" || token == "-")
             {
                 // If we see another + or -, we need to first evaluate the current operator.
-                if (operatorStack.Peek() == "+" || operatorStack.Peek() == "-")
+                if ((operatorStack.Count > 0 && operatorStack.Peek() == "*") || (operatorStack.Count > 0 && operatorStack.Peek() == "/"))
                 {
                     double number1 = valueStack.Pop();
                     double number2 = valueStack.Pop();
@@ -564,23 +564,23 @@ public class Formula
             }
 
             // Handles if the token is * or /
-            if (token == "*" || token == "/")
+            else if (token == "*" || token == "/")
             {
                 operatorStack.Push(token);
             }
 
             // Handles left Parenthesis
-            if (TokenType(token) == "leftParenthesis")
+            else if (TokenType(token) == "leftParenthesis")
             {
                 operatorStack.Push(token);
             }
 
             // Handles right Parenthesis
-            if (TokenType(token) == "rightParenthesis")
+            else if (TokenType(token) == "rightParenthesis")
             {
                 // If + or - is at the top of the operator stack, pop the value stack twice and the operator stack once.
                 // Apply the popped operator to the popped numbers. Push the result onto the value stack.
-                if (operatorStack.Peek() == "+" || operatorStack.Peek() == "-")
+                if ((operatorStack.Count > 0 && operatorStack.Peek() == "+") || (operatorStack.Count > 0 && operatorStack.Peek() == "-"))
                 {
                     double number1 = valueStack.Pop();
                     double number2 = valueStack.Pop();
@@ -600,7 +600,7 @@ public class Formula
                 operatorStack.Pop();
 
                 // Now we check for mulitiplication and division (+/-)
-                if(operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
+                if ((operatorStack.Count > 0 && operatorStack.Peek() == "*") || (operatorStack.Count > 0 && operatorStack.Peek() == "/"))
                 {
                     double number1 = valueStack.Pop();
                     double number2 = valueStack.Pop();
@@ -610,14 +610,12 @@ public class Formula
                     {
                         valueStack.Push(number2 * number1);
                     }
-
                     else
                     {
-                        if(number1 == 0)
+                        if (number1 == 0)
                         {
                             return new FormulaError("Division by zero error!");
                         }
-
                         else
                         {
                             valueStack.Push(number2 / number1);
@@ -627,6 +625,27 @@ public class Formula
             }
         }
 
+        // Final computations for remaining value/operators
+        if (operatorStack.Count == 0)
+        {
+            return valueStack.Pop();
+        }
+        else
+        {
+            double number1 = valueStack.Pop();
+            double number2 = valueStack.Pop();
+            string currentOperation = operatorStack.Pop();
+
+            if (currentOperation == "+")
+            {
+                valueStack.Push(number2 + number1);
+            }
+
+            else
+            {
+                valueStack.Push(number2 - number1);
+            }
+        }
         return valueStack.Pop();
     }
 

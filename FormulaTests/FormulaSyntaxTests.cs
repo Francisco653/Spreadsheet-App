@@ -910,7 +910,7 @@ public class FormulaSyntaxTests
             }
         }
 
-        Assert.AreEqual(9, f.Evaluate(TestLookup));
+        Assert.AreEqual(9D, f.Evaluate(TestLookup));
     }
 
     /// <summary>
@@ -919,8 +919,8 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_Variable_Lambda()
     {
-        Formula f = new("A1 + B1 - D1 + 1");
-        Assert.AreEqual(6, f.Evaluate((name) => 5));
+        Formula f = new ("A1 + B1 - D1 + 1");
+        Assert.AreEqual(6D, f.Evaluate((name) => 5));
     }
 
     /// <summary>
@@ -929,8 +929,9 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_NoVariable_Lambda()
     {
-        Formula f = new("10 + 5 * 0 - 10");
-        Assert.AreEqual(0, f.Evaluate((name) => 5));
+        Formula f = new ("10 + 5 * 0 - 10");
+        // The value returned is a double not an int.
+        Assert.AreEqual(0D, f.Evaluate((name) => 5));
     }
 
     /// <summary>
@@ -955,8 +956,8 @@ public class FormulaSyntaxTests
                 throw new ArgumentException("I don't know that variable");
             }
         }
-
-        Assert.AreEqual(7, f.Evaluate(TestLookup));
+        // The return value is a double, not an int. 
+        Assert.AreEqual(7D, f.Evaluate(TestLookup));
     }
 
     // --- END OF ASSIGNMENT 4 PRETESTS, START OF ASSIGNMENT 4 WHITE BOX TESTS ---
