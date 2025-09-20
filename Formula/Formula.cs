@@ -19,6 +19,7 @@
 
 namespace CS3500.Formula;
 
+using System.ComponentModel.Design;
 using System.Text.RegularExpressions;
 
 /// <summary>
@@ -413,7 +414,7 @@ public class Formula
     /// <returns> true if the two formulas are not equal to each other.</returns>
     public static bool operator !=(Formula f1, Formula f2)
     {
-        return ! (f1 == f2);
+        return !(f1 == f2);
     }
 
     /// <summary>
@@ -509,30 +510,30 @@ public class Formula
                 }
             }
 
-                // Handles variables (NOTE: The delegate lookup method is used to get the value of the variable.
-                // The delegate function is expected to throw an ArgumentException if the variable is undefined.
+            // Handles variables (NOTE: The delegate lookup method is used to get the value of the variable.
+            // The delegate function is expected to throw an ArgumentException if the variable is undefined.
             if (TokenType(token) == "variable")
+            {
+                // This handles multiplication and division order of operations.
+                if (operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
                 {
-                    // This handles multiplication and division order of operations.
-                    if (operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
+                    string op = operatorStack.Pop();
+                    double number = valueStack.Pop();
+                    if (op == "*")
                     {
-                        string op = operatorStack.Pop();
-                        double number = valueStack.Pop();
-                        if (op == "*")
-                        {
-                            valueStack.Push(number * lookup(token));
-                        }
-                        else
-                        {
-                            // Throw divide by zero error
-                            if (lookup(token) == 0)
-                            {
-                                return new FormulaError("Division by zero error!");
-                            }
-
-                            valueStack.Push(number / lookup(token));
-                        }
+                        valueStack.Push(number * lookup(token));
                     }
+                    else
+                    {
+                        // Throw divide by zero error
+                        if (lookup(token) == 0)
+                        {
+                            return new FormulaError("Division by zero error!");
+                        }
+
+                        valueStack.Push(number / lookup(token));
+                    }
+                }
 
                 // Add the variable normally if we don't need to worry about multiplication or division
                 else
@@ -541,7 +542,7 @@ public class Formula
                 }
             }
 
-                // Handle + or - token
+            // Handle + or - token
             if (token == "+" || token == "-")
             {
                 // If we see another + or -, we need to first evaluate the current operator.
@@ -575,9 +576,49 @@ public class Formula
             {
                 operatorStack.Push(token);
             }
+
+            // Handles right Parenthesis
+            if (TokenType(token) == "rightParenthesis")
+            {
+                // If + or - is at the top of the operator stack, pop the value stack twice and the operator stack once.
+                // Apply the popped operator to the popped numbers. Push the result onto the value stack.
+                if (operatorStack.Peek() == "+" || operatorStack.Peek() == "-")
+                {
+                    double number1 = valueStack.Pop();
+                    double number2 = valueStack.Pop();
+                    string currentOperator = operatorStack.Pop();
+
+                    if (currentOperator == "+")
+                    {
+                        valueStack.Push(number2 + number1);
+                    }
+                    else if (currentOperator == "-")
+                    {
+                        valueStack.Push(number2 - number1);
+                    }
+                    else if (currentOperator == "*")
+                    {
+                        valueStack.Push(number2 * number1);
+                    }
+                    else
+                    {
+                        // Divide by zero error
+                        if (number1 == 0)
+                        {
+                            return new FormulaError("Division by zero error");
+                        }
+                        else
+                        {
+                            valueStack.Push(number2 / number1);
+                        }
+                    }
+                }
+
+                //
+            }
         }
 
-        return valueStack.Pop(); // TODO: REMOVE THIS LINE WHEN POSSIBLE
+        return valueStack.Pop();
     }
 
     /// <summary>
@@ -598,7 +639,7 @@ public class Formula
             count++;
             hash += count * character;
 
-            if(character % 7 == 0)
+            if (character % 7 == 0)
             {
                 hash *= -count;
             }
