@@ -21,4 +21,4 @@ It can now evaluate formulas and compare them to one another.
     1. Assignment One:   Predicted Hours:          8        Actual Hours:   7
     2. Assignment Two:   Predicted Hours:           12        Actual Hours:    5
     3. Assignment Three:   Predicted Hours:           8        Actual Hours:    4.5
-    4. Assignment Four :   Predicted Hours:           5        Actual Hours:    1 (so far)
+    4. Assignment Four :   Predicted Hours:           5        Actual Hours:    2 (so far)

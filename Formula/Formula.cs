@@ -472,8 +472,65 @@ public class Formula
     /// <returns> Either a double or a formula error, based on evaluating the formula.</returns>
     public object Evaluate(Lookup lookup)
     {
+        Stack<double> valueStack = new Stack<double>();
+        Stack<string> operatorStack = new Stack<string>();
         // TODO: Implement the required algorithm here.
-        return null;
+
+        foreach (string token in tokenList)
+        {
+            // Handles numbers
+            if (TokenType(token) == "number")
+            {
+                // This handles multiplication and division order of operations.
+                if (operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
+                {
+                    string op = operatorStack.Pop();
+                    double number = valueStack.Pop();
+                    if (op == "*")
+                    {
+                        valueStack.Push(number * double.Parse(token));
+                    }
+                    else
+                    {
+                        // Throw divide by zero error
+                        if (double.Parse(token) == 0)
+                        {
+                            return new FormulaError("Division by zero error!");
+                        }
+
+                        valueStack.Push(number / double.Parse(token));
+                    }
+                }
+
+                // Handles variables (NOTE: The delegate lookup method is used to get the value of the variable.
+                // The delegate function is expected to throw an ArgumentException if the variable is undefined.
+                if (TokenType(token) == "variable")
+                {
+                    // This handles multiplication and division order of operations.
+                    if (operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
+                    {
+                        string op = operatorStack.Pop();
+                        double number = valueStack.Pop();
+                        if (op == "*")
+                        {
+                            valueStack.Push(number * lookup(token));
+                        }
+                        else
+                        {
+                            // Throw divide by zero error
+                            if (lookup(token) == 0)
+                            {
+                                return new FormulaError("Division by zero error!");
+                            }
+
+                            valueStack.Push(number / lookup(token));
+                        }
+                    }
+                }
+
+            }
+        }
+        return valueStack.Pop(); // TODO: REMOVE THIS LINE WHEN POSSIBLE
     }
 
     /// <summary>
@@ -486,7 +543,6 @@ public class Formula
     /// <returns> The hashcode for the object. </returns>
     public override int GetHashCode()
     {
-        // TODO: Implement the required algorithm here.
         int hash = 0;
         int count = 0;
 
