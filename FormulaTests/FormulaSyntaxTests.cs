@@ -1035,4 +1035,13 @@ public class FormulaSyntaxTests
         f2 = new Formula(" 77 + 88 - A9");
         Assert.IsTrue(f1 != f2);
     }
+
+    /// <summary>
+    /// Making sure that GetHashCode() returns a unique hash code for two different formulas that are anagrams of each other.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestGetHashCode_Anagram()
+    {
+        Assert.AreNotEqual(new Formula("a1 + b2 - c3").GetHashCode(), new Formula("C3 - B2 + a1").GetHashCode());
+    }
 }

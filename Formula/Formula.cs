@@ -489,11 +489,16 @@ public class Formula
         // TODO: Implement the required algorithm here.
         int hash = 0;
         int count = 0;
-        string [] canonicalChars = canonicalForm.Split();
-        // The hashcode of each string character is obtained along with count, to differentiate between anagrams.
-        foreach (string character in canonicalChars) {
+
+        foreach (char character in canonicalForm)
+        {
             count++;
-            hash += character.GetHashCode() + count.GetHashCode();
+            hash += count * character;
+
+            if(character % 7 == 0)
+            {
+                hash *= -count;
+            }
         }
 
         return hash;
