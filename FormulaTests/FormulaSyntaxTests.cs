@@ -914,9 +914,34 @@ public class FormulaSyntaxTests
     /// This methods ensures that evaluating a formula without variables works properly.
     /// </summary>
     [TestMethod]
-    public void FormulaConstructor_TestEvaluate_NoVariable()
+    public void FormulaConstructor_TestEvaluate_NoVariable_Lambda()
     {
         Formula f = new ("10 + 5 * 0 - 10");
         Assert.AreEqual(0, f.Evaluate((name) => 5));
+    }
+
+    /// <summary>
+    /// This methods ensures that evaluating a formula with variables works properly when provided a valid but very simple lookup function.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_NoVariable()
+    {
+        Formula f = new Formula(" 6/2  + 4");
+        double TestLookup(string name)
+        {
+            if (name == "A1")
+            {
+                return 2;
+            }
+            else if (name == "B1")
+            {
+                return 3;
+            }
+            else
+            {
+                throw new ArgumentException("I don't know that variable");
+            }
+        }
+        Assert.AreEqual(7, f.Evaluate(TestLookup));
     }
 }
