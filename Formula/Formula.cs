@@ -544,9 +544,9 @@ public class Formula
                 // Handle + or - token
             if (token == "+" || token == "-")
             {
-               // If we see another + or -, we need to first evaluate the current operator.
-               if (operatorStack.Peek() == "+" || operatorStack.Peek() == "-")
-               {
+                // If we see another + or -, we need to first evaluate the current operator.
+                if (operatorStack.Peek() == "+" || operatorStack.Peek() == "-")
+                {
                     double number1 = valueStack.Pop();
                     double number2 = valueStack.Pop();
                     string currentOperator = operatorStack.Pop();
@@ -560,10 +560,20 @@ public class Formula
                         valueStack.Push(number2 - number1);
                     }
                 }
-               else
-                {
-                    operatorStack.Push(token);
-                }
+
+                operatorStack.Push(token);
+            }
+
+            // Handles if the token is * or /
+            if (token == "*" || token == "/")
+            {
+                operatorStack.Push(token);
+            }
+
+            // Handles left Parenthesis
+            if (TokenType(token) == "leftParenthesis")
+            {
+                operatorStack.Push(token);
             }
         }
 
