@@ -475,8 +475,6 @@ public class Formula
     {
         Stack<double> valueStack = new Stack<double>();
         Stack<string> operatorStack = new Stack<string>();
-        // TODO: Implement the required algorithm here.
-
         foreach (string token in tokenList)
         {
             // Handles numbers
@@ -592,29 +590,40 @@ public class Formula
                     {
                         valueStack.Push(number2 + number1);
                     }
-                    else if (currentOperator == "-")
+                    else
                     {
                         valueStack.Push(number2 - number1);
                     }
-                    else if (currentOperator == "*")
+                }
+
+                // The top of the operator stack should be a '('. So we pop it.
+                operatorStack.Pop();
+
+                // Now we check for mulitiplication and division (+/-)
+                if(operatorStack.Peek() == "*" || operatorStack.Peek() == "/")
+                {
+                    double number1 = valueStack.Pop();
+                    double number2 = valueStack.Pop();
+                    string currentOperator = operatorStack.Pop();
+
+                    if (currentOperator == "*")
                     {
                         valueStack.Push(number2 * number1);
                     }
+
                     else
                     {
-                        // Divide by zero error
-                        if (number1 == 0)
+                        if(number1 == 0)
                         {
-                            return new FormulaError("Division by zero error");
+                            return new FormulaError("Division by zero error!");
                         }
+
                         else
                         {
                             valueStack.Push(number2 / number1);
                         }
                     }
                 }
-
-                //
             }
         }
 
