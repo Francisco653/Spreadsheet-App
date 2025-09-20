@@ -6,7 +6,7 @@ using Microsoft.Testing.Platform.Extensions.Messages;
 /// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
-/// Date:      08/28/2025
+/// Date:      09/19/2025
 /// Course:    CS 3500, University of Utah, School of Computing
 /// Copyright: CS 3500 and Francisco - This work may not 
 ///            be copied for use in Academic Coursework.
@@ -21,6 +21,7 @@ using Microsoft.Testing.Platform.Extensions.Messages;
 ///    This file is the FormulaTester Class, used to test the Formula class.
 ///    This class ensures that the Formula class is properly creating tokens,
 ///    and enforcing the rules for how a formula should be structured.
+///    It now also contains tests for new FormulaClass functionality, ensuring that formulas are properly evaluated.
 /// </summary>
 namespace CS3500.Formula;
 /// <summary>
@@ -1058,5 +1059,267 @@ public class FormulaSyntaxTests
         f1 = new Formula("a11 + b22 * c44");
         int newHash = f1.GetHashCode();
         Assert.AreNotEqual(oldHash, newHash);
+    }
+
+    /// <summary>
+    /// This tests make sure that a simple parenthesis case encompassing the whole formula evaluates properly.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Simple_Parenthesis()
+    {
+        Formula f = new ("(a7 + cdgfhaja1 - Dig65 - 1)");
+        Assert.AreEqual(4D, f.Evaluate((name) => 5));
+    }
+
+    /// <summary>
+    /// This tests make sure that a having multiple parenthesis in a formula still properly evaluates.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Multiple_Parenthesis()
+    {
+        Formula f = new ("(5 * 11) / (15 - 4)");
+        Assert.AreEqual(5D, f.Evaluate((name) => -36572));
+    }
+
+    /// <summary>
+    /// This tests make sure that a having nested parenthesis in a formula still properly evaluates.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Nested_Parenthesis()
+    {
+        Formula f = new ("( 1 * (5 * 11) / 1)  / (((15 - 4)))");
+        Assert.AreEqual(5D, f.Evaluate((name) => -36572));
+    }
+
+    /// <summary>
+    /// This tests make sure that a FormulaError object is returned when dividing by zero inside a parenthesis.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_By_Zero_In_Parenthesis()
+    {
+        Formula f = new("(1+A5 - 85 / 0)");
+        Assert.IsTrue(f.Evaluate(name => 1000) is FormulaError);
+    }
+
+    /// <summary>
+    /// This tests make sure that a FormulaError object is returned when dividing a number by zero.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_Number_By_Zero()
+    {
+        Formula f = new ("10 / 0 - 6");
+        Assert.IsTrue(f.Evaluate(name => 7) is FormulaError);
+    }
+
+    /// <summary>
+    /// This tests make sure that a FormulaError object is returned when dividing a variable by zero.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_Variable_By_Zero()
+    {
+        Formula f = new ("Y10 / 0 - 6");
+        Assert.IsTrue(f.Evaluate(name => 9) is FormulaError);
+    }
+
+    /// <summary>
+    /// This tests make sure that a FormulaError object is returned when dividing by zero last.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_By_Zero_Last()
+    {
+        Formula f = new ("672 / 0");
+        Assert.IsTrue(f.Evaluate(name => -9) is FormulaError);
+    }
+
+    /// <summary>
+    /// This tests make sure that a FormulaError object is returned when dividing by variable that equals zero.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_By_Variable_Zero()
+    {
+        Formula f = new("672 / A8");
+        Assert.IsTrue(f.Evaluate(name => 0) is FormulaError);
+    }
+
+    /// <summary>
+    /// This tests make sure that a the formula is evaluated properly when dividing by a defined variable.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_By_Variable_Normal()
+    {
+        Formula f = new ("98 + A7 / D65 ");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 6;
+            }
+            else if (name == "D65")
+            {
+                return 3;
+            }
+            else
+            {
+                throw new ArgumentException("I don't know that variable");
+            }
+        }
+
+        Assert.AreEqual(100D, f.Evaluate(TestLookup));
+    }
+
+    /// <summary>
+    /// This tests make sure that a the formula is evaluated properly adding inside and outside the right parenthesis.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Right_Parenthesis_Addition()
+    {
+        Formula f = new ("(10 + d5) + 6");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 6;
+            }
+            else if (name == "D65")
+            {
+                return 3;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        Assert.AreEqual(16D, f.Evaluate(TestLookup));
+    }
+
+    /// <summary>
+    /// This tests make sure that a the formula is evaluated properly subtracting inside and outside the right parenthesis.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Right_Parenthesis_Subtraction()
+    {
+        Formula f = new ("(10 - D5) - 6");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 6;
+            }
+            else if (name == "D5")
+            {
+                return 4;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        Assert.AreEqual(0D, f.Evaluate(TestLookup));
+    }
+
+    /// <summary>
+    /// This tests make sure that a the formula is evaluated properly multiplying inside and outside the right parenthesis.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Right_Parenthesis_Multiplication()
+    {
+        Formula f = new ("(10 * A7) * 2");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 6;
+            }
+            else if (name == "D5")
+            {
+                return 4;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        Assert.AreEqual(120D, f.Evaluate(TestLookup));
+    }
+
+    /// <summary>
+    /// This tests make sure that a the formula is evaluated properly dividing inside and outside the right parenthesis.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Right_Parenthesis_Division()
+    {
+        Formula f = new ("(10 / A7) / 2");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 5;
+            }
+            else if (name == "D5")
+            {
+                return 4;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        Assert.AreEqual(1D, f.Evaluate(TestLookup));
+    }
+
+    /// <summary>
+    /// This tests make sure that a the formula is evaluated properly dividing by something inside a parenthesis.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_By_Parenthesis()
+    {
+        Formula f = new("A7 / (10 * 1)");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 20;
+            }
+            else if (name == "D5")
+            {
+                return 14;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        Assert.AreEqual(2D, f.Evaluate(TestLookup));
+    }
+
+    /// <summary>
+    /// This tests make sure that a the formula is evaluated properly dividing something inside a parenthesis by zero.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_Divide_Inside_Parenthesis_By_Zero()
+    {
+        Formula f = new ("A7 / (0)");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 20;
+            }
+            else if (name == "D5")
+            {
+                return 14;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        Assert.IsTrue(f.Evaluate(TestLookup) is FormulaError);
     }
 }

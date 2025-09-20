@@ -1,7 +1,7 @@
 ﻿/// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
-/// Date:      09/05/2025
+/// Date:      09/19/2025
 /// Course:    CS 3500, University of Utah, School of Computing
 /// Copyright: CS 3500 and Francisco - This work may not 
 ///            be copied for use in Academic Coursework.
@@ -13,7 +13,7 @@
 ///
 /// File Contents
 ///
-///    This file is the Formula class, which is used to represent and validate formula strings, rules down below. 
+///    This file is the Formula class, which is used to represent, validate, and evaluate formula strings, rules down below. 
 /// </summary>
 
 
@@ -640,12 +640,12 @@ public class Formula
             {
                 valueStack.Push(number2 + number1);
             }
-
             else
             {
                 valueStack.Push(number2 - number1);
             }
         }
+
         return valueStack.Pop();
     }
 
