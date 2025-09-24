@@ -1,5 +1,5 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
-// The .NET Foundation licenses this file to you under the MIT license.
-// See the LICENSE file in the project root for more information.
+﻿// <copyright file="MSTestSettings.cs" company="UofU-CS3500">
+// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// </copyright>
 
 [assembly: Parallelize(Scope = ExecutionScope.MethodLevel)]

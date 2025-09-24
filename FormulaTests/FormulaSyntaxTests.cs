@@ -1,19 +1,18 @@
-﻿
-
-using Microsoft.CodeCoverage.Core;
-using Microsoft.Testing.Platform.Extensions.Messages;
+﻿// <copyright file="FormulaSyntaxTests.cs" company="UofU-CS3500">
+// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// </copyright>
 
 /// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
 /// Date:      09/19/2025
 /// Course:    CS 3500, University of Utah, School of Computing
-/// Copyright: CS 3500 and Francisco - This work may not 
+/// Copyright: CS 3500 and Francisco - This work may not
 ///            be copied for use in Academic Coursework.
 ///
 /// I, Francisco, certify that I wrote this code from scratch and
-/// did not copy it in part or whole from another source.  All 
-/// references used in the completion of the assignments are cited 
+/// did not copy it in part or whole from another source.  All
+/// references used in the completion of the assignments are cited
 /// in my README file.
 ///
 /// File Contents
@@ -24,6 +23,7 @@ using Microsoft.Testing.Platform.Extensions.Messages;
 ///    It now also contains tests for new FormulaClass functionality, ensuring that formulas are properly evaluated.
 /// </summary>
 namespace CS3500.Formula;
+
 /// <summary>
 ///   <para>
 ///     The following class shows the basics of how to use the MSTest framework,
@@ -60,6 +60,7 @@ public class FormulaSyntaxTests
     }
 
     // --- Tests for Valid Token Rule ---
+
     /// <summary>
     /// This method should throw an exception for an invalid variable,
     /// which in this case is a number BEFORE a variable.
@@ -69,6 +70,7 @@ public class FormulaSyntaxTests
     {
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("1A"));
     }
+
     /// <summary>
     /// This method should also throw an exception for an invalid variable,
     /// which in this case is a number BEFORE a variable.
@@ -81,7 +83,7 @@ public class FormulaSyntaxTests
 
     /// <summary>
     /// This method should also throw an exception for an invalid variable,
-    /// as a number is sandwiched between two variable characters. 
+    /// as a number is sandwiched between two variable characters.
     /// EDIT: Actually the given getTokens method splits the variable where it stops being valid. So here, we get [c12453, h6]. Still should give an error, but for a different reason now.
     /// </summary>
     [TestMethod]
@@ -89,9 +91,10 @@ public class FormulaSyntaxTests
     {
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("c12453h6"));
     }
+
     /// <summary>
     /// This method should run with no exceptions, as variables are defined by letter(s).
-    /// followed by number(s). 
+    /// followed by number(s).
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestToken_Valid_Variable_Uppercase()
@@ -144,6 +147,7 @@ public class FormulaSyntaxTests
     {
         new Formula("AB12345 + 23 * (8 / 2) - 10");
     }
+
     /// <summary>
     /// The program does allow for decimals points to be the start of a number
     /// For instance, both "1+ 0.25" and "1+ .25" are equally valid.
@@ -153,7 +157,6 @@ public class FormulaSyntaxTests
     {
         new Formula("1 + .25");
     }
-
 
     /// <summary>
     /// This method should run with no errors, multiple spaces should just seperate tokens.
@@ -239,8 +242,8 @@ public class FormulaSyntaxTests
     // --- Tests for Closing Parenthesis Rule
 
     /// <summary>
-    /// This method is testing to make sure a FormulaFormatException is thrown 
-    /// when there is a valid pair of parenthesis, but an extra mismatched closing. 
+    /// This method is testing to make sure a FormulaFormatException is thrown
+    /// when there is a valid pair of parenthesis, but an extra mismatched closing.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestClosing_Pairs()
@@ -249,8 +252,8 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// This method is testing to make sure a FormulaFormatException is thrown 
-    /// when there is one mismatched closing parenthesis. 
+    /// This method is testing to make sure a FormulaFormatException is thrown
+    /// when there is one mismatched closing parenthesis.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestClosing_No_Pair()
@@ -259,7 +262,7 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// This method is testing to make sure a FormulaFormatException is thrown 
+    /// This method is testing to make sure a FormulaFormatException is thrown
     /// when a closing parenthesis comes before the opening.
     /// </summary>
     [TestMethod]
@@ -267,8 +270,9 @@ public class FormulaSyntaxTests
     {
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("0) + (10"));
     }
+
     /// <summary>
-    /// This method uses closing parenthesis properly, no error should be thrown
+    /// This method uses closing parenthesis properly, no error should be thrown.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestClosing_Proper()
@@ -276,12 +280,11 @@ public class FormulaSyntaxTests
         new Formula("(abc123) +  (def456)");
     }
 
-
     // --- Tests for Balanced Parentheses Rule
 
     /// <summary>
-    /// This method is testing to make sure a FormulaFormatException is thrown 
-    /// when there is a valid pair of parenthesis, but also an invalid pair. 
+    /// This method is testing to make sure a FormulaFormatException is thrown
+    /// when there is a valid pair of parenthesis, but also an invalid pair.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestBalanced_Pairs()
@@ -290,7 +293,7 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// This method is testing to make sure a FormulaFormatException is thrown 
+    /// This method is testing to make sure a FormulaFormatException is thrown
     /// when there only one open bracket with no closing pair.
     /// </summary>
     [TestMethod]
@@ -307,23 +310,23 @@ public class FormulaSyntaxTests
     {
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("(18 + (10) * 20 ) - (5) +  2)"));
     }
+
     /// <summary>
     /// This method makes sure that a simple balanced parenthesis equation works properly.
     /// </summary>
-    /// 
+    ///
     [TestMethod]
     public void FormulaConstructor_TestBalanced_Proper_Simple()
     {
         new Formula("(a0 + 5) * 2");
     }
 
-
     // --- Tests for First Token Rule
 
     /// <summary>
     /// This method ensures that starting with an opening bracket works normally.
     /// </summary>
-    /// 
+    ///
     [TestMethod]
     public void FormulaConstructor_TestFirst_OpenParenthesis()
     {
@@ -333,7 +336,7 @@ public class FormulaSyntaxTests
     /// <summary>
     /// This method ensures that starting with a number works normally.
     /// </summary>
-    /// 
+    ///
     [TestMethod]
     public void FormulaConstructor_TestFirst_Number()
     {
@@ -343,7 +346,7 @@ public class FormulaSyntaxTests
     /// <summary>
     /// This method should throw an error as it uses a closing bracket as the first character.
     /// </summary>
-    /// 
+    ///
     [TestMethod]
     public void FormulaConstructor_TestFirst_ClosedParenthesis()
     {
@@ -353,7 +356,6 @@ public class FormulaSyntaxTests
     /// <summary>
     /// This method should throw an error as it uses an operator as the first character.
     /// </summary>
-
     [TestMethod]
     public void FormulaConstructor_TestFirst_Operator()
     {
@@ -363,7 +365,7 @@ public class FormulaSyntaxTests
     /// <summary>
     /// This method should throw an error as it uses a random character as the first character.
     /// </summary>
-    /// 
+    ///
     [TestMethod]
     public void FormulaConstructor_TestFirst_RandomCharacter()
     {
@@ -371,7 +373,7 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// Starting with a decimal should work, as .25 is a number token, despite starting with a period. 
+    /// Starting with a decimal should work, as .25 is a number token, despite starting with a period.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestFirst_DecimalPoint()
@@ -500,7 +502,6 @@ public class FormulaSyntaxTests
         Assert.ThrowsExactly<FormulaFormatException>(() => _ = new Formula("(? - 1)"));
     }
 
-
     // --- Tests for Extra Following Rule ---
 
     /// <summary>
@@ -621,7 +622,7 @@ public class FormulaSyntaxTests
     }
 
     /// <summary>
-    /// Should throw a formula format exception error as random characters cannot follow a closing parenthesis
+    /// Should throw a formula format exception error as random characters cannot follow a closing parenthesis.
     /// </summary>
     [TestMethod]
     public void FormulaConstructor_TestExtra_Closing_Parenthesis_Random()
@@ -702,6 +703,7 @@ public class FormulaSyntaxTests
     {
         Assert.AreEqual("((XABCD55+123*WWW6))", new Formula("((xaBCD55 +     123 * www6))").ToString());
     }
+
     /// <summary>
     /// Testing that the formula is normalized properly in a very simple case (variables are capitalized and white space removed).
     /// </summary>
@@ -821,7 +823,6 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEquals_Same()
     {
-
         Assert.IsTrue(new Formula("a1 + b2 - c3 * 2E+5 - 0.25").Equals(new Formula("A1+B2-C3 * 2e5 -.25")));
     }
 
@@ -931,6 +932,7 @@ public class FormulaSyntaxTests
     public void FormulaConstructor_TestEvaluate_NoVariable_Lambda()
     {
         Formula f = new ("10 + 5 * 0 - 10");
+
         // The value returned is a double not an int.
         Assert.AreEqual(0D, f.Evaluate((name) => 5));
     }
@@ -957,7 +959,8 @@ public class FormulaSyntaxTests
                 throw new ArgumentException("I don't know that variable");
             }
         }
-        // The return value is a double, not an int. 
+
+        // The return value is a double, not an int.
         Assert.AreEqual(7D, f.Evaluate(TestLookup));
     }
 
@@ -994,10 +997,10 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEquals_Updated_Same()
     {
-        Formula f1 = new("a1 + b2 - c3 * 2E+5 - 0.25");
-        Formula f2 = new("A1+B2-C3 * 2e5 -.25");
+        Formula f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
+        Formula f2 = new ("A1+B2-C3 * 2e5 -.25");
         Assert.IsTrue(f2.Equals(f1));
-        f1 = new("a1 + b2 - c3 * 2E+5 - 0.25");
+        f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
         Assert.IsTrue(f1.Equals(f2));
     }
 
@@ -1007,10 +1010,10 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEquals_Updated_Different()
     {
-        Formula f1 = new("a1 + b2 - c3 * 2E+5 - 0.25");
-        Formula f2 = new("A1+B2-C3 * 2e5 -.25");
+        Formula f1 = new ("a1 + b2 - c3 * 2E+5 - 0.25");
+        Formula f2 = new ("A1+B2-C3 * 2e5 -.25");
         Assert.IsTrue(f2.Equals(f1));
-        f1 = new("55 + 10 - f90");
+        f1 = new ("55 + 10 - f90");
         Assert.IsFalse(f1.Equals(f2));
     }
 
@@ -1097,7 +1100,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_Divide_By_Zero_In_Parenthesis()
     {
-        Formula f = new("(1+A5 - 85 / 0)");
+        Formula f = new ("(1+A5 - 85 / 0)");
         Assert.IsTrue(f.Evaluate(name => 1000) is FormulaError);
     }
 
@@ -1137,7 +1140,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_Divide_By_Variable_Zero()
     {
-        Formula f = new("672 / A8");
+        Formula f = new ("672 / A8");
         Assert.IsTrue(f.Evaluate(name => 0) is FormulaError);
     }
 
@@ -1277,7 +1280,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_Divide_By_Parenthesis()
     {
-        Formula f = new("A7 / (10 * 1)");
+        Formula f = new ("A7 / (10 * 1)");
         double TestLookup(string name)
         {
             if (name == "A7")

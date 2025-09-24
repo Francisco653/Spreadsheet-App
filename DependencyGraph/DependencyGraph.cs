@@ -227,7 +227,7 @@ public class DependencyGraph
             // Need to check that this ordered pair actually exists
             if (children.ContainsKey(dependent))
             {
-                if(children[dependent].Remove(dependee))
+                if (children[dependent].Remove(dependee))
                 {
                     count--;
                 }

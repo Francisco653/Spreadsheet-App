@@ -113,10 +113,10 @@ public class DependencyGraphTests
     [Timeout(2000)]
     public void StressTestCreateAndReplace()
     {
-        for(int i = 0; i < 1000; i++)
+        for (int i = 0; i < 1000; i++)
         {
             DependencyGraph dg = new();
-            dg.AddDependency("" + (char) (i), "" + (char) (i + 1));
+            dg.AddDependency("" + (char)(i), "" + (char)(i + 1));
             dg.AddDependency("" + (char)(i + 2), "" + (char)(i + 3));
             dg.AddDependency("" + (char)(i + 4), "" + (char)(i + 5));
             dg.ReplaceDependents("A", new HashSet<string> { "X", "Y", "Z" });
@@ -125,13 +125,13 @@ public class DependencyGraphTests
             Assert.IsTrue(new HashSet<string> { "W", "V" }.SetEquals(dg.GetDependees("D")));
         }
     }
-        // -- BLACK BOX TESTS PRIOR TO IMPLEMENTATION OF DEPENDENCY GRAPH --
+    // -- BLACK BOX TESTS PRIOR TO IMPLEMENTATION OF DEPENDENCY GRAPH --
 
-        /// <summary>
-        /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, a new dependency graph is empty when first created.
-        /// As such, the size should be zero.
-        /// </summary>
-        [TestMethod]
+    /// <summary>
+    /// This is a black box test implemented before the DependencyGraph class was implemented. This ensures that by API, a new dependency graph is empty when first created.
+    /// As such, the size should be zero.
+    /// </summary>
+    [TestMethod]
     public void TestEmptyBySize()
     {
         DependencyGraph dg = new();
@@ -508,7 +508,7 @@ public class DependencyGraphTests
         DependencyGraph dg = new();
         dg.AddDependency("A1", "Y1");
         dg.AddDependency("A1", "354");
-        dg.ReplaceDependents("A1", new HashSet<string> {});
+        dg.ReplaceDependents("A1", new HashSet<string> { });
         Assert.IsFalse(dg.HasDependents("A1"));
     }
 
@@ -547,7 +547,7 @@ public class DependencyGraphTests
         DependencyGraph dg = new();
         dg.AddDependency("F2", "Child");
         dg.AddDependency("AC1", "Child");
-        dg.ReplaceDependees("Child", new HashSet<string> {});
+        dg.ReplaceDependees("Child", new HashSet<string> { });
         Assert.IsFalse(dg.HasDependees("Child"));
     }
 

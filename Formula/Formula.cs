@@ -1,21 +1,24 @@
-﻿/// <summary>
+﻿// <copyright file="Formula.cs" company="UofU-CS3500">
+// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// </copyright>
+
+/// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
 /// Date:      09/19/2025
 /// Course:    CS 3500, University of Utah, School of Computing
-/// Copyright: CS 3500 and Francisco - This work may not 
+/// Copyright: CS 3500 and Francisco - This work may not
 ///            be copied for use in Academic Coursework.
 ///
 /// I, Francisco, certify that I wrote this code from scratch and
-/// did not copy it in part or whole from another source.  All 
-/// references used in the completion of the assignments are cited 
+/// did not copy it in part or whole from another source.  All
+/// references used in the completion of the assignments are cited
 /// in my README file.
 ///
 /// File Contents
 ///
-///    This file is the Formula class, which is used to represent, validate, and evaluate formula strings, rules down below. 
+///    This file is the Formula class, which is used to represent, validate, and evaluate formula strings, rules down below.
 /// </summary>
-
 
 namespace CS3500.Formula;
 
@@ -56,12 +59,16 @@ public class Formula
     ///   represents valid variable name strings.
     /// </summary>
     private const string VariableRegExPattern = @"[a-zA-Z]+\d+";
+
     // List of tokens in the formula
     private List<string> tokenList;
+
     // This string will spit back the formula in canonical form when ToString is called, it is initiated here to achieve O(1) time complexity.
     private string canonicalForm = string.Empty;
+
     // This hashset contains all the UNIQUE variables in the formula.
     private HashSet<string> uniqueVariables = new HashSet<string>();
+
     /// <summary>
     ///   Initializes a new instance of the <see cref="Formula"/> class.
     ///   <para>
@@ -92,8 +99,10 @@ public class Formula
     public Formula(string formula)
     {
         tokenList = GetTokens(formula);
+
         // Check each token using the rules from the assignment.
         FormulaIsValid(tokenList);
+
         // Normalizes the string for ToString method (again to achieve O(1) time complexity).
         canonicalForm = BuildCanonicalForm();
     }
@@ -136,7 +145,7 @@ public class Formula
     ///     The string will contain no spaces.
     ///   </para>
     ///   <para>
-    ///     If the string is passed to the Formula constructor, the new Formula f 
+    ///     If the string is passed to the Formula constructor, the new Formula f
     ///     will be such that this.ToString() == f.ToString().
     ///   </para>
     ///   <para>
@@ -152,7 +161,7 @@ public class Formula
     ///   </code>
     ///   <para>
     ///     This code should execute in O(1) time.
-    ///   <para>
+    ///   </para>
     /// </summary>
     /// <returns>
     ///   A canonical version (string) of the formula. All "equal" formulas
@@ -229,24 +238,28 @@ public class Formula
 
         return results;
     }
+
     /// <summary>
     /// This method iterates through the list of tokens and checks if they are valid according to the rules specified in the assignment.
     /// </summary>
-    /// <param name="formulaTokens"></param>
-    /// <returns> True if all the tokens (in relation to one another) are valid</returns>
+    /// <param name="formulaTokens"> These are the tokens of this formula (string types) that will be analyzed.</param>
+    /// <returns> True if all the tokens (in relation to one another) are valid.</returns>
     private static bool FormulaIsValid(List<string> formulaTokens)
     {
         // This will hold the types of each token, useful for checking some of the formatting rules.
         List<string> types = new List<string>();
+
         // One token minimum rule
         if (formulaTokens.Count == 0)
         {
             throw new FormulaFormatException("The formula cannot be empty!");
         }
+
         // These ints are used for checking first token, and number of opening/closing parenthesis.
         int count = 0;
         int leftParenthesisCount = 0;
         int rightParenthesisCount = 0;
+
         // Here we start iterating through the tokens to check their validity.
         foreach (string token in formulaTokens)
         {
@@ -263,14 +276,15 @@ public class Formula
                 throw new FormulaFormatException("Tokens must be a number, variable, opening/closing parenthesis, or operator!");
             }
 
-
             // Adds the token type now that it is verified, and from here more rule checks will occur.
             types.Add(TokenType(token));
+
             // Counting opening and closing parenthesis (left and right respectively) to check closing parenthesis and later the balanced parenthesis rules.
             if (types.Last() == "leftParenthesis")
             {
                 leftParenthesisCount++;
             }
+
             if (types.Last() == "rightParenthesis")
             {
                 rightParenthesisCount++;
@@ -279,6 +293,7 @@ public class Formula
                     throw new FormulaFormatException("Closing parenthesis cannot at any point exceed opening parenthesis when read left to right!");
                 }
             }
+
             // Parenthesis following rule checked here.
             if (count >= 2 && (types[types.Count - 2] == "operator" || types[types.Count - 2] == "leftParenthesis"))
             {
@@ -288,6 +303,7 @@ public class Formula
                     throw new FormulaFormatException("A number, variable, or opening parenthesis must follow an operator or opening parenthesis!");
                 }
             }
+
             // Extra following rule (Any token that immediately follows a number, a variable, or a closing parenthesis must be either an operator or a closing parenthesis.)
             if (count >= 2 && (types[types.Count - 2] == "number" || types[types.Count - 2] == "variable" || types[types.Count - 2] == "rightParenthesis"))
             {
@@ -297,6 +313,7 @@ public class Formula
                 }
             }
         }
+
         // Now we check balanced parenthesis rule that ALL tokens have been iterated through.
         if (rightParenthesisCount > leftParenthesisCount || leftParenthesisCount > rightParenthesisCount)
         {
@@ -308,13 +325,15 @@ public class Formula
         {
             throw new FormulaFormatException("Last token must be a number, variable, or a closing parenthesis!");
         }
+
         return true;
     }
+
     /// <summary>
     /// Returns a string of the token's type (number, variable, operator, parenthesis, or invalid).
     /// </summary>
-    /// <param name="token"></param>
-    /// <returns>Returns the type the token is as a string</returns>
+    /// <param name="token"> The token is each individual piece of a function.</param>
+    /// <returns>Returns the type the token is as a string.</returns>
     private static string TokenType(string token)
     {
         if (Regex.IsMatch(token, @"^(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?$"))
@@ -323,7 +342,6 @@ public class Formula
         }
         else if (IsVar(token))
         {
-
             return "variable"; // It's a variable
         }
         else if (Regex.IsMatch(token, @"^[\+\-\*/]$"))
@@ -339,22 +357,26 @@ public class Formula
             return "rightParenthesis"; // It's a right parenthesis
         }
         else
+        {
             return "invalid"; // It's not a valid token
+        }
     }
+
     /// <summary>
     /// Returns true if the first token is valid (number, variable, or left parenthesis).
     /// </summary>
     /// <param name="tokenType">The type of the token to check for validity as the first token.</param>
-    /// <returns>True if valid</returns>
+    /// <returns>True if valid.</returns>
     private static bool IsValidFirst(string tokenType)
     {
         return tokenType == "number" || tokenType == "variable" || tokenType == "leftParenthesis";
     }
+
     /// <summary>
     /// This method normalizes the formula string to a canonical form during the construction of the Formula object.
     /// </summary>
-    /// <param name="formula"></param>
-    /// <returns> A new normalized formula (whitespace removed and variable letters capitalized</returns>
+    /// <param name="formula"> The formula given by the user upon object construction.</param>
+    /// <returns> A new normalized formula (whitespace removed and variable letters capitalized.</returns>
     private string BuildCanonicalForm()
     {
         string normalized = string.Empty;
@@ -369,6 +391,7 @@ public class Formula
                 if (TokenType(token) == "number")
                 {
                     double num = double.Parse(token);
+
                     // This ensures decimals like 2.0000 are properly converted to just 2. However we have to be careful of the fact that integer values have a lower limit than doubles.
                     if (num == Math.Floor(num) && num <= int.MaxValue)
                     {
@@ -456,7 +479,7 @@ public class Formula
     ///   </remarks>
     ///   <para>
     ///     If no undefined variables or divisions by zero are encountered when evaluating
-    ///     this Formula, the numeric value of the formula is returned.  Otherwise, a 
+    ///     this Formula, the numeric value of the formula is returned.  Otherwise, a
     ///     FormulaError is returned (with a meaningful explanation as the Reason property).
     ///   </para>
     ///   <para>
@@ -466,7 +489,7 @@ public class Formula
     /// <param name="lookup">
     ///   <para>
     ///     Given a variable symbol as its parameter, lookup returns the variable's (double) value
-    ///     (if it has one) or throws an ArgumentException (otherwise).  This method should expect 
+    ///     (if it has one) or throws an ArgumentException (otherwise).  This method should expect
     ///     variable names to be capitalized.
     ///   </para>
     /// </param>
