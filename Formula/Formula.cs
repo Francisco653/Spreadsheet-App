@@ -527,8 +527,7 @@ public class Formula
             // Handle + or - token
             else if (token == "+" || token == "-")
             {
-                AddOrSubtractTopOfStack(valueStack, operatorStack);
-
+                OperatorsTopOfStack(valueStack, operatorStack);
                 operatorStack.Push(token);
             }
 
@@ -547,34 +546,19 @@ public class Formula
             // Handles right Parenthesis
             else if (TokenType(token) == "rightParenthesis")
             {
-                AddOrSubtractTopOfStack(valueStack, operatorStack);
+                OperatorsTopOfStack(valueStack, operatorStack);
 
                 // The top of the operator stack should be a '('. So we pop it.
                 operatorStack.Pop();
 
-                // Now we check for mulitiplication and division (+/-)
-                if ((operatorStack.Count > 0 && operatorStack.Peek() == "*") || (operatorStack.Count > 0 && operatorStack.Peek() == "/"))
+                // Making sure we aren't dividing by zero first.
+                if (valueStack.Peek() == 0 && operatorStack.Peek() == "/")
                 {
-                    double number1 = valueStack.Pop();
-                    double number2 = valueStack.Pop();
-                    string currentOperator = operatorStack.Pop();
-
-                    if (currentOperator == "*")
-                    {
-                        valueStack.Push(number2 * number1);
-                    }
-                    else
-                    {
-                        if (number1 == 0)
-                        {
-                            return new FormulaError("Division by zero error!");
-                        }
-                        else
-                        {
-                            valueStack.Push(number2 / number1);
-                        }
-                    }
+                    return new FormulaError("Divide by Zero Error!");
                 }
+
+                // Now we check for mulitiplication and division (+/-)
+                OperatorsTopOfStack(valueStack, operatorStack);
             }
         }
 
@@ -585,7 +569,7 @@ public class Formula
         }
         else
         {
-            AddOrSubtractTopOfStack(valueStack, operatorStack);
+            OperatorsTopOfStack(valueStack, operatorStack);
         }
 
         return valueStack.Pop();
@@ -619,14 +603,16 @@ public class Formula
     }
 
     /// <summary>
-    /// This private helper methods handles when an addition or subtraction are pending at the top of the operator stack.
+    /// This private helper methods handles when an operator is pending at the top of the operator stack.
     /// </summary>
     /// <param name="valueStack"> The stack that holds current values.</param>
     /// <param name="operatorStack"> The stack that holds current operators.</param>
-    private static void AddOrSubtractTopOfStack(Stack<double> valueStack, Stack<string> operatorStack)
+    private static void OperatorsTopOfStack(Stack<double> valueStack, Stack<string> operatorStack)
     {
-        // If we see another + or -, we need to first evaluate the current operator.
-        if ((operatorStack.Count > 0 && operatorStack.Peek() == "+") || (operatorStack.Count > 0 && operatorStack.Peek() == "-"))
+        bool notEmpty = operatorStack.Count > 0;
+
+        // If we see another operator, we need to first evaluate the current operator.
+        if ((notEmpty && operatorStack.Peek() == "+") || (notEmpty && operatorStack.Peek() == "-") || (notEmpty && operatorStack.Peek() == "*") || (notEmpty && operatorStack.Peek() == "/"))
         {
             double number1 = valueStack.Pop();
             double number2 = valueStack.Pop();
@@ -636,9 +622,18 @@ public class Formula
             {
                 valueStack.Push(number2 + number1);
             }
-            else
+            else if (currentOperator == "-")
             {
                 valueStack.Push(number2 - number1);
+            }
+            else if (currentOperator == "*")
+            {
+                valueStack.Push(number2 * number1);
+            }
+            else
+            {
+                // We do not check for divide by zero error, that is handled in the evaluate method when necessary.
+                valueStack.Push(number2 / number1);
             }
         }
     }
