@@ -1325,4 +1325,30 @@ public class FormulaSyntaxTests
 
         Assert.IsTrue(f.Evaluate(TestLookup) is FormulaError);
     }
+
+    /// <summary>
+    /// This tests make sure that a lowercase variable name doesn't break lookup delegate method.
+    /// </summary>
+    [TestMethod]
+    public void FormulaConstructor_TestEvaluate_LowerCase_Variable()
+    {
+        Formula f = new ("a7 + d5 - c0");
+        double TestLookup(string name)
+        {
+            if (name == "A7")
+            {
+                return 20;
+            }
+            else if (name == "D5")
+            {
+                return 14;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        Assert.AreEqual(34D, f.Evaluate(TestLookup));
+    }
 }

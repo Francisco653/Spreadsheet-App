@@ -516,7 +516,7 @@ public class Formula
             // The delegate function is expected to throw an ArgumentException if the variable is undefined.
             else if (TokenType(token) == "variable")
             {
-                double tokenValue = lookup(token);
+                double tokenValue = lookup(token.ToUpper());
                 divideByZero = NumVarCurrentTokenEvaluation(valueStack, operatorStack, tokenValue);
                 if (divideByZero)
                 {
@@ -637,7 +637,6 @@ public class Formula
             }
         }
     }
-
 
     /// <summary>
     /// This is a private helper method for the purposes of evaluating values and operators if the current token is a variable or number.
