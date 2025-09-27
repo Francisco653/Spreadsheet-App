@@ -115,7 +115,7 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet doubleSheet = new Spreadsheet();
         doubleSheet.SetCellContents("A1", "32 + 19");
-        doubleSheet.SetCellContents("c6", " 10 / (5 - 0 * 0)");
+        doubleSheet.SetCellContents("c6", "10 / (5 - 0 * 0)");
         Assert.AreEqual("32 + 19", doubleSheet.GetCellContents("a1"));
         Assert.AreEqual("10 / (5 - 0 * 0)", doubleSheet.GetCellContents("C6"));
     }

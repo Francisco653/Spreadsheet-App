@@ -133,7 +133,7 @@ public class Spreadsheet
             return string.Empty;
         }
 
-        return cellDictionary[name];
+        return cellDictionary[name.ToUpper()];
     }
 
     /// <summary>
