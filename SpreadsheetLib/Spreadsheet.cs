@@ -124,7 +124,8 @@ public class Spreadsheet
     /// </returns>
     public object GetCellContents(string name)
     {
-        // TODO: Check for invalid name
+        // Check for invalid name
+        CheckName(name);
         throw new NotImplementedException();
 
         // TODO: Return Cell Values.
@@ -217,6 +218,9 @@ public class Spreadsheet
         // Here we check for other variables in formula. If we find any, then we need to update our dependencies.
         var dependents = formula.GetVariables();
         cellDependencies.ReplaceDependents(name.ToUpper(), dependents);
+
+        // Checks for circular exceptions
+        GetCellsToRecalculate(name.ToUpper());
 
         // Now we can update cell as per usual.
         return UpdateCell(name.ToUpper(), formula);
