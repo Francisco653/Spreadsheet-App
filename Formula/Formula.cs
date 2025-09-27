@@ -681,7 +681,9 @@ public class Formula
 /// <summary>
 /// Used as a possible return value of the Formula.Evaluate method.
 /// </summary>
+#pragma warning disable SA1402 // File may only contain a single type
 public class FormulaError
+#pragma warning restore SA1402 // File may only contain a single type
 {
     /// <summary>
     ///   Initializes a new instance of the <see cref="FormulaError"/> class.
@@ -720,7 +722,9 @@ public delegate double Lookup(string variableName);
 /// <summary>
 ///   Used to report syntax errors in the argument to the Formula constructor.
 /// </summary>
+#pragma warning disable SA1402 // File may only contain a single type
 public class FormulaFormatException : Exception
+#pragma warning restore SA1402 // File may only contain a single type
 {
     /// <summary>
     ///   Initializes a new instance of the <see cref="FormulaFormatException"/> class.

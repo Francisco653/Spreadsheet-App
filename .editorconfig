@@ -77,7 +77,7 @@ dotnet_naming_style.non_private_static_field_style.capitalization = pascal_case
 # Non-private readonly fields are PascalCase
 dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.symbols = non_private_readonly_fields
-dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.style = non_private_readonly_field_style
+dotnet_naming_rule.non_private_readonly_fields_should_be_pascal_case.style = non_private_static_field_style
 
 dotnet_naming_symbols.non_private_readonly_fields.applicable_kinds = field
 dotnet_naming_symbols.non_private_readonly_fields.applicable_accessibilities = public, protected, internal, protected_internal, private_protected
@@ -88,7 +88,7 @@ dotnet_naming_style.non_private_readonly_field_style.capitalization = pascal_cas
 # Constants are PascalCase
 dotnet_naming_rule.constants_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.constants_should_be_pascal_case.symbols = constants
-dotnet_naming_rule.constants_should_be_pascal_case.style = constant_style
+dotnet_naming_rule.constants_should_be_pascal_case.style = non_private_static_field_style
 
 dotnet_naming_symbols.constants.applicable_kinds = field, local
 dotnet_naming_symbols.constants.required_modifiers = const
@@ -128,7 +128,7 @@ dotnet_naming_style.camel_case_style.capitalization = camel_case
 # Local functions are PascalCase
 dotnet_naming_rule.local_functions_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.local_functions_should_be_pascal_case.symbols = local_functions
-dotnet_naming_rule.local_functions_should_be_pascal_case.style = local_function_style
+dotnet_naming_rule.local_functions_should_be_pascal_case.style = non_private_static_field_style
 
 dotnet_naming_symbols.local_functions.applicable_kinds = local_function
 
@@ -137,7 +137,7 @@ dotnet_naming_style.local_function_style.capitalization = pascal_case
 # By default, name items with PascalCase
 dotnet_naming_rule.members_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.members_should_be_pascal_case.symbols = all_members
-dotnet_naming_rule.members_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.members_should_be_pascal_case.style = non_private_static_field_style
 
 dotnet_naming_symbols.all_members.applicable_kinds = *
 
@@ -185,7 +185,7 @@ csharp_indent_braces = false
 csharp_indent_case_contents = true
 csharp_indent_case_contents_when_block = true
 csharp_indent_switch_labels = true
-csharp_indent_labels = flush_left
+csharp_indent_labels = one_less_than_current
 
 # Whitespace options
 csharp_style_allow_embedded_statements_on_same_line_experimental = false
@@ -238,8 +238,8 @@ csharp_space_between_method_call_parameter_list_parentheses = false
 csharp_space_between_method_declaration_empty_parameter_list_parentheses = false
 csharp_space_between_method_declaration_name_and_open_parenthesis = false
 csharp_space_between_method_declaration_parameter_list_parentheses = false
-csharp_space_between_parentheses = false
-csharp_space_between_square_brackets = false
+csharp_space_between_parentheses = true
+csharp_space_between_square_brackets = true
 
 # Blocks are allowed
 csharp_prefer_braces = true:silent
@@ -320,25 +320,93 @@ dotnet_diagnostic.RS0060.severity = error
 dotnet_diagnostic.RS0061.severity = error
 
 
+
+[*.{cs,vb}]
+#### Naming styles ####
+
+# Naming rules
+
+dotnet_naming_rule.interface_should_be_begins_with_i.severity = suggestion
+dotnet_naming_rule.interface_should_be_begins_with_i.symbols = interface
+dotnet_naming_rule.interface_should_be_begins_with_i.style = begins_with_i
+
+dotnet_naming_rule.types_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.types_should_be_pascal_case.symbols = types
+dotnet_naming_rule.types_should_be_pascal_case.style = non_private_static_field_style
+
+dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
+dotnet_naming_rule.non_field_members_should_be_pascal_case.style = non_private_static_field_style
+
+# Symbol specifications
+
+dotnet_naming_symbols.interface.applicable_kinds = interface
+dotnet_naming_symbols.interface.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+dotnet_naming_symbols.interface.required_modifiers = 
+
+dotnet_naming_symbols.types.applicable_kinds = class, struct, interface, enum
+dotnet_naming_symbols.types.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+dotnet_naming_symbols.types.required_modifiers = 
+
+dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, method
+dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
+dotnet_naming_symbols.non_field_members.required_modifiers = 
+
+# Naming styles
+
+dotnet_naming_style.begins_with_i.required_prefix = I
+dotnet_naming_style.begins_with_i.required_suffix = 
+dotnet_naming_style.begins_with_i.word_separator = 
+dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+dotnet_naming_style.pascal_case.required_prefix = 
+dotnet_naming_style.pascal_case.required_suffix = 
+dotnet_naming_style.pascal_case.word_separator = 
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+
+dotnet_naming_style.pascal_case.required_prefix = 
+dotnet_naming_style.pascal_case.required_suffix = 
+dotnet_naming_style.pascal_case.word_separator = 
+dotnet_naming_style.pascal_case.capitalization = pascal_case
+dotnet_style_operator_placement_when_wrapping = beginning_of_line
+tab_width = 4
+indent_size = 4
+end_of_line = lf
+dotnet_style_coalesce_expression = true:suggestion
+dotnet_style_null_propagation = true:suggestion
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:suggestion
+dotnet_style_prefer_auto_properties = true:silent
+dotnet_style_object_initializer = true:suggestion
+dotnet_style_collection_initializer = true:suggestion
+dotnet_style_prefer_simplified_boolean_expressions = true:suggestion
+dotnet_style_prefer_conditional_expression_over_assignment = true:silent
+dotnet_style_prefer_conditional_expression_over_return = true:silent
+dotnet_style_explicit_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_tuple_names = true:suggestion
+dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
+dotnet_style_prefer_compound_assignment = true:suggestion
+dotnet_style_prefer_simplified_interpolation = true:suggestion
+dotnet_style_prefer_collection_expression = when_types_loosely_match:suggestion
+dotnet_style_namespace_match_folder = true:suggestion
+
 [*.cs]
 #
-# CS3500 - "Our Companies" style guide overrides
+# CS3500 - "Our Companies" style guide.
+#
+# By placing these at the "bottom" of the editorconfig file, we override any
+# of the above statements.
 #
 
-# SA1003: Ignore whitespace before operators, e.g., if ( !result )
-dotnet_diagnostic.SA1003.severity = none
+### Sys Lib Rules ###
 
-# SA1008: Ignore opening parenthesis should be spaced correctly   - JIM - we want ( item ) for clarity
-dotnet_diagnostic.SA1008.severity = none
+# SYSLIB1045: Convert to 'GeneratedRegexAttribute'.
+dotnet_diagnostic.SYSLIB1045.severity = suggestion
 
-# SA1009: Ignore closing parenthesis should be spaced correctly   - JIM - we want ( item ) for clarity
-dotnet_diagnostic.SA1009.severity = none
 
-# SA1010: Ignore opening square brackets should be spaced correctly - JIM - we want [ item ] for clarity
-dotnet_diagnostic.SA1010.severity = none
+### CA Rules ###
 
-# SA1011: Closing square brackets should be spaced correctly - JIM - we want [ item ] for clarity
-dotnet_diagnostic.SA1011.severity = none
+# CA1859: Use concrete types when possible for improved performance
+dotnet_diagnostic.CA1859.severity = silent
 
 # IDE0008: do not force the use of explicit types
 dotnet_diagnostic.IDE0008.severity = none
@@ -352,6 +420,29 @@ dotnet_diagnostic.IDE0130.severity = none
 # IDE1006: static readonlys do not need to start with s_
 dotnet_diagnostic.IDE1006.severity = none
 
+### SA Rules ###
+
+# SA1000: Add spaces after Keywords, such as if ( ... )
+dotnet_diagnostic.SA1000.severity = warning
+
+# SA1003: Add spaces into comma separated lists and for loops FIXME: verify this is what we want
+dotnet_diagnostic.SA1003.severity = none  
+
+# SA1008: Ignore opening parenthesis should be spaced correctly   - JIM - we want ( item ) for clarity
+dotnet_diagnostic.SA1008.severity = none
+
+# SA1009: Ignore closing parenthesis should be spaced correctly   - JIM - we want ( item ) for clarity
+dotnet_diagnostic.SA1009.severity = none
+
+# SA1010: Ignore opening square brackets should be spaced correctly - JIM - we want [ item ] for clarity
+dotnet_diagnostic.SA1010.severity = none
+
+# SA1011: Closing square brackets should be spaced correctly - JIM - we want [ item ] for clarity
+dotnet_diagnostic.SA1011.severity = none
+
+# SA1021: Negative sign should not be preceded by a space
+dotnet_diagnostic.SA1021.severity = silent
+
 # SA1025: code is allowed to contain mulitple whitespace characters in a row for alignment and readability
 dotnet_diagnostic.SA1025.severity = none
 
@@ -360,4 +451,80 @@ dotnet_diagnostic.SA1101.severity = none
 
 # SA1106: code is allowed to contain empty statements for the purpose of debugging
 dotnet_diagnostic.SA1106.severity = suggestion
+
+# SA1108: JIM FIXME - why does this _not_ show up in build+intellisense in the error list but does show up in the build errors?
+dotnet_diagnostic.SA1108.severity = error
+
+# SA1200: Using statements should be inside namespace. This appears to be outdated (why doesn't Style cop fix it?) and new guidelines suggest outside is better
+dotnet_diagnostic.SA1200.severity = none
+
+# SA1309: Field names should not begin with underscore
+dotnet_diagnostic.SA1309.severity = warning
+
+# SA1402: File may only contain a single type. We allow small related types to be part of another class file.
+dotnet_diagnostic.SA1402.severity = none
+
+### Other options ###
+
+csharp_prefer_simple_using_statement = true:warning
+csharp_using_directive_placement = outside_namespace:warning
+csharp_prefer_braces = true:warning
+csharp_style_namespace_declarations = file_scoped:warning
+csharp_style_prefer_method_group_conversion = true:suggestion
+csharp_style_prefer_top_level_statements = true:suggestion
+csharp_style_prefer_primary_constructors = false:suggestion
+
+csharp_style_allow_embedded_statements_on_same_line_experimental = true:silent
+csharp_space_around_binary_operators = before_and_after
+
+# Prefer old fashion { } functions, etc.
+csharp_style_expression_bodied_methods      = false:suggestion
+csharp_style_expression_bodied_constructors = false:suggestion
+csharp_style_expression_bodied_operators    = false:suggestion
+csharp_style_expression_bodied_indexers     = false:suggestion
+csharp_style_expression_bodied_properties   = true:suggestion
+csharp_style_expression_bodied_accessors    = true:suggestion
+csharp_style_expression_bodied_lambdas      = true:suggestion
+csharp_style_expression_bodied_local_functions = true:suggestion
+
+csharp_style_throw_expression 		    = true:suggestion
+csharp_prefer_simple_default_expression     = true:suggestion
+csharp_style_prefer_index_operator	    = true:suggestion
+csharp_style_prefer_range_operator	    = true:suggestion
+
+csharp_style_prefer_local_over_anonymous_function = false:suggestion
+
+csharp_style_implicit_object_creation_when_type_is_apparent = true:warning
+csharp_style_prefer_null_check_over_type_check		    = true:warning
+
+# swap two variables code brevity
+csharp_style_prefer_tuple_swap = true:suggestion
+
+# spacing with ( "abc" ) and [ 1 ] 
+csharp_space_after_open_parenthesis = true
+csharp_space_before_close_parenthesis = true
+csharp_space_before_open_square_brackets = false
+csharp_space_after_open_square_bracket = true
+csharp_space_before_close_square_bracket = true
+csharp_space_between_square_brackets = true
+csharp_space_between_empty_square_brackets = true
+
+# the default in C# is to not want spacing, so we tell C# to ignore
+dotnet_diagnostic.SA1009.severity = none
+dotnet_diagnostic.SA1008.severity = none
+dotnet_diagnostic.SA1010.severity = none
+dotnet_diagnostic.SA1011.severity = none
+csharp_prefer_system_threading_lock = true:suggestion
+
+
+[*Tests*.cs]
+### Rules specific to MSTest C# Files ###
+
+# Tests use the MS Test naming convention of MethodName_StateUnderTest_ExpectedBehavior.  This violates 
+# the camel case rule, so we turn it off for test projects. Only those files that contain the word Tests in them.
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+
+# MSTEST0045 : Ignore CooperativeCancellation suggestion
+dotnet_diagnostic.MSTEST0045.severity = silent
 

@@ -1,4 +1,8 @@
-﻿/// <summary>
+﻿// <copyright file="DependencyGraphTests.cs" company="UofU-CS3500">
+// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// </copyright>
+
+/// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
 /// Date:      9/11/2025
@@ -550,5 +554,4 @@ public class DependencyGraphTests
         dg.ReplaceDependees("Child", new HashSet<string> { });
         Assert.IsFalse(dg.HasDependees("Child"));
     }
-
 }
