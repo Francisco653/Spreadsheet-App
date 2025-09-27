@@ -1,19 +1,23 @@
-﻿/// <summary>
+﻿// <copyright file="DependencyGraph.cs" company="UofU-CS3500">
+// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// </copyright>
+
+/// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
 /// Date:      9/11/2025
 /// Course:    CS 3500, University of Utah, School of Computing
-/// Copyright: CS 3500 and Francisco - This work may not 
+/// Copyright: CS 3500 and Francisco - This work may not
 ///            be copied for use in Academic Coursework.
 ///
 /// I, Francisco, certify that I wrote this code from scratch and
-/// did not copy it in part or whole from another source.  All 
-/// references used in the completion of the assignments are cited 
+/// did not copy it in part or whole from another source.  All
+/// references used in the completion of the assignments are cited
 /// in my README file.
 ///
 /// File Contents
 ///
-///    This file is the DependencyGraph class, which is used to represent the dependencies between two objects. Duplicate entries are not counted. 
+///    This file is the DependencyGraph class, which is used to represent the dependencies between two objects. Duplicate entries are not counted.
 ///    This class tracks both parent and children nodes (dependees and dependents) using two dictionaries of hashsets.
 ///    This class can return if a given node has dependents or dependees and return the dependents or dependees of a given node.
 ///    NOTE: A node can be both a dependee and a dependent, and can point to itself.
@@ -67,10 +71,13 @@ public class DependencyGraph
 {
     // The key of this dictionary is the dependee (parent), which point to a set of dependents (children).
     private Dictionary<string, HashSet<string>> parents;
+
     // The key of this dictionary is the dependent (child), which point to a set of dependees (parents).
     private Dictionary<string, HashSet<string>> children;
+
     // Tracks the number of ordered pairs in the graph.
     private int count;
+
     /// <summary>
     ///   Initializes a new instance of the <see cref="DependencyGraph"/> class.
     ///   The initial DependencyGraph is empty.
@@ -83,7 +90,7 @@ public class DependencyGraph
     }
 
     /// <summary>
-    /// The number of ordered pairs in the DependencyGraph.
+    /// Gets the number of ordered pairs in the DependencyGraph.
     /// </summary>
     public int Size
     {
@@ -97,11 +104,11 @@ public class DependencyGraph
     /// <returns> true if the node has dependents. </returns>
     public bool HasDependents(string nodeName)
     {
-
         if (!parents.ContainsKey(nodeName))
         {
             return false;
         }
+
         // Could be a case that the key is created but replaceDependents passes an empty list to the key, so we check count.
         else
         {
@@ -120,11 +127,11 @@ public class DependencyGraph
         {
             return false;
         }
+
         // Could be a case that the key is created but replaceDependees passes an empty list to the key, so we check count.
         else
         {
             return children[nodeName].Count > 0;
-
         }
     }
 
@@ -143,7 +150,7 @@ public class DependencyGraph
         }
         else
         {
-            return new HashSet<String>(parents[nodeName]);
+            return new HashSet<string>(parents[nodeName]);
         }
     }
 
@@ -168,7 +175,7 @@ public class DependencyGraph
     }
 
     /// <summary>
-    /// <para> 
+    /// <para>
     ///   Adds the ordered pair (dependee, dependent), if it doesn't already exist (otherwise nothing happens).
     /// </para>
     /// <para>
@@ -180,6 +187,7 @@ public class DependencyGraph
     public void AddDependency(string dependee, string dependent)
     {
         bool entryAdded = false;
+
         // Create the parent (dependent) entry if it doesn't exist, then add the child (dependent).
         if (!parents.ContainsKey(dependee))
         {
@@ -225,6 +233,7 @@ public class DependencyGraph
         {
             // Note: Nothing will be removed here if the dependent doesn't exist in the set.
             parents[dependee].Remove(dependent);
+
             // Need to check that this ordered pair actually exists
             if (children.ContainsKey(dependent))
             {
@@ -254,6 +263,7 @@ public class DependencyGraph
                 RemoveDependency(nodeName, dependent);
             }
         }
+
         // Now, create the new dependencies
         foreach (var newDependent in newDependents)
         {
@@ -281,6 +291,7 @@ public class DependencyGraph
                 RemoveDependency(dependee, nodeName);
             }
         }
+
         // Now, create the new dependencies
         foreach (var newDependee in newDependees)
         {
