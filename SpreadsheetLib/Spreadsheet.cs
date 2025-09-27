@@ -4,7 +4,7 @@
 
 using System.Text.RegularExpressions;
 using DG = CS3500.DependencyGraph.DependencyGraph;
-using FormulaType = CS3500.Formula.Formula;
+using FormulaType = CS3500.Formulas.Formula;
 
 namespace CS3500.Spreadsheets;
 

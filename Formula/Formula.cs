@@ -4,7 +4,7 @@
 
 using System.Text.RegularExpressions;
 
-namespace CS3500.Formula;
+namespace CS3500.Formulas;
 
 /// <summary>
 ///   Any method meeting this type signature can be used for

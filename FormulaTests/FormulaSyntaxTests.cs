@@ -2,7 +2,7 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
-namespace CS3500.Formula;
+namespace CS3500.Formulas;
 
 /// <summary>
 ///   <para>

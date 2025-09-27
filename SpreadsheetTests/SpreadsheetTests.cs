@@ -2,7 +2,7 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
-using CS3500.Formula;
+using CS3500.Formulas;
 using CS3500.Spreadsheets;
 
 namespace SpreadsheetTests;
