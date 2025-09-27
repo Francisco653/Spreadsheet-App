@@ -256,4 +256,18 @@ public sealed class SpreadsheetTests
         dependencyList = hasDependents.SetCellContents("a1", 98);
         CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
     }
+
+    /// <summary>
+    /// This tests makes sure that a CircularException is no longer thrown when a cell is updated to stop having a circular dependency.
+    /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
+    /// </summary>
+    [TestMethod]
+    public void Test_Circular_NoMore()
+    {
+        Spreadsheet selfReference = new Spreadsheet();
+        selfReference.SetCellContents("B1", new Formula("a1 - 5"));
+        Assert.ThrowsException<CircularException>(() => _ = selfReference.SetCellContents("A1", new Formula("b1 * 2")));
+        List<string> expectedList = new List<string>();
+        CollectionAssert.AreEquivalent(expectedList, selfReference.SetCellContents("A1", "no circular dependencies here!!!").ToList());
+    }
 }
