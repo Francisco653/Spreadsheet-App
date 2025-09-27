@@ -58,7 +58,7 @@ public sealed class SpreadsheetTests
         Spreadsheet multiCell = new Spreadsheet();
         multiCell.SetCellContents("A1", 10);
         multiCell.SetCellContents("A2", 30);
-        HashSet<string> names = ["A1, A2"];
+        HashSet<string> names = ["A1", "A2"];
         CollectionAssert.AreEquivalent(names.ToList(), multiCell.GetNamesOfAllNonemptyCells().ToList());
     }
 
@@ -103,7 +103,7 @@ public sealed class SpreadsheetTests
         Spreadsheet doubleSheet = new Spreadsheet();
         doubleSheet.SetCellContents("A1", 10);
         doubleSheet.SetCellContents("a7", .25);
-        Assert.AreEqual(10, doubleSheet.GetCellContents("A1"));
+        Assert.AreEqual(10D, doubleSheet.GetCellContents("A1"));
         Assert.AreEqual(.25, doubleSheet.GetCellContents("A7"));
     }
 
