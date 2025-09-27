@@ -7,6 +7,8 @@ namespace CS3500.Spreadsheets;
 using System.Text.RegularExpressions;
 using CS3500.DependencyGraph;
 using CS3500.Formula;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 /// <summary>
 ///   <para>
@@ -174,8 +176,9 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, string text)
     {
-        // TODO: IMPLEMENT
-        throw new NotImplementedException();
+        // We check if the given variable name is valid. If so, we update that cell.
+        CheckVar(name);
+        return UpdateCell(name, text);
     }
 
     /// <summary>
@@ -200,8 +203,18 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, Formula formula)
     {
-        // TODO: IMPLEMENT
-        throw new NotImplementedException();
+        // We check if the given variable name is valid.
+        CheckVar(name);
+
+        // Here we check for other variables in formula. If we find any, then we need to update our dependencies.
+        var dependents = formula.GetVariables();
+        foreach (string dependent in dependents)
+        {
+            cellDependencies.AddDependency(name, dependent);
+        }
+
+        // Now we can update cell as per usual.
+        return UpdateCell(name, formula);
     }
 
     /// <summary>
@@ -277,8 +290,7 @@ public class Spreadsheet
     /// </returns>
     private IEnumerable<string> GetDirectDependents(string name)
     {
-        // TODO: Implement direct dependents
-        throw new NotImplementedException();
+        return cellDependencies.GetDependents(name);
     }
 
     /// <summary>
