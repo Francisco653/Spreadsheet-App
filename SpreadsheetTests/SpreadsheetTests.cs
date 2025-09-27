@@ -193,4 +193,5 @@ public sealed class SpreadsheetTests
         Assert.ThrowsException<CircularException>(() => _ = selfReference.SetCellContents("A1", new Formula("b1 * 2")));
     }
 
+    // --- END OF BLACK BOX PRE-TESTS
 }

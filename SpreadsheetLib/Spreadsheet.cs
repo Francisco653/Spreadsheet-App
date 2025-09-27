@@ -4,6 +4,8 @@
 
 namespace CS3500.Spreadsheets;
 
+using System.Text.RegularExpressions;
+using CS3500.DependencyGraph;
 using CS3500.Formula;
 
 /// <summary>
@@ -11,7 +13,11 @@ using CS3500.Formula;
 ///     Thrown to indicate that a change to a cell will cause a circular dependency.
 ///   </para>
 /// </summary>
+#pragma warning disable SA1402 // File may only contain a single type
+#pragma warning disable SA1649 // File name should match first type name
 public class CircularException : Exception
+#pragma warning restore SA1649 // File name should match first type name
+#pragma warning restore SA1402 // File may only contain a single type
 {
 }
 
@@ -20,7 +26,9 @@ public class CircularException : Exception
 ///     Thrown to indicate that a name parameter was invalid. Lowercase variables are auto-capitalized.
 ///   </para>
 /// </summary>
+#pragma warning disable SA1402 // File may only contain a single type
 public class InvalidNameException : Exception
+#pragma warning restore SA1402 // File may only contain a single type
 {
 }
 
@@ -80,6 +88,11 @@ public class InvalidNameException : Exception
 /// </summary>
 public class Spreadsheet
 {
+    // Needed to copy this from formula class as all the methods that check if variables are valid are private within the class.
+    private const string VariableRegExPattern = @"[a-zA-Z]+\d+";
+    private Dictionary<string, object> cellDictionary = new Dictionary<string, object>();
+    private DependencyGraph cellDependencies = new DependencyGraph();
+
     /// <summary>
     ///   Provides a copy of the names of all of the cells in the spreadsheet
     ///   that contain information (i.e., not empty cells).
@@ -89,7 +102,7 @@ public class Spreadsheet
     /// </returns>
     public ISet<string> GetNamesOfAllNonemptyCells()
     {
-        throw new NotImplementedException();
+        return cellDictionary.Keys.ToHashSet();
     }
 
     /// <summary>
@@ -107,7 +120,10 @@ public class Spreadsheet
     /// </returns>
     public object GetCellContents(string name)
     {
+        // TODO: Check for invalid name
         throw new NotImplementedException();
+
+        // TODO: Return Cell Values.
     }
 
     /// <summary>
@@ -139,7 +155,9 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, double number)
     {
-        throw new NotImplementedException();
+        // We check if the given variable name is valid. If so, we update that cell.
+        CheckVar(name);
+        return UpdateCell(name, number);
     }
 
     /// <summary>
@@ -156,6 +174,7 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, string text)
     {
+        // TODO: IMPLEMENT
         throw new NotImplementedException();
     }
 
@@ -181,7 +200,60 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, Formula formula)
     {
+        // TODO: IMPLEMENT
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    ///   Reports whether "token" is a variable.  It must be one or more letters
+    ///   followed by one or more numbers.
+    /// </summary>
+    /// <param name="token"> A token that may be a variable. </param>
+    /// <returns> true if the string matches the requirements, e.g., A1 or a1. </returns>
+    private static bool IsVar(string token)
+    {
+        // notice the use of ^ and $ to denote that the entire string being matched is just the variable
+        string standaloneVarPattern = $"^{VariableRegExPattern}$";
+        return Regex.IsMatch(token, standaloneVarPattern);
+    }
+
+    /// <summary>
+    /// This private helper calls IsVar to check variable name validity, and throws an error if invalid.
+    /// </summary>
+    /// <param name="name"> The variable name given.
+    /// </param>
+    /// <exception cref="InvalidNameException"> If the name is invalid, throw an InvalidNameException.
+    /// </exception>
+    private static void CheckVar(string name)
+    {
+        if (!IsVar(name))
+        {
+            throw new InvalidNameException();
+        }
+    }
+
+    /// <summary>
+    /// This private helper takes a variable name and either updates it in cellDictionary or creates a new key for the newly defined variable.
+    /// These cell keys are then given an object value (double, string, or formula) to hold.
+    /// </summary>
+    /// <param name="name"> The name of the cell to be made or updated.
+    /// </param>
+    /// <param name="value"> The vakue for the cell (key) to hold.
+    /// </param>
+    /// <returns> Returns a list of all cells dependent on the cell just updated.
+    /// </returns>
+    private IList<string> UpdateCell(string name, object value)
+    {
+        if (cellDictionary.ContainsKey(name))
+        {
+            cellDictionary[name] = value;
+            return GetDirectDependents(name).ToList();
+        }
+        else
+        {
+            cellDictionary.Add(name, value);
+            return GetDirectDependents(name).ToList();
+        }
     }
 
     /// <summary>
@@ -205,6 +277,7 @@ public class Spreadsheet
     /// </returns>
     private IEnumerable<string> GetDirectDependents(string name)
     {
+        // TODO: Implement direct dependents
         throw new NotImplementedException();
     }
 
