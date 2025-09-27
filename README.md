@@ -29,3 +29,4 @@ It can now evaluate formulas and compare them to one another.
     2. Code Reuse - I properly reused my RemoveDependency and AddDepencency methods when calling ReplaceDependency.
     3. Seperation of concerns - Within my Evaluate method in Formula class, I acknowledge and document that the lookup method used is to be defined elsewhere, and not the concern of Evaluate to define.
     4. DRY - Copied IsVar from formula class to check variable name validity in Spreadsheet.
+    5. Code Reuse - I reused the GetCellsToRecalculate method to check for circular dependencies.
