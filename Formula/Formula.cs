@@ -1,5 +1,5 @@
 ﻿// <copyright file="Formula.cs" company="UofU-CS3500">
-// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
 /// <summary>
@@ -67,7 +67,7 @@ public class Formula
     private string canonicalForm = string.Empty;
 
     // This hashset contains all the UNIQUE variables in the formula.
-    private HashSet<string> uniqueVariables = new HashSet<string>();
+    private HashSet<string> uniqueVariables = new ();
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Formula"/> class.
@@ -247,7 +247,7 @@ public class Formula
     private static bool FormulaIsValid(List<string> formulaTokens)
     {
         // This will hold the types of each token, useful for checking some of the formatting rules.
-        List<string> types = new List<string>();
+        List<string> types = [];
 
         // One token minimum rule
         if (formulaTokens.Count == 0)
@@ -496,8 +496,8 @@ public class Formula
     /// <returns> Either a double or a formula error, based on evaluating the formula.</returns>
     public object Evaluate(Lookup lookup)
     {
-        Stack<double> valueStack = new Stack<double>();
-        Stack<string> operatorStack = new Stack<string>();
+        Stack<double> valueStack = new ();
+        Stack<string> operatorStack = new ();
         bool divideByZero;
         foreach (string token in tokenList)
         {

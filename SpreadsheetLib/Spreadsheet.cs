@@ -1,5 +1,5 @@
 ﻿// <copyright file="Spreadsheet.cs" company="UofU-CS3500">
-// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
 namespace CS3500.Spreadsheets;
@@ -7,8 +7,6 @@ namespace CS3500.Spreadsheets;
 using System.Text.RegularExpressions;
 using CS3500.DependencyGraph;
 using CS3500.Formula;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 /// <summary>
 ///   <para>
@@ -94,8 +92,8 @@ public class Spreadsheet
     private const string VariableRegExPattern = @"[a-zA-Z]+\d+";
 
     // All variable names will be uppercase for sake of normality
-    private Dictionary<string, object> cellDictionary = new Dictionary<string, object>();
-    private DependencyGraph cellDependencies = new DependencyGraph();
+    private Dictionary<string, object> cellDictionary = new();
+    private DependencyGraph cellDependencies = new();
 
     /// <summary>
     ///   Provides a copy of the names of all of the cells in the spreadsheet

@@ -1,5 +1,5 @@
 ﻿// <copyright file="FormulaSyntaxTests.cs" company="UofU-CS3500">
-// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
 /// <summary>
@@ -895,7 +895,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_Variable()
     {
-        Formula f = new Formula("A1 * B1 + 3");
+        Formula f = new ("A1 * B1 + 3");
         double TestLookup(string name)
         {
             if (name == "A1")
@@ -943,7 +943,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEvaluate_NoVariable()
     {
-        Formula f = new Formula(" 6/2  + 4");
+        Formula f = new (" 6/2  + 4");
         double TestLookup(string name)
         {
             if (name == "A1")
@@ -972,7 +972,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEqualOperator_Self()
     {
-        Formula f1 = new Formula("a5 / a4");
+        Formula f1 = new ("a5 / a4");
         Formula f2 = f1;
         Assert.IsTrue(f2 == f1);
         Assert.IsTrue(f1 == f2);
@@ -984,8 +984,8 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestEqualOperator_Updated()
     {
-        Formula f1 = new Formula("a5 / a4");
-        Formula f2 = new Formula("A5 /     A4");
+        Formula f1 = new ("a5 / a4");
+        Formula f2 = new ("A5 /     A4");
         Assert.IsTrue(f2 == f1);
         f2 = new Formula(" 67 + 68 + 69");
         Assert.IsFalse(f1 == f2);
@@ -1023,7 +1023,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestNotEqualOperator_Self()
     {
-        Formula f1 = new Formula("a5 / a4");
+        Formula f1 = new ("a5 / a4");
         Formula f2 = f1;
         Assert.IsFalse(f2 != f1);
         Assert.IsFalse(f1 != f2);
@@ -1035,8 +1035,8 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestNotEqualOperator_Updated()
     {
-        Formula f1 = new Formula("a5 / a4");
-        Formula f2 = new Formula("A5 /     A4");
+        Formula f1 = new ("a5 / a4");
+        Formula f2 = new ("A5 /     A4");
         Assert.IsFalse(f2 != f1);
         f2 = new Formula(" 77 + 88 - A9");
         Assert.IsTrue(f1 != f2);
@@ -1057,7 +1057,7 @@ public class FormulaSyntaxTests
     [TestMethod]
     public void FormulaConstructor_TestGetHashCode_Update()
     {
-        Formula f1 = new Formula("81 / b32 - 03");
+        Formula f1 = new ("81 / b32 - 03");
         int oldHash = f1.GetHashCode();
         f1 = new Formula("a11 + b22 * c44");
         int newHash = f1.GetHashCode();

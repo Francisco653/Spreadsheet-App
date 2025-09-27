@@ -1,5 +1,5 @@
 ﻿// <copyright file="DependencyGraph.cs" company="UofU-CS3500">
-// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
 /// <summary>

@@ -1,5 +1,5 @@
 ﻿// <copyright file="DependencyGraphTests.cs" company="UofU-CS3500">
-// Copyright (c) 2024 UofU-CS3500. All rights reserved.
+// Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
 /// <summary>
@@ -7,12 +7,12 @@
 /// Partner:   N/A
 /// Date:      9/11/2025
 /// Course:    CS 3500, University of Utah, School of Computing
-/// Copyright: CS 3500 and Francisco - This work may not 
+/// Copyright: CS 3500 and Francisco - This work may not
 ///            be copied for use in Academic Coursework.
 ///
 /// I, Francisco, certify that I wrote this code from scratch and
-/// did not copy it in part or whole from another source.  All 
-/// references used in the completion of the assignments are cited 
+/// did not copy it in part or whole from another source.  All
+/// references used in the completion of the assignments are cited
 /// in my README file.
 ///
 /// File Contents
@@ -27,13 +27,13 @@ using CS3500.DependencyGraph;
 
 /// <summary>
 ///   This is a test class for DependencyGraphTest and is intended
-///   to contain all DependencyGraphTest Unit Tests
+///   to contain all DependencyGraphTest Unit Tests.
 /// </summary>
 [TestClass]
 public class DependencyGraphTests
 {
     /// <summary>
-    /// This test creates a large string array of 200 with characters a,b,c... throughout the ascii table. These characters are then iterated through repeatedly to add and remove dependencies, 
+    /// This test creates a large string array of 200 with characters a,b,c... throughout the ascii table. These characters are then iterated through repeatedly to add and remove dependencies,
     /// testing if these operations are done within two seconds and are also done accurately (each dependency is added and removed correctly).
     /// </summary>
     [TestMethod]
@@ -110,8 +110,9 @@ public class DependencyGraphTests
             Assert.IsTrue(dependees[i].SetEquals(new HashSet<string>(dg.GetDependees(letters[i]))));
         }
     }
+
     /// <summary>
-    /// This stress tests creates a ton of dependency graph objects and constantly replaces them. 
+    /// This stress tests creates a ton of dependency graph objects and constantly replaces them.
     /// </summary>
     [TestMethod]
     [Timeout(2000)]
@@ -120,15 +121,16 @@ public class DependencyGraphTests
         for (int i = 0; i < 1000; i++)
         {
             DependencyGraph dg = new();
-            dg.AddDependency("" + (char)(i), "" + (char)(i + 1));
-            dg.AddDependency("" + (char)(i + 2), "" + (char)(i + 3));
-            dg.AddDependency("" + (char)(i + 4), "" + (char)(i + 5));
+            dg.AddDependency(string.Empty + (char)i, string.Empty + (char)(i + 1));
+            dg.AddDependency(string.Empty + (char)(i + 2), string.Empty + (char)(i + 3));
+            dg.AddDependency(string.Empty + (char)(i + 4), string.Empty + (char)(i + 5));
             dg.ReplaceDependents("A", new HashSet<string> { "X", "Y", "Z" });
             dg.ReplaceDependees("D", new HashSet<string> { "W", "V" });
             Assert.IsTrue(new HashSet<string> { "X", "Y", "Z" }.SetEquals(dg.GetDependents("A")));
             Assert.IsTrue(new HashSet<string> { "W", "V" }.SetEquals(dg.GetDependees("D")));
         }
     }
+
     // -- BLACK BOX TESTS PRIOR TO IMPLEMENTATION OF DEPENDENCY GRAPH --
 
     /// <summary>
@@ -254,7 +256,7 @@ public class DependencyGraphTests
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A1", "C1");
         dg.AddDependency("A1", "A2");
-        HashSet<string> replacement = new HashSet<string> { "C5", "D1", "F2" };
+        HashSet<string> replacement = new() { "C5", "D1", "F2" };
         dg.ReplaceDependents("A1", replacement);
         Assert.IsTrue(new HashSet<string> { "C5", "D1", "F2" }.SetEquals(dg.GetDependents("A1")));
     }
@@ -270,7 +272,7 @@ public class DependencyGraphTests
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A2", "B1");
         dg.AddDependency("C1", "B1");
-        HashSet<string> replacement = new HashSet<string> { "Z8", "G13", "F42" };
+        HashSet<string> replacement = new() { "Z8", "G13", "F42" };
         dg.ReplaceDependees("B1", replacement);
         Assert.IsTrue(new HashSet<string> { "Z8", "G13", "F42" }.SetEquals(dg.GetDependees("B1")));
     }
@@ -340,6 +342,7 @@ public class DependencyGraphTests
         dg.AddDependency("A1", "B1");
         Assert.IsTrue(dg.HasDependees("B1"));
     }
+
     /// <summary>
     /// This tests that when a dependency is added, HasDependents returns true for the dependee.
     /// </summary>
@@ -361,6 +364,7 @@ public class DependencyGraphTests
         dg.AddDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependents("B1"));
     }
+
     /// <summary>
     /// This tests that when a dependency is added, the dependent isn't mistakenly marked as having dependents.
     /// </summary>
@@ -371,6 +375,7 @@ public class DependencyGraphTests
         dg.AddDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependees("A1"));
     }
+
     /// <summary>
     /// This tests that adding a duplicate dependency does not increase the size of the dependency graph.
     /// </summary>
@@ -382,8 +387,9 @@ public class DependencyGraphTests
         dg.AddDependency("A1", "B1");
         Assert.AreEqual(1, dg.Size);
     }
+
     /// <summary>
-    /// This tests that adding a dependency of one string to itself is counted once. 
+    /// This tests that adding a dependency of one string to itself is counted once.
     /// </summary>
     [TestMethod]
     public void TestAddDependencyToSelfSize()
@@ -438,6 +444,7 @@ public class DependencyGraphTests
         dg.AddDependency("duplicate", "unique");
         Assert.IsTrue(new HashSet<string> { "duplicate" }.SetEquals(dg.GetDependees("duplicate")));
     }
+
     /// <summary>
     /// Removing a non-existant dependee from a dependency should not change the ones that do exist, and should not crash.
     /// </summary>
@@ -451,6 +458,7 @@ public class DependencyGraphTests
         Assert.IsTrue(new HashSet<string> { "B1" }.SetEquals(dg.GetDependents("A1")));
         Assert.IsTrue(new HashSet<string> { "A1" }.SetEquals(dg.GetDependees("B1")));
     }
+
     /// <summary>
     /// Removing a non-existant dependent from a dependency should not change the ones that do exist, and should not crash.
     /// </summary>
@@ -475,8 +483,9 @@ public class DependencyGraphTests
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("A1", "Chrome");
     }
+
     /// <summary>
-    /// Replacing dependents of an empty dependency graph should not crash, and in fact simply create the new dependencies. 
+    /// Replacing dependents of an empty dependency graph should not crash, and in fact simply create the new dependencies.
     /// </summary>
     [TestMethod]
     public void TestReplaceDependentsFromEmpty()
@@ -488,7 +497,7 @@ public class DependencyGraphTests
     }
 
     /// <summary>
-    /// Replacing dependents of a non-existent dependee should not crash, and in fact simply create the new dependencies. 
+    /// Replacing dependents of a non-existent dependee should not crash, and in fact simply create the new dependencies.
     /// Also ensuring that existing uninvolved dependencies are not changed.
     /// </summary>
     [TestMethod]
@@ -503,8 +512,8 @@ public class DependencyGraphTests
     }
 
     /// <summary>
-    /// Testing for an extreme corner case where a dependency is created, thus creating a key for the dependee, 
-    /// and then replaceDependents is called with an empty list, thus making HasDependents return false even though the key exists. 
+    /// Testing for an extreme corner case where a dependency is created, thus creating a key for the dependee,
+    /// and then replaceDependents is called with an empty list, thus making HasDependents return false even though the key exists.
     /// </summary>
     [TestMethod]
     public void TestReplaceDependentsHasDependentsEmptyList()
@@ -517,7 +526,7 @@ public class DependencyGraphTests
     }
 
     /// <summary>
-    /// Replacing dependees of a non-existent dependent should not crash, and in fact simply create the new dependencies. 
+    /// Replacing dependees of a non-existent dependent should not crash, and in fact simply create the new dependencies.
     /// Also ensuring that existing uninvolved dependencies are not changed.
     /// </summary>
     [TestMethod]
@@ -530,8 +539,9 @@ public class DependencyGraphTests
         Assert.IsTrue(new HashSet<string> { "B1", "C1" }.SetEquals(dg.GetDependees("A1")));
         Assert.IsTrue(new HashSet<string> { "Y1" }.SetEquals(dg.GetDependents("X1")));
     }
+
     /// <summary>
-    /// Replacing dependees of an empty dependency graph should not crash, and in fact simply create the new dependencies. 
+    /// Replacing dependees of an empty dependency graph should not crash, and in fact simply create the new dependencies.
     /// </summary>
     [TestMethod]
     public void TestReplaceDependeeFromEmpty()
@@ -542,8 +552,8 @@ public class DependencyGraphTests
     }
 
     /// <summary>
-    /// Testing for an extreme corner case where a dependency is created, thus creating a key for the dependent, 
-    /// and then replaceDependees is called with an empty list, thus making HasDependees return false even though the key exists. 
+    /// Testing for an extreme corner case where a dependency is created, thus creating a key for the dependent,
+    /// and then replaceDependees is called with an empty list, thus making HasDependees return false even though the key exists.
     /// </summary>
     [TestMethod]
     public void TestReplaceDependeeHasDependeesEmptyList()
