@@ -187,12 +187,6 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, string text)
     {
-        // If a cell is set to empty, we need to remove it from our dictionary.
-        if (text == string.Empty)
-        {
-            cellDictionary.Remove(name.ToUpper());
-        }
-
         // We check if the given variable name is valid.
         CheckName(name);
 
@@ -277,6 +271,13 @@ public class Spreadsheet
     /// </returns>
     private IList<string> UpdateCell(string name, object value)
     {
+        // Need to account for the cell being set to an empty string, which effectively removes that cell.
+        if (value is string && (string) value == string.Empty )
+        {
+            cellDictionary.Remove(name);
+            return [];
+        }
+
         if (cellDictionary.ContainsKey(name))
         {
             cellDictionary[name] = value;

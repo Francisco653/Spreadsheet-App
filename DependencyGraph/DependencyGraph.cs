@@ -124,6 +124,7 @@ public class DependencyGraph
         else
         {
             return children[nodeName].Count > 0;
+
         }
     }
 
