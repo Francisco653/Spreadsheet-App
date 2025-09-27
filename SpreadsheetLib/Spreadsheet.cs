@@ -2,11 +2,11 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
-namespace CS3500.Spreadsheets;
-
 using System.Text.RegularExpressions;
-using CS3500.DependencyGraph;
-using CS3500.Formula;
+using DG = CS3500.DependencyGraph.DependencyGraph;
+using FormulaType = CS3500.Formula.Formula;
+
+namespace CS3500.Spreadsheets;
 
 /// <summary>
 ///   <para>
@@ -93,7 +93,7 @@ public class Spreadsheet
 
     // All variable names will be uppercase for sake of normality
     private Dictionary<string, object> cellDictionary = new();
-    private DependencyGraph cellDependencies = new();
+    private DG cellDependencies = new();
 
     /// <summary>
     ///   Provides a copy of the names of all of the cells in the spreadsheet
@@ -213,7 +213,7 @@ public class Spreadsheet
     /// <returns>
     ///   The same list as defined in <see cref="SetCellContents(string, double)"/>.
     /// </returns>
-    public IList<string> SetCellContents(string name, Formula formula)
+    public IList<string> SetCellContents(string name, FormulaType formula)
     {
         // We check if the given variable name is valid.
         CheckName(name);

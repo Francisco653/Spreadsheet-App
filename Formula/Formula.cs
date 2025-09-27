@@ -2,6 +2,8 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
+using System.Text.RegularExpressions;
+
 /// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
@@ -21,9 +23,6 @@
 /// </summary>
 
 namespace CS3500.Formula;
-
-using System.ComponentModel.Design;
-using System.Text.RegularExpressions;
 
 /// <summary>
 ///   <para>

@@ -2,10 +2,10 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
-namespace SpreadsheetTests;
-
 using CS3500.Formula;
 using CS3500.Spreadsheets;
+
+namespace SpreadsheetTests;
 
 /// <summary>
 /// This class tests that SpreadsheetLib can properly represent cells, edit cells, and find exceptions such as circular dependencies and invalid names.

@@ -14,6 +14,7 @@ Thanks for all the help in Piaza!  This work "stands on its own".
 
 # Consulted Peers:
 I consulted in Copilot to find out about CollectionAssert methods and their syntax. Very helpful here as lists are sometimes the return values.
+I also used Copilot to figure out how to move my directives as how stylecop demanded.
 
 
 # References

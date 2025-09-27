@@ -2,6 +2,8 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
+using DG = CS3500.DependencyGraph.DependencyGraph;
+
 /// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
@@ -23,8 +25,6 @@
 
 namespace CS3500.DevelopmentTests;
 
-using CS3500.DependencyGraph;
-
 /// <summary>
 ///   This is a test class for DependencyGraphTest and is intended
 ///   to contain all DependencyGraphTest Unit Tests.
@@ -40,7 +40,7 @@ public class DependencyGraphTests
     [Timeout(2000)]
     public void StressTest()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
 
         // A bunch of strings to use
         const int SIZE = 200;
@@ -120,7 +120,7 @@ public class DependencyGraphTests
     {
         for (int i = 0; i < 1000; i++)
         {
-            DependencyGraph dg = new();
+            DG dg = new();
             dg.AddDependency(string.Empty + (char)i, string.Empty + (char)(i + 1));
             dg.AddDependency(string.Empty + (char)(i + 2), string.Empty + (char)(i + 3));
             dg.AddDependency(string.Empty + (char)(i + 4), string.Empty + (char)(i + 5));
@@ -140,7 +140,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestEmptyBySize()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         Assert.AreEqual(0, dg.Size);
     }
 
@@ -151,7 +151,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestEmptyByDependees()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         Assert.IsFalse(dg.HasDependees("A1"));
     }
 
@@ -162,7 +162,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestEmptyByDependents()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         Assert.IsFalse(dg.HasDependents("A1"));
     }
 
@@ -173,7 +173,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestSizeAdd()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         Assert.AreEqual(1, dg.Size);
     }
@@ -185,7 +185,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestSizeRemove()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("A1", "B1");
         Assert.AreEqual(0, dg.Size);
@@ -198,7 +198,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestRemoveDependees()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependees("B1"));
@@ -211,7 +211,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestRemoveDependents()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependents("A1"));
@@ -224,7 +224,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependents()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A1", "C1");
         dg.AddDependency("A1", "A2");
@@ -238,7 +238,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependees()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A2", "B1");
         dg.AddDependency("C1", "B1");
@@ -252,7 +252,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependents()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A1", "C1");
         dg.AddDependency("A1", "A2");
@@ -268,7 +268,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependees()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A2", "B1");
         dg.AddDependency("C1", "B1");
@@ -285,7 +285,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestCreateDependencyGraph()
     {
-        new DependencyGraph();
+        new DG();
     }
 
     /// <summary>
@@ -294,7 +294,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestGetDependeesNonExistent()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("D1", "B1");
         Assert.IsTrue(new HashSet<string> { }.SetEquals(dg.GetDependees("A1")));
     }
@@ -305,7 +305,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestGetDependentsNonExistent()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("B1", "A1");
         Assert.IsTrue(new HashSet<string> { }.SetEquals(dg.GetDependents("z9")));
     }
@@ -316,7 +316,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestHasDependentsNonExistent()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependents("test"));
     }
@@ -327,7 +327,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestHasDependeesNonExistent()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependees("nonexistent"));
     }
@@ -338,7 +338,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestHasDependeesTrue()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         Assert.IsTrue(dg.HasDependees("B1"));
     }
@@ -349,7 +349,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestHasDependentsTrue()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("C1", "88");
         Assert.IsTrue(dg.HasDependents("C1"));
     }
@@ -360,7 +360,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestHasDependentsFalse()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependents("B1"));
     }
@@ -371,7 +371,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestHasDependeesFalse()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         Assert.IsFalse(dg.HasDependees("A1"));
     }
@@ -382,7 +382,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependencyDuplicate()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.AddDependency("A1", "B1");
         Assert.AreEqual(1, dg.Size);
@@ -394,7 +394,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependencyToSelfSize()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("b11", "b11");
         Assert.AreEqual(1, dg.Size);
     }
@@ -405,7 +405,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependencyToSelfHasDependees()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("b11", "b11");
         Assert.IsTrue(dg.HasDependees("b11"));
     }
@@ -416,7 +416,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependencyToSelfHasDependents()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("b11", "b11");
         Assert.IsTrue(dg.HasDependents("b11"));
     }
@@ -427,7 +427,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependencyToSelfCorrectDependents()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("duplicate", "duplicate");
         dg.AddDependency("duplicate", "unique");
         Assert.IsTrue(new HashSet<string> { "duplicate", "unique" }.SetEquals(dg.GetDependents("duplicate")));
@@ -439,7 +439,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestAddDependencyToSelfCorrectDependees()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("duplicate", "duplicate");
         dg.AddDependency("duplicate", "unique");
         Assert.IsTrue(new HashSet<string> { "duplicate" }.SetEquals(dg.GetDependees("duplicate")));
@@ -451,7 +451,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestRemoveDependencyNonExistentDependee()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("A1", "C1");
         Assert.AreEqual(1, dg.Size);
@@ -465,7 +465,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestRemoveDependencyNonExistentDependent()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("C1", "B1");
         Assert.AreEqual(1, dg.Size);
@@ -479,7 +479,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestRemoveDependencyFromEmpty()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "B1");
         dg.RemoveDependency("A1", "Chrome");
     }
@@ -490,7 +490,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependentsFromEmpty()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.ReplaceDependents("A1", new HashSet<string> { "B1", "C1" });
         Assert.AreEqual(2, dg.Size);
         Assert.IsTrue(new HashSet<string> { "B1", "C1" }.SetEquals(dg.GetDependents("A1")));
@@ -503,7 +503,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependentsFromNonExistantDependee()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("X1", "Y1");
         dg.ReplaceDependents("A1", new HashSet<string> { "B1", "C1" });
         Assert.AreEqual(3, dg.Size);
@@ -518,7 +518,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependentsHasDependentsEmptyList()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("A1", "Y1");
         dg.AddDependency("A1", "354");
         dg.ReplaceDependents("A1", new HashSet<string> { });
@@ -532,7 +532,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependeeFromNonExistantDependent()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("X1", "Y1");
         dg.ReplaceDependees("A1", new HashSet<string> { "B1", "C1" });
         Assert.AreEqual(3, dg.Size);
@@ -546,7 +546,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependeeFromEmpty()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.ReplaceDependees("Empty", new HashSet<string> { "not", "empty" });
         Assert.IsTrue(new HashSet<string> { "not", "empty" }.SetEquals(dg.GetDependees("Empty")));
     }
@@ -558,7 +558,7 @@ public class DependencyGraphTests
     [TestMethod]
     public void TestReplaceDependeeHasDependeesEmptyList()
     {
-        DependencyGraph dg = new();
+        DG dg = new();
         dg.AddDependency("F2", "Child");
         dg.AddDependency("AC1", "Child");
         dg.ReplaceDependees("Child", new HashSet<string> { });
