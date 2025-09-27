@@ -25,6 +25,22 @@ using System.Text.RegularExpressions;
 namespace CS3500.Formula;
 
 /// <summary>
+///   Any method meeting this type signature can be used for
+///   looking up the value of a variable.  In general the expected behavior is that
+///   the Lookup method will "know" about all variables in a formula
+///   and return their appropriate value.
+/// </summary>
+/// <exception cref="ArgumentException">
+///   If a variable name is provided that is not recognized by the implementing method,
+///   then the method should throw an ArgumentException.
+/// </exception>
+/// <param name="variableName">
+///   The name of the variable (e.g., "A1") to lookup.
+/// </param>
+/// <returns> The value of the given variable (if one exists). </returns>
+public delegate double Lookup(string variableName);
+
+/// <summary>
 ///   <para>
 ///     This class represents formulas written in standard infix notation using standard precedence
 ///     rules.  The allowed symbols are non-negative numbers written using double-precision
@@ -66,7 +82,7 @@ public class Formula
     private string canonicalForm = string.Empty;
 
     // This hashset contains all the UNIQUE variables in the formula.
-    private HashSet<string> uniqueVariables = new ();
+    private HashSet<string> uniqueVariables = new();
 
     /// <summary>
     ///   Initializes a new instance of the <see cref="Formula"/> class.
@@ -374,7 +390,6 @@ public class Formula
     /// <summary>
     /// This method normalizes the formula string to a canonical form during the construction of the Formula object.
     /// </summary>
-    /// <param name="formula"> The formula given by the user upon object construction.</param>
     /// <returns> A new normalized formula (whitespace removed and variable letters capitalized.</returns>
     private string BuildCanonicalForm()
     {
@@ -495,8 +510,8 @@ public class Formula
     /// <returns> Either a double or a formula error, based on evaluating the formula.</returns>
     public object Evaluate(Lookup lookup)
     {
-        Stack<double> valueStack = new ();
-        Stack<string> operatorStack = new ();
+        Stack<double> valueStack = new();
+        Stack<string> operatorStack = new();
         bool divideByZero;
         foreach (string token in tokenList)
         {
@@ -701,22 +716,6 @@ public class FormulaError
     /// </summary>
     public string Reason { get; private set; }
 }
-
-/// <summary>
-///   Any method meeting this type signature can be used for
-///   looking up the value of a variable.  In general the expected behavior is that
-///   the Lookup method will "know" about all variables in a formula
-///   and return their appropriate value.
-/// </summary>
-/// <exception cref="ArgumentException">
-///   If a variable name is provided that is not recognized by the implementing method,
-///   then the method should throw an ArgumentException.
-/// </exception>
-/// <param name="variableName">
-///   The name of the variable (e.g., "A1") to lookup.
-/// </param>
-/// <returns> The value of the given variable (if one exists). </returns>
-public delegate double Lookup(string variableName);
 
 /// <summary>
 ///   Used to report syntax errors in the argument to the Formula constructor.
