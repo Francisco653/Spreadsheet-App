@@ -4,24 +4,6 @@
 
 using System.Text.RegularExpressions;
 
-/// <summary>
-/// Author:    Francisco Pinas
-/// Partner:   N/A
-/// Date:      09/19/2025
-/// Course:    CS 3500, University of Utah, School of Computing
-/// Copyright: CS 3500 and Francisco - This work may not
-///            be copied for use in Academic Coursework.
-///
-/// I, Francisco, certify that I wrote this code from scratch and
-/// did not copy it in part or whole from another source.  All
-/// references used in the completion of the assignments are cited
-/// in my README file.
-///
-/// File Contents
-///
-///    This file is the Formula class, which is used to represent, validate, and evaluate formula strings, rules down below.
-/// </summary>
-
 namespace CS3500.Formula;
 
 /// <summary>
@@ -41,13 +23,28 @@ namespace CS3500.Formula;
 public delegate double Lookup(string variableName);
 
 /// <summary>
-///   <para>
+/// Author:    Francisco Pinas
+/// Partner:   N/A
+/// Date:      09/19/2025
+/// Course:    CS 3500, University of Utah, School of Computing
+/// Copyright: CS 3500 and Francisco - This work may not
+///            be copied for use in Academic Coursework.
+///
+/// I, Francisco, certify that I wrote this code from scratch and
+/// did not copy it in part or whole from another source.  All
+/// references used in the completion of the assignments are cited
+/// in my README file.
+///
+/// File Contents
+///
+///    This file is the Formula class, which is used to represent, validate, and evaluate formula strings, rules down below.
+/// <para>
 ///     This class represents formulas written in standard infix notation using standard precedence
 ///     rules.  The allowed symbols are non-negative numbers written using double-precision
 ///     floating-point syntax; variables that consist of one ore more letters followed by
 ///     one or more numbers; parentheses; and the four operator symbols +, -, *, and /.
 ///   </para>
-///   <para>
+/// <para>
 ///     Spaces are significant only insofar that they delimit tokens.  For example, "xy" is
 ///     a single variable, "x y" consists of two variables "x" and y; "x23" is a single variable;
 ///     and "x 23" consists of a variable "x" and a number "23".  Otherwise, spaces are to be removed.
