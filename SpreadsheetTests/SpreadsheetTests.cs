@@ -270,4 +270,17 @@ public sealed class SpreadsheetTests
         List<string> expectedList = new List<string>();
         CollectionAssert.AreEquivalent(expectedList, selfReference.SetCellContents("A1", "no circular dependencies here!!!").ToList());
     }
+
+    /// <summary>
+    /// This tests makes sure that GetCellContent returns an empty string when a cell that used to be defined is set as an empty string.
+    /// </summary>
+    [TestMethod]
+    public void Test_GetCellContents_Removed()
+    {
+        Spreadsheet empty = new Spreadsheet();
+        empty.SetCellContents("g3", 65);
+        Assert.AreEqual(65D, empty.GetCellContents("G3"));
+        empty.SetCellContents("g3", string.Empty);
+        Assert.AreEqual(string.Empty, empty.GetCellContents("g3"));
+    }
 }
