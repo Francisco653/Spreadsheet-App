@@ -126,9 +126,14 @@ public class Spreadsheet
     {
         // Check for invalid name
         CheckName(name);
-        throw new NotImplementedException();
 
-        // TODO: Return Cell Values.
+        // By default return an empty string for an undefined cell.
+        if (! cellDictionary.ContainsKey(name.ToUpper()))
+        {
+            return string.Empty;
+        }
+
+        return cellDictionary[name];
     }
 
     /// <summary>
@@ -182,6 +187,12 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, string text)
     {
+        // If a cell is set to empty, we need to remove it from our dictionary.
+        if (text == string.Empty)
+        {
+            cellDictionary.Remove(name.ToUpper());
+        }
+
         // We check if the given variable name is valid.
         CheckName(name);
 
