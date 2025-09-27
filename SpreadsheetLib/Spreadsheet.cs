@@ -362,7 +362,18 @@ public class Spreadsheet
 
     /// <summary>
     ///   A helper for the GetCellsToRecalculate method.
-    ///   TODO: You should fully comment what is going on below using XML tags as appropriate.
+    ///   <para>
+    ///   This method takes a starting point, and a current point to examine. It adds the current point to a list of visited then iterates through each dependent of the current point.
+    ///   If at any moment the dependents inside current point lead back to the start point, a circular error exception is thrown.
+    ///   Otherwise, the current point is added to the list of changed values.
+    ///   Every non-visited point gets its own recursion of the visit method, repeating the mentioned steps until all points are contained in the visited Set.
+    ///   </para>
+    ///   <returns>
+    ///   Returns a list of all points that need to be recalculated due to a change in their dependee.
+    ///   </returns>
+    ///   <exception cref="CircularException">
+    ///   Throws a CircularException if a circular dependency is found.
+    ///   </exception>
     /// </summary>
     private void Visit(string start, string name, ISet<string> visited, LinkedList<string> changed)
     {
