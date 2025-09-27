@@ -2,27 +2,6 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
-/// <summary>
-/// Author:    Francisco Pinas
-/// Partner:   N/A
-/// Date:      9/11/2025
-/// Course:    CS 3500, University of Utah, School of Computing
-/// Copyright: CS 3500 and Francisco - This work may not
-///            be copied for use in Academic Coursework.
-///
-/// I, Francisco, certify that I wrote this code from scratch and
-/// did not copy it in part or whole from another source.  All
-/// references used in the completion of the assignments are cited
-/// in my README file.
-///
-/// File Contents
-///
-///    This file is the DependencyGraph class, which is used to represent the dependencies between two objects. Duplicate entries are not counted.
-///    This class tracks both parent and children nodes (dependees and dependents) using two dictionaries of hashsets.
-///    This class can return if a given node has dependents or dependees and return the dependents or dependees of a given node.
-///    NOTE: A node can be both a dependee and a dependent, and can point to itself.
-/// </summary>
-
 namespace CS3500.DependencyGraph;
 
 /// <summary>
@@ -66,6 +45,27 @@ namespace CS3500.DependencyGraph;
 ///     dependees("c")  = {"a"}
 ///     dependees("d")  = {"b", "d"}
 ///   </code>
+/// </summary>
+
+/// <summary>
+/// Author:    Francisco Pinas
+/// Partner:   N/A
+/// Date:      9/11/2025
+/// Course:    CS 3500, University of Utah, School of Computing
+/// Copyright: CS 3500 and Francisco - This work may not
+///            be copied for use in Academic Coursework.
+///
+/// I, Francisco, certify that I wrote this code from scratch and
+/// did not copy it in part or whole from another source.  All
+/// references used in the completion of the assignments are cited
+/// in my README file.
+///
+/// File Contents
+///
+///    This file is the DependencyGraph class, which is used to represent the dependencies between two objects. Duplicate entries are not counted.
+///    This class tracks both parent and children nodes (dependees and dependents) using two dictionaries of hashsets.
+///    This class can return if a given node has dependents or dependees and return the dependents or dependees of a given node.
+///    NOTE: A node can be both a dependee and a dependent, and can point to itself.
 /// </summary>
 public class DependencyGraph
 {

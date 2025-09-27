@@ -2,6 +2,19 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
+namespace CS3500.Formula;
+
+/// <summary>
+///   <para>
+///     The following class shows the basics of how to use the MSTest framework,
+///     including:
+///   </para>
+///   <list type="number">
+///     <item> How to catch exceptions. </item>
+///     <item> How a test of valid code should look. </item>
+///   </list>
+/// </summary>
+
 /// <summary>
 /// Author:    Francisco Pinas
 /// Partner:   N/A
@@ -21,18 +34,6 @@
 ///    This class ensures that the Formula class is properly creating tokens,
 ///    and enforcing the rules for how a formula should be structured.
 ///    It now also contains tests for new FormulaClass functionality, ensuring that formulas are properly evaluated.
-/// </summary>
-namespace CS3500.Formula;
-
-/// <summary>
-///   <para>
-///     The following class shows the basics of how to use the MSTest framework,
-///     including:
-///   </para>
-///   <list type="number">
-///     <item> How to catch exceptions. </item>
-///     <item> How a test of valid code should look. </item>
-///   </list>
 /// </summary>
 [TestClass]
 public class FormulaSyntaxTests
