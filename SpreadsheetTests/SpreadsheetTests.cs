@@ -66,7 +66,7 @@ public sealed class SpreadsheetTests
     /// This tests makes sure that GetNames returns nothing if a cell is set and then set again to hold an empty string.
     /// </summary>
     [TestMethod]
-    public void Test_GetName_ChangeToEmpty()
+    public void Test_GetName_Removed()
     {
         Spreadsheet empty = new Spreadsheet();
         empty.SetCellContents("A1", 10);
