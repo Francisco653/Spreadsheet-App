@@ -92,6 +92,8 @@ public class Spreadsheet
 {
     // Needed to copy this from formula class as all the methods that check if variables are valid are private within the class.
     private const string VariableRegExPattern = @"[a-zA-Z]+\d+";
+
+    // All variable names will be uppercase for sake of normality
     private Dictionary<string, object> cellDictionary = new Dictionary<string, object>();
     private DependencyGraph cellDependencies = new DependencyGraph();
 
@@ -157,9 +159,12 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, double number)
     {
-        // We check if the given variable name is valid. If so, we update that cell.
-        CheckVar(name);
-        return UpdateCell(name, number);
+        // We check if the given variable name is valid.
+        CheckName(name);
+
+        // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
+        cellDependencies.ReplaceDependents(name.ToUpper(), []);
+        return UpdateCell(name.ToUpper(), number);
     }
 
     /// <summary>
@@ -176,9 +181,12 @@ public class Spreadsheet
     /// </returns>
     public IList<string> SetCellContents(string name, string text)
     {
-        // We check if the given variable name is valid. If so, we update that cell.
-        CheckVar(name);
-        return UpdateCell(name, text);
+        // We check if the given variable name is valid.
+        CheckName(name);
+
+        // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
+        cellDependencies.ReplaceDependents(name.ToUpper(), []);
+        return UpdateCell(name.ToUpper(), text);
     }
 
     /// <summary>
@@ -204,17 +212,14 @@ public class Spreadsheet
     public IList<string> SetCellContents(string name, Formula formula)
     {
         // We check if the given variable name is valid.
-        CheckVar(name);
+        CheckName(name);
 
         // Here we check for other variables in formula. If we find any, then we need to update our dependencies.
         var dependents = formula.GetVariables();
-        foreach (string dependent in dependents)
-        {
-            cellDependencies.AddDependency(name, dependent);
-        }
+        cellDependencies.ReplaceDependents(name.ToUpper(), dependents);
 
         // Now we can update cell as per usual.
-        return UpdateCell(name, formula);
+        return UpdateCell(name.ToUpper(), formula);
     }
 
     /// <summary>
@@ -237,7 +242,7 @@ public class Spreadsheet
     /// </param>
     /// <exception cref="InvalidNameException"> If the name is invalid, throw an InvalidNameException.
     /// </exception>
-    private static void CheckVar(string name)
+    private static void CheckName(string name)
     {
         if (!IsVar(name))
         {
@@ -290,7 +295,7 @@ public class Spreadsheet
     /// </returns>
     private IEnumerable<string> GetDirectDependents(string name)
     {
-        return cellDependencies.GetDependents(name);
+        return cellDependencies.GetDependents(name.ToUpper());
     }
 
     /// <summary>

@@ -183,7 +183,7 @@ public sealed class SpreadsheetTests
 
     /// <summary>
     /// This tests makes sure that a CircularException is thrown when a cell points to itself INDIRECTLY.
-    /// NOTE: This behavior is defined ONLY for formula, not double or string.
+    /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
     /// </summary>
     [TestMethod]
     public void Test_Circular_Indirect()
@@ -194,4 +194,66 @@ public sealed class SpreadsheetTests
     }
 
     // --- END OF BLACK BOX PRE-TESTS
+
+    /// <summary>
+    /// This tests makes sure that SetCellContents returns an empty list when it has no dependents.
+    /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
+    /// </summary>
+    [TestMethod]
+    public void Test_Set_Return_NoDependents()
+    {
+        Spreadsheet noDependents = new Spreadsheet();
+        var dependencyList = noDependents.SetCellContents("a1", new Formula("9 - 8"));
+        List<string> empty = new List<string>();
+        CollectionAssert.AreEquivalent(empty, dependencyList.ToList());
+    }
+
+    /// <summary>
+    /// This tests makes sure that SetCellContents returns a correct list of dependents. Order doesn't matter.
+    /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
+    /// </summary>
+    [TestMethod]
+    public void Test_Set_Return_Dependents()
+    {
+        Spreadsheet hasDependents = new Spreadsheet();
+        var dependencyList = hasDependents.SetCellContents("a1", new Formula("a9 - j12 / BAD88 "));
+        List<string> expectedList = new List<string>();
+
+        // Variable names should be automatically capitalized.
+        expectedList.Add("A9");
+        expectedList.Add("J12");
+        expectedList.Add("BAD88");
+        CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
+    }
+
+    /// <summary>
+    /// This tests makes sure that SetCellContents returns a correct list of dependents when old dependents are replaced. Order doesn't matter.
+    /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
+    /// </summary>
+    [TestMethod]
+    public void Test_Set_Return_New_Dependents()
+    {
+        Spreadsheet hasDependents = new Spreadsheet();
+        var dependencyList = hasDependents.SetCellContents("a1", new Formula("a9 - j12 / BAD88 "));
+        List<string> expectedList = new List<string>();
+        dependencyList = hasDependents.SetCellContents("a1", new Formula("b9"));
+
+        // Variable names should be automatically capitalized.
+        expectedList.Add("B9");
+        CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
+    }
+
+    /// <summary>
+    /// This tests makes sure that SetCellContents returns a correct list of dependents when old dependents are replaced. Order doesn't matter.
+    /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
+    /// </summary>
+    [TestMethod]
+    public void Test_Set_Return_Lost_AllDependents()
+    {
+        Spreadsheet hasDependents = new Spreadsheet();
+        var dependencyList = hasDependents.SetCellContents("a1", new Formula("aAAs9 - j12 / L89 "));
+        List<string> expectedList = new List<string>();
+        dependencyList = hasDependents.SetCellContents("a1", 98);
+        CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
+    }
 }
