@@ -527,18 +527,27 @@ public class Formula
             // The delegate function is expected to throw an ArgumentException if the variable is undefined.
             else if (TokenType(token) == "variable")
             {
-                double tokenValue = lookup(token.ToUpper());
-                divideByZero = NumVarCurrentTokenEvaluation(valueStack, operatorStack, tokenValue);
-                if (divideByZero)
+                try
                 {
-                    return new FormulaError("Divide by Zero Error!");
+                    double tokenValue = lookup(token.ToUpper());
+                    divideByZero = NumVarCurrentTokenEvaluation(valueStack, operatorStack, tokenValue);
+                    if (divideByZero)
+                    {
+                        return new FormulaError("Divide by Zero Error!");
+                    }
+                }
+
+                // Return a formula error object if lookup delegate throws ArgumentException
+                catch (ArgumentException)
+                {
+                    return new FormulaError("Undefined Variable!");
                 }
             }
 
             // Handle + or - token
             else if (token == "+" || token == "-")
             {
-                OperatorsTopOfStack(valueStack, operatorStack);
+                AddOrSubtractTopOfStack(valueStack, operatorStack);
                 operatorStack.Push(token);
             }
 
@@ -557,7 +566,7 @@ public class Formula
             // Handles right Parenthesis
             else if (TokenType(token) == "rightParenthesis")
             {
-                OperatorsTopOfStack(valueStack, operatorStack);
+                AddOrSubtractTopOfStack(valueStack, operatorStack);
 
                 // The top of the operator stack should be a '('. So we pop it.
                 operatorStack.Pop();
@@ -569,7 +578,7 @@ public class Formula
                 }
 
                 // Now we check for mulitiplication and division (+/-)
-                OperatorsTopOfStack(valueStack, operatorStack);
+                MultiplyOrDivideTopOfStack(valueStack, operatorStack);
             }
         }
 
@@ -580,7 +589,7 @@ public class Formula
         }
         else
         {
-            OperatorsTopOfStack(valueStack, operatorStack);
+            AddOrSubtractTopOfStack(valueStack, operatorStack);
         }
 
         return valueStack.Pop();
@@ -614,16 +623,45 @@ public class Formula
     }
 
     /// <summary>
-    /// This private helper methods handles when an operator is pending at the top of the operator stack.
+    /// This private helper methods handles when a multiplication/division is pending at the top of the operator stack.
+    /// NOTE: This is used only when right parenthesis is the current token, as that is the only case where something precedes multiplication/division.
+    /// Since right parenthesis are a special case, this needs to be a distinct method, and cannot be part of a greater operator stack method.
     /// </summary>
     /// <param name="valueStack"> The stack that holds current values.</param>
     /// <param name="operatorStack"> The stack that holds current operators.</param>
-    private static void OperatorsTopOfStack(Stack<double> valueStack, Stack<string> operatorStack)
+    private static void MultiplyOrDivideTopOfStack(Stack<double> valueStack, Stack<string> operatorStack)
     {
         bool notEmpty = operatorStack.Count > 0;
 
-        // If we see another operator, we need to first evaluate the current operator.
-        if ((notEmpty && operatorStack.Peek() == "+") || (notEmpty && operatorStack.Peek() == "-") || (notEmpty && operatorStack.Peek() == "*") || (notEmpty && operatorStack.Peek() == "/"))
+        // If we see another addition/subtraction, we need to first evaluate the addition at the top of the stack.
+        if ((notEmpty && operatorStack.Peek() == "*") || (notEmpty && operatorStack.Peek() == "/"))
+        {
+            double number1 = valueStack.Pop();
+            double number2 = valueStack.Pop();
+            string currentOperator = operatorStack.Pop();
+
+            if (currentOperator == "*")
+            {
+                valueStack.Push(number2 * number1);
+            }
+            else
+            {
+                valueStack.Push(number2 / number1);
+            }
+        }
+    }
+
+    /// <summary>
+    /// This private helper methods handles when an addition/subtraction is pending at the top of the operator stack.
+    /// </summary>
+    /// <param name="valueStack"> The stack that holds current values.</param>
+    /// <param name="operatorStack"> The stack that holds current operators.</param>
+    private static void AddOrSubtractTopOfStack(Stack<double> valueStack, Stack<string> operatorStack)
+    {
+        bool notEmpty = operatorStack.Count > 0;
+
+        // If we see another addition/subtraction, we need to first evaluate the addition at the top of the stack.
+        if ((notEmpty && operatorStack.Peek() == "+") || (notEmpty && operatorStack.Peek() == "-"))
         {
             double number1 = valueStack.Pop();
             double number2 = valueStack.Pop();
@@ -633,18 +671,9 @@ public class Formula
             {
                 valueStack.Push(number2 + number1);
             }
-            else if (currentOperator == "-")
-            {
-                valueStack.Push(number2 - number1);
-            }
-            else if (currentOperator == "*")
-            {
-                valueStack.Push(number2 * number1);
-            }
             else
             {
-                // We do not check for divide by zero error, that is handled in the evaluate method when necessary.
-                valueStack.Push(number2 / number1);
+                valueStack.Push(number2 - number1);
             }
         }
     }

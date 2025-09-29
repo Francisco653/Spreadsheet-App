@@ -5,6 +5,26 @@
 using CS3500.Formulas;
 using CS3500.Spreadsheets;
 
+/// <summary>
+/// Author:    Francisco Pinas
+/// Partner:   N/A
+/// Date:      09/26/2025
+/// Course:    CS 3500, University of Utah, School of Computing
+/// Copyright: CS 3500 and Francisco - This work may not
+///            be copied for use in Academic Coursework.
+///
+/// I, Francisco, certify that I wrote this code from scratch and
+/// did not copy it in part or whole from another source.  All
+/// references used in the completion of the assignments are cited
+/// in my README file.
+///
+/// File Contents
+///
+///    This file is the SpreadSheetTests Class, used to test the Spreadsheet class.
+///    This class ensures that the Formula class is properly creating tokens,
+///    and enforcing the rules for how a formula should be structured.
+///    It now also contains tests for new FormulaClass functionality, ensuring that formulas are properly evaluated.
+/// </summary>
 namespace SpreadsheetTests;
 
 /// <summary>
