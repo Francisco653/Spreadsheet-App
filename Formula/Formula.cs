@@ -646,6 +646,7 @@ public class Formula
             }
             else
             {
+                // Divide by zero check is done in Evaluate.
                 valueStack.Push(number2 / number1);
             }
         }
