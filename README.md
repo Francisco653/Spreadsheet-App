@@ -25,6 +25,8 @@ It can now evaluate formulas and compare them to one another.
     5. Assignment Five :   Predicted Hours:           7        Actual Hours:    6
     6. Assignment Six :   Predicted Hours:           ?        Actual Hours:    ?
 
+    # THIS IS A TEST FOR BRANCHING MAIN VS PS6
+
 # Examples of Good Software Practice (GSP)
     1. DRY - I updated my Evaluate method in Formula to use two private helpers for repeated processes, which drastically reduced code length and increased readability.
     2. Code Reuse - I properly reused my RemoveDependency and AddDepencency methods when calling ReplaceDependency.
