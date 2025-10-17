@@ -562,15 +562,13 @@ public class Spreadsheet
         if (cellDictionary.ContainsKey(name))
         {
             cellDictionary[name] = value;
-            var list = GetDirectDependents(name).ToList();
-            list.Insert(0, name.ToUpper());
+            var list = GetCellsToRecalculate(name).ToList();
             return list;
         }
         else
         {
             cellDictionary.Add(name, value);
-            var list = GetDirectDependents(name).ToList();
-            list.Insert(0, name.ToUpper());
+            var list = GetCellsToRecalculate(name).ToList();
             return list;
         }
     }

@@ -253,14 +253,15 @@ public sealed class SpreadsheetTests
     public void Test_Set_Return_Dependents()
     {
         Spreadsheet hasDependents = new();
+        hasDependents.SetContentsOfCell("b33", "= a1 +10");
+        hasDependents.SetContentsOfCell("c45", "= b1 + 10");
         var dependencyList = hasDependents.SetContentsOfCell("a1", " = a9 - j12 / BAD88 ");
         List<string> expectedList = new();
 
         // Variable names should be automatically capitalized.
-        expectedList.Add("A9");
-        expectedList.Add("J12");
-        expectedList.Add("BAD88");
         expectedList.Add("A1");
+        expectedList.Add("B33");
+        expectedList.Add("C45");
         CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
     }
 
@@ -309,6 +310,7 @@ public sealed class SpreadsheetTests
         Assert.ThrowsExactly<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", "= b1 * 2"));
         List<string> expectedList = new();
         expectedList.Add("A1");
+        expectedList.Add("B1");
         CollectionAssert.AreEquivalent(expectedList, selfReference.SetContentsOfCell("A1", "no circular dependencies here!!!").ToList());
     }
 
