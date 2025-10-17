@@ -254,7 +254,7 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet hasDependents = new();
         hasDependents.SetContentsOfCell("b33", "= a1 +10");
-        hasDependents.SetContentsOfCell("c45", "= b1 + 10");
+        hasDependents.SetContentsOfCell("c45", "= b33 + 10");
         var dependencyList = hasDependents.SetContentsOfCell("a1", " = a9 - j12 / BAD88 ");
         List<string> expectedList = new();
 
@@ -270,7 +270,7 @@ public sealed class SpreadsheetTests
     /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
     /// </summary>
     [TestMethod]
-    public void Test_Set_Return_New_Dependents()
+    public void Test_Set_Return_New_Dependees()
     {
         Spreadsheet hasDependents = new();
         var dependencyList = hasDependents.SetContentsOfCell("a1", "= a9 - j12 / BAD88 ");
@@ -278,7 +278,6 @@ public sealed class SpreadsheetTests
         dependencyList = hasDependents.SetContentsOfCell("a1", "= b9");
 
         // Variable names should be automatically capitalized.
-        expectedList.Add("B9");
         expectedList.Add("A1");
         CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
     }
@@ -291,9 +290,11 @@ public sealed class SpreadsheetTests
     public void Test_Set_Return_Lost_AllDependents()
     {
         Spreadsheet hasDependents = new();
+        hasDependents.SetContentsOfCell("f12", "= a1 * 123467 +b1");
         var dependencyList = hasDependents.SetContentsOfCell("a1", "= aAAs9 - j12 / L89 ");
         List<string> expectedList = new();
-        dependencyList = hasDependents.SetContentsOfCell("a1", "98");
+        hasDependents.SetContentsOfCell("f12", "98");
+        dependencyList = hasDependents.SetContentsOfCell("a1", "= aAAs9 - j12 / L89 ");
         expectedList.Add("A1");
         CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
     }
@@ -368,7 +369,7 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet spreadsheet = new();
         object test = spreadsheet[ "C1" ];
-        Assert.AreEqual("0", test);
+        Assert.AreEqual(0D, test);
     }
 
     /// <summary>
@@ -401,7 +402,7 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet spreadsheet = new();
         spreadsheet[ "f6" ] = "10";
-        Assert.AreEqual(10, spreadsheet.GetCellValue("F6"));
+        Assert.AreEqual(10D, spreadsheet.GetCellValue("F6"));
     }
 
     /// <summary>

@@ -2,6 +2,7 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
+using System.Data;
 using System.Text.RegularExpressions;
 using CS3500.Formulas;
 using DG = CS3500.DependencyGraph.DependencyGraph;
@@ -114,7 +115,8 @@ public class Spreadsheet
     private const string VariableRegExPattern = @"[a-zA-Z]+\d+";
 
     // All variable names will be uppercase for sake of normality
-    private Dictionary<string, object> cellDictionary = new();
+    private Dictionary<string, object> cellContentDictionary = new();
+    private Dictionary<string, object> cellValueDictionary = new();
     private DG cellDependencies = new();
     private string name;
 
@@ -282,7 +284,7 @@ public class Spreadsheet
     /// </returns>
     public ISet<string> GetNamesOfAllNonemptyCells()
     {
-        return cellDictionary.Keys.ToHashSet();
+        return cellContentDictionary.Keys.ToHashSet();
     }
 
     /// <summary>
@@ -304,12 +306,12 @@ public class Spreadsheet
         CheckName(name);
 
         // By default return an empty string for an undefined cell.
-        if (! cellDictionary.ContainsKey(name.ToUpper()))
+        if (! cellContentDictionary.ContainsKey(name.ToUpper()))
         {
             return string.Empty;
         }
 
-        return cellDictionary[name.ToUpper()];
+        return cellContentDictionary[name.ToUpper()];
     }
 
     /// <summary>
@@ -329,8 +331,13 @@ public class Spreadsheet
     /// </exception>
     public object GetCellValue(string cellName)
     {
-        // TODO: Implement GetCellValue per documentation
-        throw new NotImplementedException();
+        CheckName(name);
+        if (cellValueDictionary.ContainsKey(cellName.ToUpper()))
+        {
+            return cellValueDictionary[ cellName.ToUpper() ];
+        }
+
+        return 0;
     }
 
     /// <summary>
@@ -474,12 +481,9 @@ public class Spreadsheet
     /// </returns>
     private IList<string> SetCellContents(string name, double number)
     {
-        // We check if the given variable name is valid.
-        CheckName(name);
-
         // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
         cellDependencies.ReplaceDependees(name.ToUpper(), []);
-        return UpdateCell(name.ToUpper(), number);
+        return UpdateCellContent(name.ToUpper(), number);
     }
 
     /// <summary>
@@ -496,12 +500,9 @@ public class Spreadsheet
     /// </returns>
     private IList<string> SetCellContents(string name, string text)
     {
-        // We check if the given variable name is valid.
-        CheckName(name);
-
         // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
         cellDependencies.ReplaceDependees(name.ToUpper(), []);
-        return UpdateCell(name.ToUpper(), text);
+        return UpdateCellContent(name.ToUpper(), text);
     }
 
     /// <summary>
@@ -526,9 +527,6 @@ public class Spreadsheet
     /// </returns>
     private IList<string> SetCellContents(string name, FormulaType formula)
     {
-        // We check if the given variable name is valid.
-        CheckName(name);
-
         // Here we check for other variables in formula. If we find any, then we need to update our dependencies.
         var dependees = formula.GetVariables();
         cellDependencies.ReplaceDependees(name.ToUpper(), dependees);
@@ -537,39 +535,97 @@ public class Spreadsheet
         GetCellsToRecalculate(name.ToUpper());
 
         // Now we can update cell as per usual.
-        return UpdateCell(name.ToUpper(), formula);
+        return UpdateCellContent(name.ToUpper(), formula);
     }
 
     /// <summary>
-    /// This private helper takes a variable name and either updates it in cellDictionary or creates a new key for the newly defined variable.
+    /// This private helper takes a variable name and either updates it in cellContentDictionary or creates a new key for the newly defined variable.
     /// These cell keys are then given an object value (double, string, or formula) to hold.
+    /// </summary>
+    /// <param name="name"> The name of the cell to be made or updated.
+    /// </param>
+    /// <param name="content"> The vakue for the cell (key) to hold.
+    /// </param>
+    /// <returns> Returns a list of all cells just updated.
+    /// </returns>
+    private IList<string> UpdateCellContent(string name, object content)
+    {
+        // Need to account for the cell being set to an empty string, which effectively removes that cell.
+        if (content is string && (string) content == string.Empty )
+        {
+            cellContentDictionary.Remove(name);
+            cellValueDictionary.Remove(name);
+            var list = GetCellsToRecalculate(name).ToList();
+            Changed = true;
+            return list;
+        }
+
+        if (cellContentDictionary.ContainsKey(name))
+        {
+            cellContentDictionary[name] = content;
+            FindValue(name, content);
+
+            var list = GetCellsToRecalculate(name).ToList();
+            Changed = true;
+            return list;
+        }
+        else
+        {
+            cellContentDictionary.Add(name, content);
+
+            FindValue(name, content);
+
+            var list = GetCellsToRecalculate(name).ToList();
+            Changed = true;
+            return list;
+        }
+    }
+
+    /// <summary>
+    /// This private helper method is used to find the value from the content of a cell, whether it be a formula or a double.
+    /// </summary>
+    /// <param name="name"> The name of the cell wev are trying to evaluate.</param>
+    /// <param name="content"> The content of the cell. This can be a formula, double, or string. </param>
+    private void FindValue(string name, object content)
+    {
+        if (content is Formula)
+        {
+            Formula formula = (Formula)content;
+            object value = formula.Evaluate(VariableLookup);
+            UpdateCellValue(name, value);
+        }
+        else
+        {
+            // The value of a cell is 0 if its content is a string.
+            if (content is string)
+            {
+                UpdateCellValue(name, 0);
+            }
+            else
+            {
+                double value = (double) content;
+                UpdateCellValue(name, value);
+            }
+        }
+    }
+
+    /// <summary>
+    /// This private helper takes a variable name and either updates it in cellValueDictionary or creates a new key for the newly defined variable.
+    /// These cell keys are then given either a double or a FormulaError to hold.
     /// </summary>
     /// <param name="name"> The name of the cell to be made or updated.
     /// </param>
     /// <param name="value"> The vakue for the cell (key) to hold.
     /// </param>
-    /// <returns> Returns a list of all cells just updated.
-    /// </returns>
-    private IList<string> UpdateCell(string name, object value)
+    private void UpdateCellValue(string name, object value)
     {
-        // Need to account for the cell being set to an empty string, which effectively removes that cell.
-        if (value is string && (string) value == string.Empty )
+        if (cellValueDictionary.ContainsKey(name))
         {
-            cellDictionary.Remove(name);
-            return [name.ToUpper()];
-        }
-
-        if (cellDictionary.ContainsKey(name))
-        {
-            cellDictionary[name] = value;
-            var list = GetCellsToRecalculate(name).ToList();
-            return list;
+            cellValueDictionary[name] = value;
         }
         else
         {
-            cellDictionary.Add(name, value);
-            var list = GetCellsToRecalculate(name).ToList();
-            return list;
+            cellValueDictionary.Add(name, value);
         }
     }
 
@@ -686,5 +742,25 @@ public class Spreadsheet
         }
 
         changed.AddFirst(name);
+    }
+
+    // TODO: Variable Lookup documentation
+
+    /// <summary>
+    /// Test.
+    /// </summary>
+    /// <param name="variableName"> something.</param>
+    /// <returns> something.</returns>
+    private double VariableLookup(string variableName)
+    {
+        var list = GetCellsToRecalculate(variableName);
+        foreach (string cell in list)
+        {
+            Formula formula = new(cell);
+            formula.Evaluate(VariableLookup);
+        }
+
+        Formula calculated = new(list.First());
+        return (double) calculated.Evaluate(VariableLookup);
     }
 }
