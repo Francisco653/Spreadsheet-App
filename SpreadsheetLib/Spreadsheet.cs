@@ -331,10 +331,10 @@ public class Spreadsheet
     /// </exception>
     public object GetCellValue(string cellName)
     {
-        CheckName(name);
+        CheckName(cellName);
         if (cellValueDictionary.ContainsKey(cellName.ToUpper()))
         {
-            return cellValueDictionary[ cellName.ToUpper() ];
+            return cellValueDictionary[cellName.ToUpper()];
         }
 
         return 0;
@@ -744,23 +744,17 @@ public class Spreadsheet
         changed.AddFirst(name);
     }
 
-    // TODO: Variable Lookup documentation
-
-    /// <summary>
-    /// Test.
-    /// </summary>
-    /// <param name="variableName"> something.</param>
-    /// <returns> something.</returns>
     private double VariableLookup(string variableName)
     {
-        var list = GetCellsToRecalculate(variableName);
-        foreach (string cell in list)
+      string normalized = variableName.ToUpper();
+      object value = GetCellValue(variableName);
+      if (value is double number)
         {
-            Formula formula = new(cell);
-            formula.Evaluate(VariableLookup);
+            return number;
         }
-
-        Formula calculated = new(list.First());
-        return (double) calculated.Evaluate(VariableLookup);
+        else
+        {
+            throw new ArgumentException();
+        }
     }
 }

@@ -485,4 +485,40 @@ public sealed class SpreadsheetTests
     }
 
     // -- END OF BLACK BOX TESTS FOR ASSIGNMENT 6
+
+    /// <summary>
+    /// This test makes sure that getValue works properly when a cell is defined and another cell depends upon it.
+    /// </summary>
+    [TestMethod]
+    public void Test_GetValue_Variables_Defined()
+    {
+        Spreadsheet spreadsheet = new();
+        spreadsheet.SetContentsOfCell("B2", "= 10 +5");
+        spreadsheet.SetContentsOfCell("A1", "= 10 + b2");
+        Assert.AreEqual(25D, spreadsheet.GetCellValue("A1"));
+    }
+
+    /// <summary>
+    /// This test makes sure that getValue works properly when a cell is defined and another cell depends upon it.
+    /// </summary>
+    [TestMethod]
+    public void Test_GetValue_Variables_Undefined()
+    {
+        Spreadsheet spreadsheet = new();
+        spreadsheet.SetContentsOfCell("A1", "= 10 + b2");
+        Assert.IsTrue(spreadsheet.GetCellValue("A1") is FormulaError);
+    }
+
+    /// <summary>
+    /// This test makes sure that getValue works properly when a cell is defined and another cell depends upon it.
+    /// </summary>
+    [TestMethod]
+    public void Test_GetValue_Multiple_Formulas()
+    {
+        Spreadsheet spreadsheet = new();
+        spreadsheet.SetContentsOfCell("B2", "= 10 +5");
+        spreadsheet.SetContentsOfCell("A1", "= 10 + b2");
+        spreadsheet.SetContentsOfCell("C5", "= 4* A1");
+        Assert.AreEqual(100D, spreadsheet.GetCellValue("c5"));
+    }
 }
