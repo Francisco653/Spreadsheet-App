@@ -32,5 +32,11 @@ It can now evaluate formulas and compare them to one another.
     4. DRY - Copied IsVar from formula class to check variable name validity in Spreadsheet.
     5. Code Reuse - I reused the GetCellsToRecalculate method to check for circular dependencies.
 
-# What I've learned 
+# What I've learned about Time Management
+
+Most the assignments I have worked I started the day of or the day before. I have been able to get it away with it so far but it is very uncomfortable having to
+work multiple hours in one sitting to finish an assignment. Compared to how I worked in CS2420 though, the time I do spend working is managed differently.
+I spend a significant amount of time reading the assignment specifications and writing down API expectations. I spend a lot of time setting up files and 
+creating my black box tests. It is a few hours of prep but it has been paying off very well compared to my old style of just programming as I am reading
+the assignment, and making tests only after fully implementing everything.
     
