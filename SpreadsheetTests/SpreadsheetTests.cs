@@ -117,7 +117,7 @@ public sealed class SpreadsheetTests
     public void Test_GetCellContents_InvalidVariable()
     {
         Spreadsheet empty = new();
-        Assert.ThrowsException<InvalidNameException>(() => _ = empty.GetCellContents("1809ajsj"));
+        Assert.ThrowsExactly<InvalidNameException>(() => _ = empty.GetCellContents("1809ajsj"));
     }
 
     /// <summary>
@@ -179,7 +179,7 @@ public sealed class SpreadsheetTests
         Spreadsheet doubleSheet = new();
         doubleSheet.SetContentsOfCell("a1", "=9 - 8");
         doubleSheet.SetContentsOfCell("F12", "= 5");
-        Assert.ThrowsException<InvalidNameException>(() => _ = doubleSheet.SetContentsOfCell("not a variable!!!!", "=0"));
+        Assert.ThrowsExactly<InvalidNameException>(() => _ = doubleSheet.SetContentsOfCell("not a variable!!!!", "=0"));
     }
 
     /// <summary>
@@ -191,7 +191,7 @@ public sealed class SpreadsheetTests
         Spreadsheet doubleSheet = new();
         doubleSheet.SetContentsOfCell("a1", "9 - 8");
         doubleSheet.SetContentsOfCell("F12", "ligma");
-        Assert.ThrowsException<InvalidNameException>(() => _ = doubleSheet.SetContentsOfCell(string.Empty, "67"));
+        Assert.ThrowsExactly<InvalidNameException>(() => _ = doubleSheet.SetContentsOfCell(string.Empty, "67"));
     }
 
     /// <summary>
@@ -203,7 +203,7 @@ public sealed class SpreadsheetTests
         Spreadsheet doubleSheet = new();
         doubleSheet.SetContentsOfCell("a1", "= 9 - 8");
         doubleSheet.SetContentsOfCell("F12", "=5");
-        Assert.ThrowsException<InvalidNameException>(() => _ = doubleSheet.SetContentsOfCell("45a", "271"));
+        Assert.ThrowsExactly<InvalidNameException>(() => _ = doubleSheet.SetContentsOfCell("45a", "271"));
     }
 
     /// <summary>
@@ -214,7 +214,7 @@ public sealed class SpreadsheetTests
     public void Test_Circular_Direct()
     {
         Spreadsheet selfReference = new();
-        Assert.ThrowsException<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", "= a1 * 2"));
+        Assert.ThrowsExactly<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", "= a1 * 2"));
     }
 
     /// <summary>
@@ -226,13 +226,13 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet selfReference = new();
         selfReference.SetContentsOfCell("B1", "=      a1 - 5");
-        Assert.ThrowsException<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", " =    b1 * 2"));
+        Assert.ThrowsExactly<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", " =    b1 * 2"));
     }
 
     // --- END OF BLACK BOX PRE-TESTS
 
     /// <summary>
-    /// This tests makes sure that SetContentsOfCell returns an empty list when it has no dependents.
+    /// This tests makes sure that SetContentsOfCell returns only the changed cell itself when it has no dependents.
     /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
     /// </summary>
     [TestMethod]
@@ -240,12 +240,13 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet noDependents = new();
         var dependencyList = noDependents.SetContentsOfCell("a1", "= 9 - 8");
-        List<string> empty = new();
-        CollectionAssert.AreEquivalent(empty, dependencyList.ToList());
+        List<string> single = new();
+        single.Add("A1");
+        CollectionAssert.AreEquivalent(single, dependencyList.ToList());
     }
 
     /// <summary>
-    /// This tests makes sure that SetContentsOfCell returns a correct list of dependents. Order doesn't matter.
+    /// This tests makes sure that SetContentsOfCell returns a correct list of updated cells (itself and dependents). Order doesn't matter.
     /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
     /// </summary>
     [TestMethod]
@@ -259,11 +260,12 @@ public sealed class SpreadsheetTests
         expectedList.Add("A9");
         expectedList.Add("J12");
         expectedList.Add("BAD88");
+        expectedList.Add("A1");
         CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
     }
 
     /// <summary>
-    /// This tests makes sure that SetContentsOfCell returns a correct list of dependents when old dependents are replaced. Order doesn't matter.
+    /// This tests makes sure that SetContentsOfCell returns a correct list of updated cells when old dependents are replaced. Order doesn't matter.
     /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
     /// </summary>
     [TestMethod]
@@ -276,11 +278,12 @@ public sealed class SpreadsheetTests
 
         // Variable names should be automatically capitalized.
         expectedList.Add("B9");
+        expectedList.Add("A1");
         CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
     }
 
     /// <summary>
-    /// This tests makes sure that SetContentsOfCell returns a correct list of dependents when old dependents are replaced. Order doesn't matter.
+    /// This tests makes sure that SetContentsOfCell returns a correct list of updated cells when old dependents are replaced. Order doesn't matter.
     /// NOTE: This behavior is defined ONLY for a formula argument, not double or string.
     /// </summary>
     [TestMethod]
@@ -290,6 +293,7 @@ public sealed class SpreadsheetTests
         var dependencyList = hasDependents.SetContentsOfCell("a1", "= aAAs9 - j12 / L89 ");
         List<string> expectedList = new();
         dependencyList = hasDependents.SetContentsOfCell("a1", "98");
+        expectedList.Add("A1");
         CollectionAssert.AreEquivalent(expectedList, dependencyList.ToList());
     }
 
@@ -302,7 +306,7 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet selfReference = new();
         selfReference.SetContentsOfCell("B1", "= a1 - 5");
-        Assert.ThrowsException<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", "= b1 * 2"));
+        Assert.ThrowsExactly<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", "= b1 * 2"));
         List<string> expectedList = new();
         CollectionAssert.AreEquivalent(expectedList, selfReference.SetContentsOfCell("A1", "no circular dependencies here!!!").ToList());
     }
@@ -318,5 +322,41 @@ public sealed class SpreadsheetTests
         Assert.AreEqual(65D, empty.GetCellContents("G3"));
         empty.SetContentsOfCell("g3", string.Empty);
         Assert.AreEqual(string.Empty, empty.GetCellContents("g3"));
+    }
+
+    // Assignment 6 Black Box Testing (TTD)
+
+    /// <summary>
+    /// This test makes sure the new Spreadsheet default constructor works without crashing.
+    /// </summary>
+    [TestMethod]
+
+    public void Test_SpreadsheetConstructor_Default()
+    {
+        Spreadsheet spreadsheet = new();
+    }
+
+    /// <summary>
+    /// This test makes sure the new Spreadsheet string name constructor works without crashing.
+    /// </summary>
+    [TestMethod]
+
+    public void Test_SpreadsheetConstructor_Named()
+    {
+        Spreadsheet spreadsheet = new("Shouldn't Crash");
+    }
+
+    [TestMethod]
+    public void Test_IndexerSyntax_Get()
+    {
+        Spreadsheet spreadsheet = new();
+        object test = spreadsheet[ "C1" ];
+    }
+
+    [TestMethod]
+    public void Test_IndexerSyntax_Throws_InvalidNameException()
+    {
+        Spreadsheet spreadsheet = new();
+        Assert.ThrowsExactly( object test = spreadsheet[ "12C1" ]);
     }
 }
