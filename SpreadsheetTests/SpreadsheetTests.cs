@@ -479,4 +479,6 @@ public sealed class SpreadsheetTests
         Assert.AreEqual(100D, spreadsheetLoad.GetCellValue("A2"));
         Assert.IsFalse(spreadsheetLoad.Changed);
     }
+
+    // -- END OF BLACK BOX TESTS FOR ASSIGNMENT 6
 }
