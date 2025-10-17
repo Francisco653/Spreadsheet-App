@@ -347,6 +347,17 @@ public sealed class SpreadsheetTests
     }
 
     /// <summary>
+    /// This makes sure that the spreadsheet is properly marked as changed when a cell is updated.
+    /// </summary>
+    [TestMethod]
+    public void Test_Set_Changed_True()
+    {
+        Spreadsheet spreadsheet = new();
+        spreadsheet.SetContentsOfCell("m10", "hello");
+        Assert.IsTrue(spreadsheet.Changed);
+    }
+
+    /// <summary>
     /// This makes sure that we get 0 from an unimplemented cell with spreadsheet using indexer syntax.
     /// </summary>
     [TestMethod]
@@ -402,17 +413,70 @@ public sealed class SpreadsheetTests
     }
 
     /// <summary>
-    /// This tests ensures that a SpreadsheetReadWriteException is thrown if saving to a filepath that is invalid.
+    /// This tests ensures that a a proper Json file is saved for a spreadsheet object.
     /// </summary>
     [TestMethod]
     public void Test_Save_ProperFile()
     {
         Spreadsheet spreadsheetSaved = new("save");
         string valid = "valid_file.txt";
-
-        // TODO: Make proper JSON format string to compare with save.
-        string properJson = "Cells:";
+        spreadsheetSaved.SetContentsOfCell("A3", "= 95");
+        string properJson = """
+             {
+              "Cells": {
+                "A3": {
+                  "StringForm": "= 95"
+                }
+              }
+            }
+            """;
         spreadsheetSaved.Save(valid);
         Assert.AreEqual(properJson, File.ReadAllText("valid_file.txt"));
+    }
+
+    /// <summary>
+    /// This tests ensures that immediately after saving, the spreadsheet is marked as unchanged.
+    /// </summary>
+    [TestMethod]
+    public void Test_Save_Changed_False()
+    {
+        Spreadsheet spreadsheet = new();
+        spreadsheet.SetContentsOfCell("y7", "85.01");
+        spreadsheet.Save("test.txt");
+        Assert.IsFalse(spreadsheet.Changed);
+    }
+
+    /// <summary>
+    /// This ensures that a SpreadsheetReadWriteException if trying to load from an invalid point.
+    /// </summary>
+    [TestMethod]
+    public void Test_Load_SpreadsheetReadWriteException()
+    {
+        Spreadsheet spreadsheet = new();
+        Assert.ThrowsExactly<SpreadsheetReadWriteException>(() => spreadsheet.Load("."));
+    }
+
+    /// <summary>
+    /// This test is making sure that a proper json file is loaded in and creats cells appropriately.
+    /// </summary>
+    [TestMethod]
+    public void Test_Load_ProperFile_Changed_False()
+    {
+        Spreadsheet spreadsheetLoad = new();
+#pragma warning disable SA1118 // JSON Files do span multiple lines
+        File.WriteAllText("Loadtest.txt", /*lang=json,strict*/ """
+             {
+              "Cells": {
+                "A2": {
+                  "StringForm": "100"
+                }
+              }
+            }
+            """);
+#pragma warning restore SA1118 // Parameter should not span multiple lines'
+        spreadsheetLoad.Load("Loadtest.txt");
+        Assert.AreEqual("100", spreadsheetLoad.GetCellContents("A2"));
+        Assert.AreEqual(100D, spreadsheetLoad.GetCellValue("A2"));
+        Assert.IsFalse(spreadsheetLoad.Changed);
     }
 }
