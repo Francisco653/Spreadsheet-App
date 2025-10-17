@@ -346,17 +346,73 @@ public sealed class SpreadsheetTests
         Spreadsheet spreadsheet = new("Shouldn't Crash");
     }
 
+    /// <summary>
+    /// This makes sure that we get 0 from an unimplemented cell with spreadsheet using indexer syntax.
+    /// </summary>
+    [TestMethod]
+    public void Test_IndexerSyntax_Get_Empty()
+    {
+        Spreadsheet spreadsheet = new();
+        object test = spreadsheet[ "C1" ];
+        Assert.AreEqual("0", test);
+    }
+
+    /// <summary>
+    /// This makes sure that we can get values from spreadsheet using indexer syntax.
+    /// </summary>
     [TestMethod]
     public void Test_IndexerSyntax_Get()
     {
         Spreadsheet spreadsheet = new();
+        spreadsheet.SetContentsOfCell("C1", "45");
         object test = spreadsheet[ "C1" ];
+        Assert.AreEqual("45", test);
     }
 
+    /// <summary>
+    /// This ensures that Indexer syntax also throws an invalid name exception (same as GetCellValue would).
+    /// </summary>
     [TestMethod]
     public void Test_IndexerSyntax_Throws_InvalidNameException()
     {
         Spreadsheet spreadsheet = new();
-        Assert.ThrowsExactly( object test = spreadsheet[ "12C1" ]);
+        Assert.ThrowsExactly<InvalidNameException>(() => _ = spreadsheet["1782"]);
+    }
+
+    /// <summary>
+    /// This makes sure that we can get values from spreadsheet using indexer syntax.
+    /// </summary>
+    [TestMethod]
+    public void Test_IndexerSyntax_Set()
+    {
+        Spreadsheet spreadsheet = new();
+        spreadsheet[ "f6" ] = "10";
+        Assert.AreEqual(10, spreadsheet.GetCellValue("F6"));
+    }
+
+    /// <summary>
+    /// This tests ensures that a SpreadsheetReadWriteException is thrown if saving to a filepath that is invalid.
+    /// </summary>
+    [TestMethod]
+    public void Test_Save_SpreadsheetReadWriteException()
+    {
+        Spreadsheet spreadsheet = new();
+        string invalid = "Z://whole lot of nonsense?!?!.txt";
+        Assert.ThrowsExactly<SpreadsheetReadWriteException>(() => spreadsheet.Save(invalid));
+    }
+
+    /// <summary>
+    /// This tests ensures that a SpreadsheetReadWriteException is thrown if saving to a filepath that is invalid.
+    /// </summary>
+    [TestMethod]
+    public void Test_Save_ProperFile()
+    {
+        Spreadsheet spreadsheetSaved = new("save");
+        string valid = "valid_file.txt";
+
+        // TODO: Make proper JSON format string to compare with save.
+        string properJson = "Cells:";
+        spreadsheetSaved.Save(valid);
+        Assert.AreEqual(properJson, File.ReadAllText("valid_file.txt"));
     }
 }
