@@ -14,7 +14,8 @@ Thanks for all the help in Piaza!  This work "stands on its own".
 
 # Consulted Peers:
 Consulted Piazza to see what an empty cell should return for GetContents. I also consulted with Stack Overflow and Microsoft Documentation to make sure
-that the Remove() method in Dictionary would remove the key, not simply the value attached to the key.
+that the Remove() method in Dictionary would remove the key, not simply the value attached to the key. Copilot was useful for finding the TrimStart()
+function which made checking for '=' much easier. 
 
 
 # References

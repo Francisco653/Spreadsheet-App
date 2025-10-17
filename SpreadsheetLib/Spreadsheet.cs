@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Text.RegularExpressions;
+using CS3500.Formulas;
 using DG = CS3500.DependencyGraph.DependencyGraph;
 using FormulaType = CS3500.Formulas.Formula;
 
@@ -123,7 +124,6 @@ public class Spreadsheet
     /// </summary>
     public Spreadsheet()
     {
-        // TODO: Implement Default Constructor
         name = "default";
     }
 
@@ -133,7 +133,6 @@ public class Spreadsheet
     /// <param name="name"> Name of the cell.</param>
     public Spreadsheet(string name)
     {
-        // TODO: Implement string constructor
         this.name = name;
     }
 
@@ -249,7 +248,7 @@ public class Spreadsheet
     /// </exception>
     public void Save(string filename)
     {
-        // TODO: Implement per documentation
+        // TODO: Implement Saving per documentation
         throw new NotImplementedException();
     }
 
@@ -270,7 +269,7 @@ public class Spreadsheet
     /// <exception cref="SpreadsheetReadWriteException"> When the file cannot be opened or the json is bad.</exception>
     public void Load(string filename)
     {
-        // TODO: Implement per documentation
+        // TODO: Implement Loading per documentation
         throw new NotImplementedException();
     }
 
@@ -395,8 +394,27 @@ public class Spreadsheet
     /// </exception>
     public IList<string> SetContentsOfCell(string cellName, string content)
     {
-        // TODO: Implement per documentation
-        throw new NotImplementedException();
+        // Remove whitespaces from content for consistency checking values.
+        string trimmedContent = content.Trim();
+        CheckName(cellName);
+        double value;
+
+        if (double.TryParse(trimmedContent, out value) == true)
+        {
+            return SetCellContents(cellName.ToUpper(), value);
+        }
+        else if (trimmedContent.StartsWith('='))
+        {
+            Formula formula = new(trimmedContent.Substring(1));
+            return SetCellContents(cellName.ToUpper(), formula);
+        }
+
+        // If the cell is neither formula nor double, then it is a string.
+        // NOTE: Here we do want to prserve whitespace since the literal string is used.
+        else
+        {
+            return SetCellContents(cellName.ToUpper(), content);
+        }
     }
 
     /// <summary>
@@ -460,7 +478,7 @@ public class Spreadsheet
         CheckName(name);
 
         // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
-        cellDependencies.ReplaceDependents(name.ToUpper(), []);
+        cellDependencies.ReplaceDependees(name.ToUpper(), []);
         return UpdateCell(name.ToUpper(), number);
     }
 
@@ -482,7 +500,7 @@ public class Spreadsheet
         CheckName(name);
 
         // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
-        cellDependencies.ReplaceDependents(name.ToUpper(), []);
+        cellDependencies.ReplaceDependees(name.ToUpper(), []);
         return UpdateCell(name.ToUpper(), text);
     }
 
@@ -512,8 +530,8 @@ public class Spreadsheet
         CheckName(name);
 
         // Here we check for other variables in formula. If we find any, then we need to update our dependencies.
-        var dependents = formula.GetVariables();
-        cellDependencies.ReplaceDependents(name.ToUpper(), dependents);
+        var dependees = formula.GetVariables();
+        cellDependencies.ReplaceDependees(name.ToUpper(), dependees);
 
         // Checks for circular exceptions
         GetCellsToRecalculate(name.ToUpper());
@@ -530,7 +548,7 @@ public class Spreadsheet
     /// </param>
     /// <param name="value"> The vakue for the cell (key) to hold.
     /// </param>
-    /// <returns> Returns a list of all cells dependent on the cell just updated.
+    /// <returns> Returns a list of all cells just updated.
     /// </returns>
     private IList<string> UpdateCell(string name, object value)
     {
@@ -538,18 +556,22 @@ public class Spreadsheet
         if (value is string && (string) value == string.Empty )
         {
             cellDictionary.Remove(name);
-            return [];
+            return [name.ToUpper()];
         }
 
         if (cellDictionary.ContainsKey(name))
         {
             cellDictionary[name] = value;
-            return GetDirectDependents(name).ToList();
+            var list = GetDirectDependents(name).ToList();
+            list.Insert(0, name.ToUpper());
+            return list;
         }
         else
         {
             cellDictionary.Add(name, value);
-            return GetDirectDependents(name).ToList();
+            var list = GetDirectDependents(name).ToList();
+            list.Insert(0, name.ToUpper());
+            return list;
         }
     }
 

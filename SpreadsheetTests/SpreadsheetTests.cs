@@ -308,6 +308,7 @@ public sealed class SpreadsheetTests
         selfReference.SetContentsOfCell("B1", "= a1 - 5");
         Assert.ThrowsExactly<CircularException>(() => _ = selfReference.SetContentsOfCell("A1", "= b1 * 2"));
         List<string> expectedList = new();
+        expectedList.Add("A1");
         CollectionAssert.AreEquivalent(expectedList, selfReference.SetContentsOfCell("A1", "no circular dependencies here!!!").ToList());
     }
 
