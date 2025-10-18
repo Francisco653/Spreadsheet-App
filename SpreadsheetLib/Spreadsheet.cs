@@ -2,7 +2,13 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
+using System.Data;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Threading.Channels;
+using CS3500.Formulas;
 using DG = CS3500.DependencyGraph.DependencyGraph;
 using FormulaType = CS3500.Formulas.Formula;
 
@@ -30,6 +36,27 @@ public class CircularException : Exception
 public class InvalidNameException : Exception
 #pragma warning restore SA1402 // File may only contain a single type
 {
+}
+
+/// <summary>
+/// <para>
+///   Thrown to indicate that a read or write attempt has failed with
+///   an expected error message informing the user of what went wrong.
+/// </para>
+/// </summary>
+public class SpreadsheetReadWriteException : Exception
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SpreadsheetReadWriteException"/> class.
+    ///   <para>
+    ///     Creates the exception with a message defining what went wrong.
+    ///   </para>
+    /// </summary>
+    /// <param name="msg"> An informative message to the user. </param>
+    public SpreadsheetReadWriteException(string msg)
+    : base(msg)
+    {
+    }
 }
 
 /// <summary>
@@ -92,8 +119,242 @@ public class Spreadsheet
     private const string VariableRegExPattern = @"[a-zA-Z]+\d+";
 
     // All variable names will be uppercase for sake of normality
-    private Dictionary<string, object> cellDictionary = new();
+    private Dictionary<string, object> cellContentDictionary = new();
+    private Dictionary<string, object> cellValueDictionary = new();
     private DG cellDependencies = new();
+    private string name;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Spreadsheet"/> class.
+    /// If a name isn't provided, we use name "default".
+    /// </summary>
+    public Spreadsheet()
+    {
+        name = "default";
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Spreadsheet"/> class.
+    /// </summary>
+    /// <param name="name"> Name of the cell.</param>
+    public Spreadsheet(string name)
+    {
+        this.name = name;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the spreadsheet has been changed before saving or loading.
+    /// </summary>
+    public bool Changed { get; private set; }
+
+    /// <summary>
+    ///   <para>
+    ///     Shortcut syntax to for getting the value of the cell
+    ///     using the [] operator.
+    ///   </para>
+    ///   <para>
+    ///     See: <see cref="GetCellValue(string)"/>.
+    ///   </para>
+    ///   <para>
+    ///     Example Usage:
+    ///   </para>
+    ///   <code>
+    ///      sheet.SetContentsOfCell( "A1", "=5+5" );
+    ///
+    ///      sheet["A1"] == 10;
+    ///      // vs.
+    ///      sheet.GetCellValue("A1") == 10;
+    ///   </code>
+    /// </summary>
+    /// <param name="cellName"> Any valid cell name. </param>
+    /// <returns>
+    ///   Returns the value of a cell.  Note: If the cell is a formula, the value should
+    ///   already have been computed.
+    /// </returns>
+    /// <exception cref="InvalidNameException">
+    ///     If the name parameter is invalid, throw an InvalidNameException.
+    /// </exception>
+    public object this[ string cellName ]
+    {
+        // TODO: Implement Indexer Syntax Override
+        get
+        {
+           return GetCellValue( cellName );
+        }
+
+        set
+        {
+            SetContentsOfCell(cellName, (string) value);
+        }
+    }
+
+    /// <summary>
+    ///   <para>
+    ///     Writes the contents of this spreadsheet to the named file using a JSON format.
+    ///     If the file already exists, overwrite it.
+    ///   </para>
+    ///   <para>
+    ///     The output JSON should look like the following.
+    ///   </para>
+    ///   <para>
+    ///     For example, consider a spreadsheet that contains a cell "A1"
+    ///     with contents being the double 5.0, and a cell "B3" with contents
+    ///     being the Formula("A1+2"), and a cell "C4" with the contents "hello".
+    ///   </para>
+    ///   <para>
+    ///      This method would produce the following JSON string:
+    ///   </para>
+    ///   <code>
+    ///   {
+    ///     "Cells": {
+    ///       "A1": {
+    ///         "StringForm": "5"
+    ///       },
+    ///       "B3": {
+    ///         "StringForm": "=A1+2"
+    ///       },
+    ///       "C4": {
+    ///         "StringForm": "hello"
+    ///       }
+    ///     }
+    ///   }
+    ///   </code>
+    ///   <para>
+    ///     You can achieve this by making sure your data structure is a dictionary
+    ///     and that the contained objects (Cells) have property named "StringForm"
+    ///     (if this name does not match your existing code, use the JsonPropertyName
+    ///     attribute).
+    ///   </para>
+    ///   <para>
+    ///     There can be 0 cells in the dictionary, resulting in { "Cells" : {} }.
+    ///   </para>
+    ///   <para>
+    ///     Further, when writing the value of each cell...
+    ///   </para>
+    ///   <list type="bullet">
+    ///     <item>
+    ///       If the contents is a string, the value of StringForm is that string
+    ///     </item>
+    ///     <item>
+    ///       If the contents is a double d, the value of StringForm is d.ToString()
+    ///     </item>
+    ///     <item>
+    ///       If the contents is a Formula f, the value of StringForm is "=" + f.ToString()
+    ///     </item>
+    ///   </list>
+    ///   <para>
+    ///     After saving the file, the spreadsheet is no longer "changed".
+    ///   </para>
+    /// </summary>
+    /// <param name="filename"> The name (with path) of the file to save to.</param>
+    /// <exception cref="SpreadsheetReadWriteException">
+    ///   If there are any problems opening, writing, or closing the file,
+    ///   the method should throw a SpreadsheetReadWriteException with an
+    ///   explanatory message.
+    /// </exception>
+    public void Save(string filename)
+    {
+        try
+        {
+            // Build the inner dictionary: cell name → { "StringForm": value }
+            var cellEntries = new Dictionary<string, Dictionary<string, string>>();
+
+            foreach (var kvp in cellContentDictionary)
+            {
+                string cellName = kvp.Key;
+                object content = kvp.Value;
+
+                // Convert content to string form compatible with SetContentsOfCell
+                string stringForm = content switch
+                {
+                    string s => s,
+                    double d => d.ToString(),
+                    Formula f => "=" + f.ToString(),
+                    _ => throw new InvalidOperationException($"Unsupported cell content type for {cellName}"),
+                };
+
+                cellEntries[ cellName ] = new Dictionary<string, string>
+            {
+                { "StringForm", stringForm },
+            };
+            }
+
+            // Build the root object: { "Cells": { ... } }
+            var root = new Dictionary<string, object>
+        {
+            { "Cells", cellEntries },
+        };
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
+
+            string json = JsonSerializer.Serialize(root, options);
+            File.WriteAllText(filename, json);
+
+            Changed = false; // Mark spreadsheet as unchanged
+        }
+        catch (Exception ex)
+        {
+            throw new SpreadsheetReadWriteException($"Failed to save spreadsheet: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    ///   <para>
+    ///     Read the data (JSON) from the file and instantiate the current
+    ///     spreadsheet.  See <see cref="Save(string)"/> for expected format.
+    ///   </para>
+    ///   <para>
+    ///     Note: First deletes any current data in the spreadsheet.
+    ///   </para>
+    ///   <para>
+    ///     Loading a spreadsheet should set changed to false.  External
+    ///     programs should alert the user before loading over a changed sheet.
+    ///   </para>
+    /// </summary>
+    /// <param name="filename"> The saved file name including the path. </param>
+    /// <exception cref="SpreadsheetReadWriteException"> When the file cannot be opened or the json is bad.</exception>
+    public void Load(string filename)
+    {
+        try
+        {
+            string json = File.ReadAllText(filename);
+            using JsonDocument doc = JsonDocument.Parse(json);
+
+            // Clear existing data
+            cellValueDictionary.Clear();
+            cellContentDictionary.Clear();
+
+            if (!doc.RootElement.TryGetProperty("Cells", out JsonElement cellsElement) || cellsElement.ValueKind != JsonValueKind.Object)
+            {
+                throw new SpreadsheetReadWriteException("Invalid or missing 'Cells' section in JSON.");
+            }
+
+            foreach (JsonProperty cellProp in cellsElement.EnumerateObject())
+            {
+                string cellName = cellProp.Name;
+                JsonElement cellContent = cellProp.Value;
+
+                if (!cellContent.TryGetProperty("StringForm", out JsonElement stringFormElement))
+                {
+                    throw new SpreadsheetReadWriteException($"Missing 'StringForm' for cell {cellName}.");
+                }
+
+                string stringForm = stringFormElement.GetString() ?? string.Empty;
+
+                // Use SetContentsOfCell to populate the spreadsheet
+                SetContentsOfCell(cellName, stringForm);
+            }
+
+            Changed = false;
+        }
+        catch (Exception ex)
+        {
+            throw new SpreadsheetReadWriteException($"Failed to load spreadsheet: {ex.Message}");
+        }
+    }
 
     /// <summary>
     ///   Provides a copy of the names of all of the cells in the spreadsheet
@@ -104,7 +365,7 @@ public class Spreadsheet
     /// </returns>
     public ISet<string> GetNamesOfAllNonemptyCells()
     {
-        return cellDictionary.Keys.ToHashSet();
+        return cellContentDictionary.Keys.ToHashSet();
     }
 
     /// <summary>
@@ -126,107 +387,129 @@ public class Spreadsheet
         CheckName(name);
 
         // By default return an empty string for an undefined cell.
-        if (! cellDictionary.ContainsKey(name.ToUpper()))
+        if (! cellContentDictionary.ContainsKey(name.ToUpper()))
         {
             return string.Empty;
         }
 
-        return cellDictionary[name.ToUpper()];
+        return cellContentDictionary[name.ToUpper()];
     }
 
     /// <summary>
-    ///  Set the contents of the named cell to the given number.
+    ///   <para>
+    ///     Return the value of the named cell.
+    ///   </para>
     /// </summary>
-    ///
+    /// <param name="cellName"> The cell in question. </param>
+    /// <returns>
+    ///   Returns the value (as opposed to the contents) of the named cell.  The return
+    ///   value's type should be either a string, a double, or a CS3500.Formula.FormulaError.
+    ///   If the cell contents are a formula, the value should have already been computed
+    ///   at this point.
+    /// </returns>
     /// <exception cref="InvalidNameException">
-    ///   If the name is invalid, throw an InvalidNameException.
+    ///   If the provided name is invalid, throws an InvalidNameException.
     /// </exception>
+    public object GetCellValue(string cellName)
+    {
+        CheckName(cellName);
+        if (cellValueDictionary.ContainsKey(cellName.ToUpper()) && !(cellContentDictionary[ cellName.ToUpper() ] is string))
+        {
+            return cellValueDictionary[ cellName.ToUpper() ];
+        }
+
+        // This handles returning the "value" of a string cell.
+        else if (cellContentDictionary.ContainsKey(cellName.ToUpper()))
+        {
+            return cellContentDictionary[ cellName.ToUpper() ];
+        }
+
+        // Default return value of zero if the cell is completely uninitalized
+        return 0;
+    }
+
+    /// <summary>
+    ///   <para>
+    ///       Sets the contents of the named cell to the appropriate object
+    ///       based on the string in <paramref name="content"/>.
+    ///   </para>
+    ///   <para>
+    ///       First, if the <paramref name="content"/> parses as a double, the contents of the named
+    ///       cell becomes that double.
+    ///   </para>
+    ///   <para>
+    ///       Otherwise, if the <paramref name="content"/> begins with the character '=', an attempt is made
+    ///       to parse the remainder of content into a Formula.
+    ///   </para>
+    ///   <para>
+    ///       There are then three possible outcomes when a formula is detected:
+    ///   </para>
     ///
-    /// <param name="name"> The name of the cell. </param>
-    /// <param name="number"> The new content of the cell. </param>
+    ///   <list type="number">
+    ///     <item>
+    ///       If the remainder of content cannot be parsed into a Formula, a
+    ///       FormulaFormatException is thrown.
+    ///     </item>
+    ///     <item>
+    ///       If changing the contents of the named cell to be f
+    ///       would cause a circular dependency, a CircularException is thrown,
+    ///       and no change is made to the spreadsheet.
+    ///     </item>
+    ///     <item>
+    ///       Otherwise, the contents of the named cell becomes f.
+    ///     </item>
+    ///   </list>
+    ///   <para>
+    ///     Finally, if the content is a string that is not a double and does not
+    ///     begin with an "=" (equal sign), save the content as a string.
+    ///   </para>
+    ///   <para>
+    ///     On successfully changing the contents of a cell, the spreadsheet will be <see cref="Changed"/>.
+    ///   </para>
+    /// </summary>
+    /// <param name="cellName"> The cell name that is being changed.</param>
+    /// <param name="content"> The new content of the cell.</param>
     /// <returns>
     ///   <para>
-    ///     This method returns an ordered list consisting of the passed in name
-    ///     followed by the names of all other cells whose value depends, directly
-    ///     or indirectly, on the named cell.
+    ///     This method returns a list of all cells that have been updated
+    ///     (of course including the cell that was just updated).
     ///   </para>
     ///   <para>
-    ///     The order must correspond to a valid dependency ordering for recomputing
-    ///     all of the cells, i.e., if you re-evaluate each cell in the order of the list,
-    ///     the overall spreadsheet will be correctly updated.
-    ///   </para>
-    ///   <para>
-    ///     For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
-    ///     list [A1, B1, C1] is returned, i.e., A1 was changed, so then A1 must be
-    ///     evaluated, followed by B1 re-evaluated, followed by C1 re-evaluated.
+    ///     For example, if cellName is "A1", and B1 contains A1*2, and C1 contains B1+A1, the
+    ///     list containing [A1, B1, C1] is returned.
     ///   </para>
     /// </returns>
-    public IList<string> SetCellContents(string name, double number)
-    {
-        // We check if the given variable name is valid.
-        CheckName(name);
-
-        // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
-        cellDependencies.ReplaceDependents(name.ToUpper(), []);
-        return UpdateCell(name.ToUpper(), number);
-    }
-
-    /// <summary>
-    ///   The contents of the named cell becomes the given text.
-    /// </summary>
-    ///
     /// <exception cref="InvalidNameException">
-    ///   If the name is invalid, throw an InvalidNameException.
-    /// </exception>
-    /// <param name="name"> The name of the cell. </param>
-    /// <param name="text"> The new content of the cell. </param>
-    /// <returns>
-    ///   The same list as defined in <see cref="SetCellContents(string, double)"/>.
-    /// </returns>
-    public IList<string> SetCellContents(string name, string text)
-    {
-        // We check if the given variable name is valid.
-        CheckName(name);
-
-        // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
-        cellDependencies.ReplaceDependents(name.ToUpper(), []);
-        return UpdateCell(name.ToUpper(), text);
-    }
-
-    /// <summary>
-    ///   Set the contents of the named cell to the given formula.
-    /// </summary>
-    /// <exception cref="InvalidNameException">
-    ///   If the name is invalid, throw an InvalidNameException.
+    ///   If the cellName parameter contains an invalid name, throw an InvalidNameException.
     /// </exception>
     /// <exception cref="CircularException">
-    ///   <para>
-    ///     If changing the contents of the named cell to be the formula would
-    ///     cause a circular dependency, throw a CircularException.
-    ///   </para>
-    ///   <para>
-    ///     No change is made to the spreadsheet.
-    ///   </para>
+    ///   If changing the contents of the named cell to be the formula would
+    ///   cause a circular dependency, throw a CircularException.
+    ///   (NOTE: No change is made to the spreadsheet.)
     /// </exception>
-    /// <param name="name"> The name of the cell. </param>
-    /// <param name="formula"> The new content of the cell. </param>
-    /// <returns>
-    ///   The same list as defined in <see cref="SetCellContents(string, double)"/>.
-    /// </returns>
-    public IList<string> SetCellContents(string name, FormulaType formula)
+    public IList<string> SetContentsOfCell(string cellName, string content)
     {
-        // We check if the given variable name is valid.
-        CheckName(name);
+        // Remove whitespaces from content for consistency checking values.
+        string trimmedContent = content.Trim();
+        CheckName(cellName);
+        double value;
 
-        // Here we check for other variables in formula. If we find any, then we need to update our dependencies.
-        var dependents = formula.GetVariables();
-        cellDependencies.ReplaceDependents(name.ToUpper(), dependents);
+        if (double.TryParse(trimmedContent, out value) == true)
+        {
+            return SetCellContents(cellName.ToUpper(), value);
+        }
+        else if (trimmedContent.StartsWith('='))
+        {
+            Formula formula = new(trimmedContent.Substring(1));
+            return SetCellContents(cellName.ToUpper(), formula);
+        }
 
-        // Checks for circular exceptions
-        GetCellsToRecalculate(name.ToUpper());
-
-        // Now we can update cell as per usual.
-        return UpdateCell(name.ToUpper(), formula);
+        // If the cell is neither formula nor double, then it is a string.
+        // NOTE: Here we do want to prserve whitespace since the literal string is used.
+        else
+        {
+            return SetCellContents(cellName.ToUpper(), content);
+        }
     }
 
     /// <summary>
@@ -258,33 +541,179 @@ public class Spreadsheet
     }
 
     /// <summary>
-    /// This private helper takes a variable name and either updates it in cellDictionary or creates a new key for the newly defined variable.
+    ///  Set the contents of the named cell to the given number.
+    /// </summary>
+    ///
+    /// <exception cref="InvalidNameException">
+    ///   If the name is invalid, throw an InvalidNameException.
+    /// </exception>
+    ///
+    /// <param name="name"> The name of the cell. </param>
+    /// <param name="number"> The new content of the cell. </param>
+    /// <returns>
+    ///   <para>
+    ///     This method returns an ordered list consisting of the passed in name
+    ///     followed by the names of all other cells whose value depends, directly
+    ///     or indirectly, on the named cell.
+    ///   </para>
+    ///   <para>
+    ///     The order must correspond to a valid dependency ordering for recomputing
+    ///     all of the cells, i.e., if you re-evaluate each cell in the order of the list,
+    ///     the overall spreadsheet will be correctly updated.
+    ///   </para>
+    ///   <para>
+    ///     For example, if name is A1, B1 contains A1*2, and C1 contains B1+A1, the
+    ///     list [A1, B1, C1] is returned, i.e., A1 was changed, so then A1 must be
+    ///     evaluated, followed by B1 re-evaluated, followed by C1 re-evaluated.
+    ///   </para>
+    /// </returns>
+    private IList<string> SetCellContents(string name, double number)
+    {
+        // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
+        cellDependencies.ReplaceDependees(name.ToUpper(), []);
+        return UpdateCellContent(name.ToUpper(), number);
+    }
+
+    /// <summary>
+    ///   The contents of the named cell becomes the given text.
+    /// </summary>
+    ///
+    /// <exception cref="InvalidNameException">
+    ///   If the name is invalid, throw an InvalidNameException.
+    /// </exception>
+    /// <param name="name"> The name of the cell. </param>
+    /// <param name="text"> The new content of the cell. </param>
+    /// <returns>
+    ///   The same list as defined in <see cref="SetCellContents(string, double)"/>.
+    /// </returns>
+    private IList<string> SetCellContents(string name, string text)
+    {
+        // Since the cell being set is not a formula now, we need to remove any potential dependencies that may exist.
+        cellDependencies.ReplaceDependees(name.ToUpper(), []);
+        return UpdateCellContent(name.ToUpper(), text);
+    }
+
+    /// <summary>
+    ///   Set the contents of the named cell to the given formula.
+    /// </summary>
+    /// <exception cref="InvalidNameException">
+    ///   If the name is invalid, throw an InvalidNameException.
+    /// </exception>
+    /// <exception cref="CircularException">
+    ///   <para>
+    ///     If changing the contents of the named cell to be the formula would
+    ///     cause a circular dependency, throw a CircularException.
+    ///   </para>
+    ///   <para>
+    ///     No change is made to the spreadsheet.
+    ///   </para>
+    /// </exception>
+    /// <param name="name"> The name of the cell. </param>
+    /// <param name="formula"> The new content of the cell. </param>
+    /// <returns>
+    ///   The same list as defined in <see cref="SetCellContents(string, double)"/>.
+    /// </returns>
+    private IList<string> SetCellContents(string name, FormulaType formula)
+    {
+        // Here we check for other variables in formula. If we find any, then we need to update our dependencies.
+        var dependees = formula.GetVariables();
+        cellDependencies.ReplaceDependees(name.ToUpper(), dependees);
+
+        // Checks for circular exceptions
+        GetCellsToRecalculate(name.ToUpper());
+
+        // Now we can update cell as per usual.
+        return UpdateCellContent(name.ToUpper(), formula);
+    }
+
+    /// <summary>
+    /// This private helper takes a variable name and either updates it in cellContentDictionary or creates a new key for the newly defined variable.
     /// These cell keys are then given an object value (double, string, or formula) to hold.
+    /// </summary>
+    /// <param name="name"> The name of the cell to be made or updated.
+    /// </param>
+    /// <param name="content"> The vakue for the cell (key) to hold.
+    /// </param>
+    /// <returns> Returns a list of all cells just updated.
+    /// </returns>
+    private IList<string> UpdateCellContent(string name, object content)
+    {
+        // Need to account for the cell being set to an empty string, which effectively removes that cell.
+        if (content is string && (string) content == string.Empty )
+        {
+            cellContentDictionary.Remove(name);
+            cellValueDictionary.Remove(name);
+            var list = GetCellsToRecalculate(name).ToList();
+            Changed = true;
+            return list;
+        }
+
+        if (cellContentDictionary.ContainsKey(name))
+        {
+            cellContentDictionary[name] = content;
+            FindValue(name, content);
+
+            var list = GetCellsToRecalculate(name).ToList();
+            Changed = true;
+            return list;
+        }
+        else
+        {
+            cellContentDictionary.Add(name, content);
+
+            FindValue(name, content);
+
+            var list = GetCellsToRecalculate(name).ToList();
+            Changed = true;
+            return list;
+        }
+    }
+
+    /// <summary>
+    /// This private helper method is used to find the value from the content of a cell, whether it be a formula or a double.
+    /// </summary>
+    /// <param name="name"> The name of the cell wev are trying to evaluate.</param>
+    /// <param name="content"> The content of the cell. This can be a formula, double, or string. </param>
+    private void FindValue(string name, object content)
+    {
+        if (content is Formula)
+        {
+            Formula formula = (Formula)content;
+            object value = formula.Evaluate(VariableLookup);
+            UpdateCellValue(name, value);
+        }
+        else
+        {
+            // The value of a cell is 0 if its content is a string.
+            if (content is string)
+            {
+                UpdateCellValue(name, 0);
+            }
+            else
+            {
+                double value = (double) content;
+                UpdateCellValue(name, value);
+            }
+        }
+    }
+
+    /// <summary>
+    /// This private helper takes a variable name and either updates it in cellValueDictionary or creates a new key for the newly defined variable.
+    /// These cell keys are then given either a double or a FormulaError to hold.
     /// </summary>
     /// <param name="name"> The name of the cell to be made or updated.
     /// </param>
     /// <param name="value"> The vakue for the cell (key) to hold.
     /// </param>
-    /// <returns> Returns a list of all cells dependent on the cell just updated.
-    /// </returns>
-    private IList<string> UpdateCell(string name, object value)
+    private void UpdateCellValue(string name, object value)
     {
-        // Need to account for the cell being set to an empty string, which effectively removes that cell.
-        if (value is string && (string) value == string.Empty )
+        if (cellValueDictionary.ContainsKey(name))
         {
-            cellDictionary.Remove(name);
-            return [];
-        }
-
-        if (cellDictionary.ContainsKey(name))
-        {
-            cellDictionary[name] = value;
-            return GetDirectDependents(name).ToList();
+            cellValueDictionary[name] = value;
         }
         else
         {
-            cellDictionary.Add(name, value);
-            return GetDirectDependents(name).ToList();
+            cellValueDictionary.Add(name, value);
         }
     }
 
@@ -401,5 +830,19 @@ public class Spreadsheet
         }
 
         changed.AddFirst(name);
+    }
+
+    private double VariableLookup(string variableName)
+    {
+      string normalized = variableName.ToUpper();
+      object value = GetCellValue(variableName);
+      if (value is double number)
+        {
+            return number;
+        }
+        else
+        {
+            throw new ArgumentException();
+        }
     }
 }

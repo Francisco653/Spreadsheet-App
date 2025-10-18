@@ -23,7 +23,7 @@ It can now evaluate formulas and compare them to one another.
     3. Assignment Three:   Predicted Hours:           8        Actual Hours:    4.5
     4. Assignment Four :   Predicted Hours:           5        Actual Hours:    5.5
     5. Assignment Five :   Predicted Hours:           7        Actual Hours:    6
-    6. Assignment Six :   Predicted Hours:           ?        Actual Hours:    ?
+    6. Assignment Six :   Predicted Hours:           8        Actual Hours:    8.5 (so far)
 
     # THIS IS A TEST FOR BRANCHING MAIN VS PS6
 
@@ -33,3 +33,12 @@ It can now evaluate formulas and compare them to one another.
     3. Seperation of concerns - Within my Evaluate method in Formula class, I acknowledge and document that the lookup method used is to be defined elsewhere, and not the concern of Evaluate to define.
     4. DRY - Copied IsVar from formula class to check variable name validity in Spreadsheet.
     5. Code Reuse - I reused the GetCellsToRecalculate method to check for circular dependencies.
+
+# What I've learned about Time Management
+
+Most the assignments I have worked I started the day of or the day before. I have been able to get it away with it so far but it is very uncomfortable having to
+work multiple hours in one sitting to finish an assignment. Compared to how I worked in CS2420 though, the time I do spend working is managed differently.
+I spend a significant amount of time reading the assignment specifications and writing down API expectations. I spend a lot of time setting up files and 
+creating my black box tests. It is a few hours of prep but it has been paying off very well compared to my old style of just programming as I am reading
+the assignment, and making tests only after fully implementing everything.
+    
