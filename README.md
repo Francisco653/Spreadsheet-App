@@ -23,7 +23,7 @@ It can now evaluate formulas and compare them to one another.
     3. Assignment Three:   Predicted Hours:           8        Actual Hours:    4.5
     4. Assignment Four :   Predicted Hours:           5        Actual Hours:    5.5
     5. Assignment Five :   Predicted Hours:           7        Actual Hours:    6
-    6. Assignment Six :   Predicted Hours:           8        Actual Hours:    8.5 (so far)
+    6. Assignment Six :   Predicted Hours:           8        Actual Hours:    8.5
 
     # THIS IS A TEST FOR BRANCHING MAIN VS PS6
 
