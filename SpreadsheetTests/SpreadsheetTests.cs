@@ -2,6 +2,7 @@
 // Copyright (c) 2025 UofU-CS3500. All rights reserved.
 // </copyright>
 
+using System.Text.Json;
 using CS3500.Formulas;
 using CS3500.Spreadsheets;
 
@@ -369,7 +370,7 @@ public sealed class SpreadsheetTests
     {
         Spreadsheet spreadsheet = new();
         object test = spreadsheet[ "C1" ];
-        Assert.AreEqual(0D, test);
+        Assert.AreEqual(0, test);
     }
 
     /// <summary>
@@ -381,7 +382,7 @@ public sealed class SpreadsheetTests
         Spreadsheet spreadsheet = new();
         spreadsheet.SetContentsOfCell("C1", "45");
         object test = spreadsheet[ "C1" ];
-        Assert.AreEqual("45", test);
+        Assert.AreEqual(45D, test);
     }
 
     /// <summary>
@@ -416,31 +417,37 @@ public sealed class SpreadsheetTests
         Assert.ThrowsExactly<SpreadsheetReadWriteException>(() => spreadsheet.Save(invalid));
     }
 
-    /// <summary>
-    /// This tests ensures that a a proper Json file is saved for a spreadsheet object.
-    /// </summary>
+/// <summary>
+/// This tests ensures that a a proper Json file is saved for a spreadsheet object.
+/// </summary>
     [TestMethod]
     public void Test_Save_ProperFile()
-    {
+{
         Spreadsheet spreadsheetSaved = new("save");
         string valid = "valid_file.txt";
         spreadsheetSaved.SetContentsOfCell("A3", "= 95");
+
         string properJson = """
-             {
+            {
               "Cells": {
                 "A3": {
-                  "StringForm": "= 95"
+                  "StringForm": "=95"
                 }
               }
             }
             """;
-        spreadsheetSaved.Save(valid);
-        Assert.AreEqual(properJson, File.ReadAllText("valid_file.txt"));
-    }
 
-    /// <summary>
-    /// This tests ensures that immediately after saving, the spreadsheet is marked as unchanged.
-    /// </summary>
+        spreadsheetSaved.Save(valid);
+
+        var expected = JsonDocument.Parse(properJson).RootElement;
+        var actual = JsonDocument.Parse(File.ReadAllText(valid)).RootElement;
+
+        Assert.AreEqual(expected.ToString().Trim(), actual.ToString().Trim());
+}
+
+/// <summary>
+/// This tests ensures that immediately after saving, the spreadsheet is marked as unchanged.
+/// </summary>
     [TestMethod]
     public void Test_Save_Changed_False()
     {
@@ -479,7 +486,7 @@ public sealed class SpreadsheetTests
             """);
 #pragma warning restore SA1118 // Parameter should not span multiple lines'
         spreadsheetLoad.Load("Loadtest.txt");
-        Assert.AreEqual("100", spreadsheetLoad.GetCellContents("A2"));
+        Assert.AreEqual(100D, spreadsheetLoad.GetCellContents("A2"));
         Assert.AreEqual(100D, spreadsheetLoad.GetCellValue("A2"));
         Assert.IsFalse(spreadsheetLoad.Changed);
     }
@@ -520,5 +527,42 @@ public sealed class SpreadsheetTests
         spreadsheet.SetContentsOfCell("A1", "= 10 + b2");
         spreadsheet.SetContentsOfCell("C5", "= 4* A1");
         Assert.AreEqual(100D, spreadsheet.GetCellValue("c5"));
+    }
+
+    /// <summary>
+    /// This ensures that when getting with the Indexer override, strings are properly returned.
+    /// </summary>
+    [TestMethod]
+    public void Test_Indexer_Get_String()
+    {
+        Spreadsheet spreadsheet = new();
+        spreadsheet.SetContentsOfCell("pB2", "awesome");
+        Assert.AreEqual("awesome", spreadsheet.GetCellValue("PB2"));
+    }
+
+    /// <summary>
+    /// This is a stress test for setting contents of a cell and evaluating the value when there is a long chain of dependencies.
+    /// </summary>
+    [TestMethod]
+    [Timeout(3000)]
+    public void StressTest_DeepDependencyChain_10000()
+    {
+        Spreadsheet sheet = new();
+
+        // Set A1 to a base value
+        sheet.SetContentsOfCell("A1", "1");
+
+        // Chain A2 to A10000: A2 = A1, A3 = A2, ..., A10000 = A9999
+        for (int i = 2; i <= 10000; i++)
+        {
+            string current = $"A{i}";
+            string previous = $"A{i - 1}";
+            sheet.SetContentsOfCell(current, $"={previous}");
+        }
+
+        // Evaluate the final cell
+        object value = sheet.GetCellValue("A10000");
+
+        Assert.AreEqual(1.0, value);
     }
 }

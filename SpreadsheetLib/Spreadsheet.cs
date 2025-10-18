@@ -3,7 +3,11 @@
 // </copyright>
 
 using System.Data;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
+using System.Threading.Channels;
 using CS3500.Formulas;
 using DG = CS3500.DependencyGraph.DependencyGraph;
 using FormulaType = CS3500.Formulas.Formula;
@@ -175,12 +179,12 @@ public class Spreadsheet
         // TODO: Implement Indexer Syntax Override
         get
         {
-            throw new NotImplementedException();
+           return GetCellValue( cellName );
         }
 
         set
         {
-            throw new NotImplementedException();
+            SetContentsOfCell(cellName, (string) value);
         }
     }
 
@@ -250,8 +254,51 @@ public class Spreadsheet
     /// </exception>
     public void Save(string filename)
     {
-        // TODO: Implement Saving per documentation
-        throw new NotImplementedException();
+        try
+        {
+            // Build the inner dictionary: cell name → { "StringForm": value }
+            var cellEntries = new Dictionary<string, Dictionary<string, string>>();
+
+            foreach (var kvp in cellContentDictionary)
+            {
+                string cellName = kvp.Key;
+                object content = kvp.Value;
+
+                // Convert content to string form compatible with SetContentsOfCell
+                string stringForm = content switch
+                {
+                    string s => s,
+                    double d => d.ToString(),
+                    Formula f => "=" + f.ToString(),
+                    _ => throw new InvalidOperationException($"Unsupported cell content type for {cellName}"),
+                };
+
+                cellEntries[ cellName ] = new Dictionary<string, string>
+            {
+                { "StringForm", stringForm },
+            };
+            }
+
+            // Build the root object: { "Cells": { ... } }
+            var root = new Dictionary<string, object>
+        {
+            { "Cells", cellEntries },
+        };
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+            };
+
+            string json = JsonSerializer.Serialize(root, options);
+            File.WriteAllText(filename, json);
+
+            Changed = false; // Mark spreadsheet as unchanged
+        }
+        catch (Exception ex)
+        {
+            throw new SpreadsheetReadWriteException($"Failed to save spreadsheet: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -271,8 +318,42 @@ public class Spreadsheet
     /// <exception cref="SpreadsheetReadWriteException"> When the file cannot be opened or the json is bad.</exception>
     public void Load(string filename)
     {
-        // TODO: Implement Loading per documentation
-        throw new NotImplementedException();
+        try
+        {
+            string json = File.ReadAllText(filename);
+            using JsonDocument doc = JsonDocument.Parse(json);
+
+            // Clear existing data
+            cellValueDictionary.Clear();
+            cellContentDictionary.Clear();
+
+            if (!doc.RootElement.TryGetProperty("Cells", out JsonElement cellsElement) || cellsElement.ValueKind != JsonValueKind.Object)
+            {
+                throw new SpreadsheetReadWriteException("Invalid or missing 'Cells' section in JSON.");
+            }
+
+            foreach (JsonProperty cellProp in cellsElement.EnumerateObject())
+            {
+                string cellName = cellProp.Name;
+                JsonElement cellContent = cellProp.Value;
+
+                if (!cellContent.TryGetProperty("StringForm", out JsonElement stringFormElement))
+                {
+                    throw new SpreadsheetReadWriteException($"Missing 'StringForm' for cell {cellName}.");
+                }
+
+                string stringForm = stringFormElement.GetString() ?? string.Empty;
+
+                // Use SetContentsOfCell to populate the spreadsheet
+                SetContentsOfCell(cellName, stringForm);
+            }
+
+            Changed = false;
+        }
+        catch (Exception ex)
+        {
+            throw new SpreadsheetReadWriteException($"Failed to load spreadsheet: {ex.Message}");
+        }
     }
 
     /// <summary>
@@ -332,11 +413,18 @@ public class Spreadsheet
     public object GetCellValue(string cellName)
     {
         CheckName(cellName);
-        if (cellValueDictionary.ContainsKey(cellName.ToUpper()))
+        if (cellValueDictionary.ContainsKey(cellName.ToUpper()) && !(cellContentDictionary[ cellName.ToUpper() ] is string))
         {
-            return cellValueDictionary[cellName.ToUpper()];
+            return cellValueDictionary[ cellName.ToUpper() ];
         }
 
+        // This handles returning the "value" of a string cell.
+        else if (cellContentDictionary.ContainsKey(cellName.ToUpper()))
+        {
+            return cellContentDictionary[ cellName.ToUpper() ];
+        }
+
+        // Default return value of zero if the cell is completely uninitalized
         return 0;
     }
 
