@@ -2,7 +2,7 @@
 Author:     Francisco Pinas
 Start Date: September 4th, 2025
 GitHub ID:  Francisco653
-Repo:       https://github.com/uofu-cs3500-20-fall2025/spreadsheet-Franinja1
+Repo:       https://github.com/Francisco653/Spreadsheet-App
 Commit Date: September 19th, 2025
 Solution:   Spreadsheet
 ```
